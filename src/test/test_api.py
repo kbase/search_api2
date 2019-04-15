@@ -70,6 +70,10 @@ class TestApi(unittest.TestCase):
     def tearDownClass(cls):
         _tear_down_elasticsearch()
 
+    def test_status(self):
+        resp = requests.get(_API_URL + '/status')
+        self.assertEqual(resp.json(), {'status': 'ok'})
+
     def test_show_config(self):
         """
         Test the show_config RPC method.

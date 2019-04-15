@@ -17,6 +17,12 @@ app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET_KEY', str(uuid4()))
 app.url_map.strict_slashes = False  # allow both `get /v1/` and `get /v1`
 
 
+@app.route('/status', methods=['GET'])
+def health_check():
+    """Really basic health check; could be expanded if needed."""
+    return flask.jsonify({'status': 'ok'})
+
+
 @app.route('/', methods=['POST'])
 def root():
     """Handle JSON RPC methods."""
