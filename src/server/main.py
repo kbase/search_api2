@@ -1,4 +1,5 @@
 """The main entrypoint for running the Flask server."""
+import os
 import sanic
 import traceback
 
@@ -14,7 +15,7 @@ app = sanic.Sanic()
 @app.route('/status', methods=['GET'])
 async def health_check(request):
     """Really basic health check; could be expanded if needed."""
-    return sanic.response.json({'status': 'ok'})
+    return _json_resp({'status': 'ok'})
 
 
 @app.route('/rpc', methods=['POST'])
@@ -32,7 +33,7 @@ async def root(request):
         InvalidParameters(f'Unknown method: {method}. Available methods: {rpc_handlers.keys()}')
     config = init_config()
     result = rpc_handlers[method](params, request.headers, config)
-    return sanic.response.json(result)
+    return _json_resp(result)
 
 
 def _show_config(params, headers, config):
@@ -49,7 +50,7 @@ def _show_config(params, headers, config):
 
 @app.exception(sanic.exceptions.NotFound)
 async def page_not_found(request, err):
-    return sanic.response.json({'error': '404 - Not found.'}, status=404)
+    return _json_resp({'error': '404 - Not found.'}, 404)
 
 
 # Any other exception -> 500
@@ -63,11 +64,24 @@ async def server_error(request, err):
     resp = {'error': '500 - Server error'}
     resp['error_class'] = err.__class__.__name__
     resp['error_details'] = str(err)
-    return sanic.response.json(resp, status=500)
+    return _json_resp(resp, 500)
+
+
+def _json_resp(data, status=200):
+    # Enable CORS
+    env_allowed_headers = os.environ.get('HTTP_ACCESS_CONTROL_REQUEST_HEADERS', 'Authorization, Content-Type')
+    headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': env_allowed_headers
+    }
+    return sanic.response.json(
+        data,
+        status=status,
+        headers=headers
+    )
 
 
 if __name__ == '__main__':
-    print('hi')
     app.run(
         host='0.0.0.0',  # nosec
         port=5000,
