@@ -6,27 +6,28 @@ from src.utils.config import init_config
 
 _API_URL = 'http://web:5000'
 config = init_config()
-_INDEX_NAME = config['index_prefix'] + '.' + 'helloworld'
 _TYPE_NAME = 'data'
+_INDEX_NAMES = [
+    config['index_prefix'] + '.' + 'index1',
+    config['index_prefix'] + '.' + 'index2',
+]
 
 
 def _init_elasticsearch():
     """
     Initialize the indexes and documents on elasticsearch before running tests.
     """
-    resp = requests.put(
-        config['elasticsearch_url'] + '/' + _INDEX_NAME,
-        data=json.dumps({
-            'settings': {
-                'index': {
-                    'number_of_shards': 3,
-                    'number_of_replicas': 1
+    for index_name in _INDEX_NAMES:
+        resp = requests.put(
+            config['elasticsearch_url'] + '/' + index_name,
+            data=json.dumps({
+                'settings': {
+                    'index': {'number_of_shards': 3, 'number_of_replicas': 1}
                 }
-            }
-        }),
-        headers={'Content-Type': 'application/json'}
-    )
-    if not resp.ok and resp.json()['error']['type'] != 'index_already_exists_exception':
+            }),
+            headers={'Content-Type': 'application/json'}
+        )
+        if not resp.ok and resp.json()['error']['type'] != 'index_already_exists_exception':
             raise RuntimeError('Error creating index on ES:', resp.text)
     test_docs = [
         # Public doc
@@ -40,25 +41,27 @@ def _init_elasticsearch():
     ]
     for doc in test_docs:
         # Note that the 'refresh=wait_for' option must be set in the URL so we can search on it immediately.
-        url = '/'.join([  # type: ignore
-            config['elasticsearch_url'],
-            _INDEX_NAME,
-            _TYPE_NAME,
-            doc['name'],
-            '?refresh=wait_for'
-        ])
-        resp = requests.put(url, data=json.dumps(doc), headers={'Content-Type': 'application/json'})
-        if not resp.ok:
-            raise RuntimeError('Error creating doc on ES:', resp.text)
+        for i in range(0, 2):  # i will be [0, 1]
+            url = '/'.join([  # type: ignore
+                config['elasticsearch_url'],
+                _INDEX_NAMES[i],
+                _TYPE_NAME,
+                doc['name'],
+                '?refresh=wait_for'
+            ])
+            resp = requests.put(url, data=json.dumps(doc), headers={'Content-Type': 'application/json'})
+            if not resp.ok:
+                raise RuntimeError('Error creating doc on ES:', resp.text)
 
 
 def _tear_down_elasticsearch():
     """
     Drop the elasticsearch index when we exit the tests.
     """
-    resp = requests.delete(config['elasticsearch_url'] + '/' + _INDEX_NAME)
-    if not resp.ok:
-        print('Error tearing down ES index:', resp.text)
+    for index_name in _INDEX_NAMES:
+        resp = requests.delete(config['elasticsearch_url'] + '/' + index_name)
+        if not resp.ok:
+            print('Error tearing down ES index:', resp.text)
 
 
 class TestApi(unittest.TestCase):
@@ -70,6 +73,8 @@ class TestApi(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         _tear_down_elasticsearch()
+
+    # TODO invalid json response
 
     def test_status(self):
         resp = requests.get(_API_URL + '/status')
@@ -98,7 +103,7 @@ class TestApi(unittest.TestCase):
             data=json.dumps({
                 'method': 'search_objects',
                 'params': {
-                    'indexes': ['HelloWorld'],
+                    'indexes': ['Index1'],
                     'query': {
                         'term': {'name': 'doc1'}
                     }
@@ -114,24 +119,36 @@ class TestApi(unittest.TestCase):
             {'is_public': False, 'name': 'private-doc1', 'access_group': 28327}
         ])
 
-    def test_search_objects_valid_no_query_no_auth(self):
+    def test_count_indexes_valid(self):
         """
-        Test the search_objects function without providing a query or auth.
-        This should return all public docs
+        Test the search_objects function, where we aggregate counts by index name.
         """
         resp = requests.post(
             _API_URL + '/rpc',
             data=json.dumps({
                 'method': 'search_objects',
-                'params': {
-                    'indexes': ['HelloWorld']
-                }
+                'params': {'indexes': ['index1', 'index2'], 'count': True}
             })
         )
         self.assertTrue(resp.ok)
         resp_json = resp.json()
-        results = [r['_source'] for r in resp_json['hits']['hits']]
+        results = resp_json['aggregations']['count_by_index']['buckets']
         self.assertEqual(results, [
-            {'is_public': True, 'name': 'public-doc1'},
-            {'is_public': True, 'name': 'public-doc2'}
+            {'key': 'test.index1', 'doc_count': 2},
+            {'key': 'test.index2', 'doc_count': 2}
         ])
+
+    def test_show_indexes(self):
+        """
+        Test the show_indexes function.
+        """
+        resp = requests.post(
+            _API_URL + '/rpc',
+            data=json.dumps({'method': 'show_indexes'})
+        )
+        self.assertTrue(resp.ok)
+        resp_json = resp.json()
+        names = [r['index'] for r in resp_json]
+        self.assertEqual(set(names), {'test.index2', 'test.index1'})
+        counts = [int(r['docs.count']) for r in resp_json]
+        self.assertEqual(counts, [4, 4])

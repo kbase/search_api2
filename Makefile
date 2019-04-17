@@ -1,6 +1,7 @@
 .PHONY: test reset
 
 test:
+	docker-compose restart web
 	docker-compose run web sh scripts/run_tests.sh
 
 reset:

@@ -20,6 +20,7 @@ def search_objects(params, headers, config):
                 `only_private` - only show private workspace data
                 `size` - result length to return for pagination
                 `from` - result offset for pagination
+                `count` - take a count of the query, instead of listing results ? TODO
         config - comes from src.utils.config.init_config
 
     ES 5.5 search query documentation:
@@ -31,7 +32,7 @@ def search_objects(params, headers, config):
         # Fetch the workspace IDs that the user can read
         # Used for simple access control
         authorized_ws_ids = ws_auth(headers['Authorization'])
-    # The index name will be the same as the type name, lower-cased with a prefix
+    # Lower-case and prefix every provided index name
     index_names = [
         config['index_prefix'] + '.' + name.lower()
         for name in params.get('indexes', [])
@@ -64,17 +65,22 @@ def search_objects(params, headers, config):
             }
         }
     # Make a query request to elasticsearch
-    resp = requests.post(
-        config['elasticsearch_url'] + '/' + index_name_str + '/_search',
-        data=json.dumps({
-            'terminate_after': 10000,  # XXX we may not want this
-            'timeout': '3m',
-            'size': params.get('size', 10),
-            'from': params.get('from', 0),
-            'query': query
-        }),
-        headers={'Content-Type': 'application/json'}
-    )
+    url = config['elasticsearch_url'] + '/' + index_name_str + '/_search'
+    # url += '/_count' if params.get('count') else '/_search'
+    options = {
+        'query': query,
+        'terminate_after': 10000,  # type: ignore
+        'size': 0 if params.get('count') else params.get('size', 10),
+        'from': params.get('from', 0),
+        'timeout': '3m'  # type: ignore
+    }
+    if params.get('count'):
+        # Do an aggregation on the index name
+        options['aggs'] = {
+            'count_by_index': {'terms': {'field': '_index'}}
+        }
+    headers = {'Content-Type': 'application/json'}
+    resp = requests.post(url, data=json.dumps(options), headers=headers)
     if not resp.ok:
         raise RuntimeError(resp.text)
     return resp.json()
