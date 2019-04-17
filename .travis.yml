@@ -3,5 +3,5 @@ services:
 - docker
 script:
 - docker-compose up --build -d
-- sleep 15
+- sleep 30
 - make test
