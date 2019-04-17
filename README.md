@@ -34,3 +34,11 @@ Run the tests (with the server running):
 ```sh
 make test
 ```
+
+### Deploying to Dockerhub
+
+Build the image locally, specifying the image name:
+
+```sh
+IMAGE_NAME=kbase/search_api:0.0.2 sh hooks/build
+```
