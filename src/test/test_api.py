@@ -23,7 +23,8 @@ def _init_elasticsearch():
                     'number_of_replicas': 1
                 }
             }
-        })
+        }),
+        headers={'Content-Type': 'application/json'}
     )
     if not resp.ok and resp.json()['error']['type'] != 'index_already_exists_exception':
             raise RuntimeError('Error creating index on ES:', resp.text)
@@ -46,7 +47,7 @@ def _init_elasticsearch():
             doc['name'],
             '?refresh=wait_for'
         ])
-        resp = requests.put(url, data=json.dumps(doc))
+        resp = requests.put(url, data=json.dumps(doc), headers={'Content-Type': 'application/json'})
         if not resp.ok:
             raise RuntimeError('Error creating doc on ES:', resp.text)
 
@@ -78,7 +79,7 @@ class TestApi(unittest.TestCase):
         """
         Test the show_config RPC method.
         """
-        resp = requests.post(_API_URL, data='{}')
+        resp = requests.post(_API_URL + '/rpc', data='{}')
         self.assertEqual(resp.json(), {
             'elasticsearch_url': 'http://elasticsearch:9200',
             'workspace_url': 'https://ci.kbase.us/services/ws',
@@ -93,7 +94,7 @@ class TestApi(unittest.TestCase):
          - is_public is true or access_group is 100
         """
         resp = requests.post(
-            _API_URL,
+            _API_URL + '/rpc',
             data=json.dumps({
                 'method': 'search_objects',
                 'params': {
@@ -119,7 +120,7 @@ class TestApi(unittest.TestCase):
         This should return all public docs
         """
         resp = requests.post(
-            _API_URL,
+            _API_URL + '/rpc',
             data=json.dumps({
                 'method': 'search_objects',
                 'params': {

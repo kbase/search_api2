@@ -27,7 +27,7 @@ RUN apk --update add --virtual build-dependencies python-dev build-base && \
 COPY . /app
 
 LABEL org.label-schema.build-date=$BUILD_DATE \
-      org.label-schema.vcs-url="https://github.com/kbase/search_api" \
+      org.label-schema.vcs-url="https://github.com/kbaseincubator/search_api_deluxe" \
       org.label-schema.vcs-ref=$VCS_REF \
       org.label-schema.schema-version="1.0.0-rc1" \
       us.kbase.vcs-branch=$BRANCH \

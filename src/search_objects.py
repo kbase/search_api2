@@ -3,12 +3,11 @@ Search objects on elasticsearch
 """
 import json
 import requests
-import flask
 
 from src.workspace_auth import ws_auth
 
 
-def search_objects(params, config):
+def search_objects(params, headers, config):
     """
     Make a query on elasticsearch using the given index and options.
 
@@ -28,10 +27,10 @@ def search_objects(params, config):
     """
     user_query = params.get('query', {})
     authorized_ws_ids = []  # type: list
-    if not params.get('public_only') and flask.request.headers.get('Authorization'):
+    if not params.get('public_only') and headers.get('Authorization'):
         # Fetch the workspace IDs that the user can read
         # Used for simple access control
-        authorized_ws_ids = ws_auth(flask.request.headers['Authorization'])
+        authorized_ws_ids = ws_auth(headers['Authorization'])
     # The index name will be the same as the type name, lower-cased with a prefix
     index_names = [
         config['index_prefix'] + '.' + name.lower()
@@ -73,7 +72,8 @@ def search_objects(params, config):
             'size': params.get('size', 10),
             'from': params.get('from', 0),
             'query': query
-        })
+        }),
+        headers={'Content-Type': 'application/json'}
     )
     if not resp.ok:
         raise RuntimeError(resp.text)
