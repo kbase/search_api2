@@ -18,7 +18,7 @@ async def health_check(request):
     return _json_resp({'status': 'ok'})
 
 
-@app.route('/rpc', methods=['POST'])
+@app.route('/rpc', methods=['POST', 'OPTIONS'])
 async def root(request):
     """Handle JSON RPC methods."""
     json_body = request.json
