@@ -1,7 +1,7 @@
 """The main entrypoint for running the Flask server."""
 import sanic
 import traceback
-from sanic_cors import cross_origin
+from sanic_cors import CORS
 
 from src.exceptions import InvalidParameters
 from src.utils.config import init_config
@@ -9,6 +9,7 @@ from src.search_objects import search_objects
 from src.show_indexes import show_indexes
 
 app = sanic.Sanic()
+CORS(app, automatic_options=True)
 
 
 @app.route('/')
@@ -18,8 +19,7 @@ async def health_check(request):
     return sanic.response.json({'status': 'ok'})
 
 
-@app.route('/rpc', methods=['POST', 'OPTIONS'])
-@cross_origin(app)
+@app.route('/rpc', methods=['POST'])
 async def root(request):
     """Handle JSON RPC methods."""
     json_body = request.json
