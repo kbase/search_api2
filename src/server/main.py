@@ -1,7 +1,7 @@
 """The main entrypoint for running the Flask server."""
-import os
 import sanic
 import traceback
+from sanic_cors import cross_origin
 
 from src.exceptions import InvalidParameters
 from src.utils.config import init_config
@@ -15,10 +15,11 @@ app = sanic.Sanic()
 @app.route('/status', methods=['GET'])
 async def health_check(request):
     """Really basic health check; could be expanded if needed."""
-    return _json_resp({'status': 'ok'})
+    return sanic.response.json({'status': 'ok'})
 
 
 @app.route('/rpc', methods=['POST', 'OPTIONS'])
+@cross_origin(app)
 async def root(request):
     """Handle JSON RPC methods."""
     json_body = request.json
@@ -33,7 +34,7 @@ async def root(request):
         InvalidParameters(f'Unknown method: {method}. Available methods: {rpc_handlers.keys()}')
     config = init_config()
     result = rpc_handlers[method](params, request.headers, config)
-    return _json_resp(result)
+    return sanic.response.json(result)
 
 
 def _show_config(params, headers, config):
@@ -50,7 +51,7 @@ def _show_config(params, headers, config):
 
 @app.exception(sanic.exceptions.NotFound)
 async def page_not_found(request, err):
-    return _json_resp({'error': '404 - Not found.'}, 404)
+    return sanic.response.json({'error': '404 - Not found.'}, status=404)
 
 
 # Any other exception -> 500
@@ -64,21 +65,7 @@ async def server_error(request, err):
     resp = {'error': '500 - Server error'}
     resp['error_class'] = err.__class__.__name__
     resp['error_details'] = str(err)
-    return _json_resp(resp, 500)
-
-
-def _json_resp(data, status=200):
-    # Enable CORS
-    env_allowed_headers = os.environ.get('HTTP_ACCESS_CONTROL_REQUEST_HEADERS', 'Authorization, Content-Type')
-    headers = {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': env_allowed_headers
-    }
-    return sanic.response.json(
-        data,
-        status=status,
-        headers=headers
-    )
+    return sanic.response.json(resp, status=500)
 
 
 if __name__ == '__main__':
