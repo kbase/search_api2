@@ -74,11 +74,13 @@ def search_objects(params, headers, config):
         'from': params.get('from', 0),
         'timeout': '3m'  # type: ignore
     }
-    if params.get('count'):
-        # Do an aggregation on the index name
-        options['aggs'] = {
-            'count_by_index': {'terms': {'field': '_index'}}
-        }
+    # User-supplied aggregations
+    if params.get('aggs'):
+        options['aggs'] = params['aggs']
+    # User-supplied sorting rules
+    if params.get('sort'):
+        options['sort'] = params['sort']
+    print('options!', options)
     headers = {'Content-Type': 'application/json'}
     resp = requests.post(url, data=json.dumps(options), headers=headers)
     if not resp.ok:

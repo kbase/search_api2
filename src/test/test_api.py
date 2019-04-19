@@ -1,8 +1,12 @@
+import os
 import unittest
 import requests
 import json
 
 from src.utils.config import init_config
+
+if 'TEST_TOKEN' not in os.environ:
+    raise RuntimeError('Set the TEST_TOKEN env var first.')
 
 _API_URL = 'http://web:5000'
 config = init_config()
@@ -31,13 +35,13 @@ def _init_elasticsearch():
             raise RuntimeError('Error creating index on ES:', resp.text)
     test_docs = [
         # Public doc
-        {'name': 'public-doc1', 'is_public': True},
+        {'name': 'public-doc1', 'is_public': True, 'timestamp': 10},
         # Public doc
-        {'name': 'public-doc2', 'is_public': True},
+        {'name': 'public-doc2', 'is_public': True, 'timestamp': 12},
         # Private but accessible doc
-        {'name': 'private-doc1', 'is_public': False, 'access_group': 28327},
+        {'name': 'private-doc1', 'is_public': False, 'access_group': 28327, 'timestamp': 7},
         # Private but inaccessible doc
-        {'name': 'private2-doc1', 'is_public': False, 'access_group': 0},
+        {'name': 'private2-doc1', 'is_public': False, 'access_group': 0, 'timestamp': 9},
     ]
     for doc in test_docs:
         # Note that the 'refresh=wait_for' option must be set in the URL so we can search on it immediately.
@@ -109,14 +113,14 @@ class TestApi(unittest.TestCase):
                     }
                 }
             }),
-            headers={'Authorization': 'F3T2TTJEIBI2Y5HIJYY4MOZ6XLKBVE3B'}
+            headers={'Authorization': os.environ['TEST_TOKEN']}
         )
         self.assertTrue(resp.ok)
         resp_json = resp.json()
         results = [r['_source'] for r in resp_json['hits']['hits']]
         self.assertEqual(results, [
-            {'is_public': True, 'name': 'public-doc1'},
-            {'is_public': False, 'name': 'private-doc1', 'access_group': 28327}
+            {'is_public': True, 'name': 'public-doc1', 'timestamp': 10},
+            {'is_public': False, 'name': 'private-doc1', 'access_group': 28327, 'timestamp': 7}
         ])
 
     def test_count_indexes_valid(self):
@@ -127,7 +131,12 @@ class TestApi(unittest.TestCase):
             _API_URL + '/rpc',
             data=json.dumps({
                 'method': 'search_objects',
-                'params': {'indexes': ['index1', 'index2'], 'count': True}
+                'params': {
+                    'indexes': ['index1', 'index2'],
+                    'aggs': {
+                        'count_by_index': {'terms': {'field': '_index'}}
+                    }
+                }
             })
         )
         self.assertTrue(resp.ok)
@@ -152,3 +161,33 @@ class TestApi(unittest.TestCase):
         self.assertEqual(set(names), {'test.index2', 'test.index1'})
         counts = [int(r['docs.count']) for r in resp_json]
         self.assertEqual(counts, [4, 4])
+
+    def test_custom_sort(self):
+        """
+        Test the search_objects function with a sort
+        """
+        resp = requests.post(
+            _API_URL + '/rpc',
+            data=json.dumps({
+                'method': 'search_objects',
+                'params': {
+                    'indexes': ['index1', 'index2'],
+                    'query': {'term': {'name': 'doc1'}},
+                    'sort': [
+                        {'timestamp': {'order': 'desc'}},
+                        '_score'
+                    ]
+                }
+            }),
+            headers={'Authorization': os.environ['TEST_TOKEN']}
+        )
+        self.assertTrue(resp.ok)
+        resp_json = resp.json()
+        results = [r['_source'] for r in resp_json['hits']['hits']]
+        timestamps = [r['timestamp'] for r in results]
+        self.assertEqual(set(timestamps), {10, 7})
+        # results = resp_json['aggregations']['count_by_index']['buckets']
+        # self.assertEqual(results, [
+        #     {'key': 'test.index1', 'doc_count': 2},
+        #     {'key': 'test.index2', 'doc_count': 2}
+        # ])
