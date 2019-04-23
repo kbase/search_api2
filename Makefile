@@ -2,7 +2,7 @@
 
 test:
 	docker-compose restart web
-	docker-compose run -e TEST_TOKEN web sh scripts/run_tests.sh
+	docker-compose run web sh scripts/run_tests.sh
 
 reset:
 	docker-compose down

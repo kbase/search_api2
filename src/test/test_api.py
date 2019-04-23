@@ -1,12 +1,8 @@
-import os
 import unittest
 import requests
 import json
 
 from src.utils.config import init_config
-
-if 'TEST_TOKEN' not in os.environ:
-    raise RuntimeError('Set the TEST_TOKEN env var first.')
 
 _API_URL = 'http://web:5000'
 config = init_config()
@@ -39,9 +35,9 @@ def _init_elasticsearch():
         # Public doc
         {'name': 'public-doc2', 'is_public': True, 'timestamp': 12},
         # Private but accessible doc
-        {'name': 'private-doc1', 'is_public': False, 'access_group': 28327, 'timestamp': 7},
+        {'name': 'private-doc1', 'is_public': False, 'access_group': 1, 'timestamp': 7},
         # Private but inaccessible doc
-        {'name': 'private2-doc1', 'is_public': False, 'access_group': 0, 'timestamp': 9},
+        {'name': 'private2-doc1', 'is_public': False, 'access_group': 99, 'timestamp': 9},
     ]
     for doc in test_docs:
         # Note that the 'refresh=wait_for' option must be set in the URL so we can search on it immediately.
@@ -91,7 +87,7 @@ class TestApi(unittest.TestCase):
         resp = requests.post(_API_URL + '/rpc', data='{}')
         self.assertEqual(resp.json(), {
             'elasticsearch_url': 'http://elasticsearch:9200',
-            'workspace_url': 'https://ci.kbase.us/services/ws',
+            'workspace_url': 'http://workspace:5000',
             'index_prefix': 'test'
         })
 
@@ -113,14 +109,14 @@ class TestApi(unittest.TestCase):
                     }
                 }
             }),
-            headers={'Authorization': os.environ['TEST_TOKEN']}
+            headers={'Authorization': 'valid_token'}
         )
         self.assertTrue(resp.ok)
         resp_json = resp.json()
         results = [r['_source'] for r in resp_json['hits']['hits']]
         self.assertEqual(results, [
             {'is_public': True, 'name': 'public-doc1', 'timestamp': 10},
-            {'is_public': False, 'name': 'private-doc1', 'access_group': 28327, 'timestamp': 7}
+            {'is_public': False, 'name': 'private-doc1', 'access_group': 1, 'timestamp': 7}
         ])
 
     def test_count_indexes_valid(self):
@@ -179,7 +175,7 @@ class TestApi(unittest.TestCase):
                     ]
                 }
             }),
-            headers={'Authorization': os.environ['TEST_TOKEN']}
+            headers={'Authorization': 'valid_token'}
         )
         self.assertTrue(resp.ok)
         resp_json = resp.json()
