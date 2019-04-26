@@ -15,6 +15,7 @@ Uses JSON RPC format, so all requests should:
 * method: `search_objects`
 * params:
   * `query` elasticsearch query object (refer to [the ES docs](https://www.elastic.co/guide/en/elasticsearch/reference/5.5/search-request-body.html))
+  * `source` - optional source filters (refer to [the ES docs](https://www.elastic.co/guide/en/elasticsearch/reference/5.5/search-request-source-filtering.html))
   * `indexes` - array of index names (without any prefix). Case insensitive
   * `only_public` - only show public workspace data
   * `only_private` - only show private workspace data

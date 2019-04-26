@@ -15,6 +15,7 @@ def search_objects(params, headers, config):
         params - dict of parameters from the JSON RPC request to the server
             can contain:
                 `query` options for elasticsearch
+                `source` - array of field names to return in the "_source"
                 `indexes` - array of index names (without any prefix)
                 `only_public` - only show public workspace data
                 `only_private` - only show private workspace data
@@ -80,6 +81,9 @@ def search_objects(params, headers, config):
     # User-supplied sorting rules
     if params.get('sort'):
         options['sort'] = params['sort']
+    # User-supplied source filters
+    if params.get('source'):
+        options['_source'] = params.get('source')
     print('options!', options)
     headers = {'Content-Type': 'application/json'}
     resp = requests.post(url, data=json.dumps(options), headers=headers)
