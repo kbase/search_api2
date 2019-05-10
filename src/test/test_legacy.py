@@ -74,28 +74,25 @@ class TestApi(unittest.TestCase):
     def tearDownClass(cls):
         _tear_down_elasticsearch()
 
-    def test_legacy_request(self):
+    def test_count(self):
         """
         Test a valid, vanilla call to the search_objects method
         This should match all documents with:
          - "doc1" in the name
          - is_public is true or access_group is 100
         """
-        pass
         resp = requests.post(
             _API_URL + '/legacy',
             data=json.dumps({
                 'method': 'SearchAPIThing.search_objects',
                 'params': [{
                     "match_filter": {
-                        "full_text_in_all": "coli",
-                        "exclude_subobjects": 1,
-                        "source_tags": ["refdata"],
-                        "source_tags_blacklist": 0
+                        "full_text_in_all": "public",
+                        "exclude_subobjects": 1
                     },
                     "pagination": {
                         "start": 0,
-                        "count": 0
+                        "count": 10
                     },
                     "post_processing": {
                         "ids_only": 1,
@@ -105,16 +102,20 @@ class TestApi(unittest.TestCase):
                         "include_highlight": 1
                     },
                     "access_filter": {
-                        "with_private": 0,
+                        "with_private": 1,
                         "with_public": 1
                     }
                 }]
             }),
             headers={'Authorization': 'valid_token'}
         )
-        print('RESP!', resp.text)
         self.assertTrue(resp.ok)
-        # resp_json = resp.json()
+        resp_json = resp.json()
+        print('resp', resp_json)
+        self.assertEqual(resp_json['total'], 4)
+        self.assertEqual(resp_json['pagination'], {'start': 0, 'count': 10})
+        self.assertEqual(resp_json['sorting_rules'], [])
+        self.assertTrue(resp_json['time'])
         # results = [r['_source'] for r in resp_json['hits']['hits']]
         # self.assertEqual(results, [
         #     {'is_public': True, 'name': 'public-doc1', 'timestamp': 10},

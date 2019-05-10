@@ -34,7 +34,7 @@ def _search_objects(params, headers, config):
             query['bool']['must_not'] = tag_query
         else:
             query['bool']['must'] += tag_query
-    # TODO match_filter/exclude_subobjects -- what does it do?
+    # TODO match_filter/exclude_subobjects
     # TODO what is the noindex tag?
     object_types = params.get('object_types', [])
     if object_types:
@@ -63,7 +63,7 @@ def _search_objects(params, headers, config):
     access_filter = params.get('access_filter', {})
     with_private = bool(access_filter.get('with_private'))
     with_public = bool(access_filter.get('with_public'))
-    params = {
+    search_params = {
         'query': query,
         'size': pagination.get('count', 20),
         'from': pagination.get('start', 0),
@@ -71,7 +71,18 @@ def _search_objects(params, headers, config):
         'only_public': not with_private and with_public,
         'only_private': not with_public and with_private
     }
-    return search_objects(params, headers, config)
+    search_data = search_objects(search_params, headers, config)
+    return _create_search_objects_result(params, search_data)
+
+
+def _create_search_objects_result(params, search_data):
+    result = {
+        'pagination': params.get('pagination', {}),
+        'sorting_rules': params.get('sorting_rules', []),
+        'total': search_data['hits']['total'],
+        'search_time': search_data['took'],
+    }
+    return result
 
 
 # Map property names sent to the Java API to the names we actually use in ES
