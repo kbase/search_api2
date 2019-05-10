@@ -6,6 +6,7 @@ from sanic_cors import CORS
 from src.exceptions import InvalidParameters
 from src.utils.config import init_config
 from src.search_objects import search_objects
+from src.handle_legacy import handle_legacy
 from src.show_indexes import show_indexes
 
 app = sanic.Sanic()
@@ -34,6 +35,14 @@ async def root(request):
         InvalidParameters(f'Unknown method: {method}. Available methods: {rpc_handlers.keys()}')
     config = init_config()
     result = rpc_handlers[method](params, request.headers, config)
+    return sanic.response.json(result)
+
+
+@app.route('/legacy', methods=['POST'])
+async def legacy(request):
+    """Handle legacy-formatted requests that are intended for the previous Java api."""
+    config = init_config()
+    result = handle_legacy(request.json, request.headers, config)
     return sanic.response.json(result)
 
 
