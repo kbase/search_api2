@@ -64,7 +64,7 @@ def _tear_down_elasticsearch():
             print('Error tearing down ES index:', resp.text)
 
 
-class TestApi(unittest.TestCase):
+class TestLegacy(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -115,7 +115,7 @@ class TestApi(unittest.TestCase):
         self.assertEqual(resp_json['total'], 4)
         self.assertEqual(resp_json['pagination'], {'start': 0, 'count': 10})
         self.assertEqual(resp_json['sorting_rules'], [])
-        self.assertTrue(resp_json['time'])
+        self.assertTrue(resp_json['search_time'])
         # results = [r['_source'] for r in resp_json['hits']['hits']]
         # self.assertEqual(results, [
         #     {'is_public': True, 'name': 'public-doc1', 'timestamp': 10},

@@ -9,8 +9,10 @@ def init_config():
     index_prefix = os.environ.get('INDEX_PREFIX', 'test')
     config_url = os.environ.get('GLOBAL_CONFIG_URL', 'https://github.com/kbaseIncubator/search_config/releases/download/0.0.1/config.yaml')  # noqa
     # Load the global configuration release (non-environment specific, public config)
-    with urllib.request.urlopen(config_url) as res:
-        global_config = yaml.load(res)  # type: ignore
+    if not config_url.startswith('http'):
+        raise RuntimeError(f"Invalid config url: {config_url}")
+    with urllib.request.urlopen(config_url) as res:  # nosec
+        global_config = yaml.safe_load(res)  # type: ignore
     return {
         'global': global_config,
         'elasticsearch_url': es_url,
