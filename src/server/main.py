@@ -11,6 +11,7 @@ from src.show_indexes import show_indexes
 
 app = sanic.Sanic()
 CORS(app, automatic_options=True)
+_CONFIG = init_config()
 
 
 @app.route('/')
@@ -33,28 +34,26 @@ async def root(request):
     }
     if method not in rpc_handlers:
         InvalidParameters(f'Unknown method: {method}. Available methods: {rpc_handlers.keys()}')
-    config = init_config()
-    result = rpc_handlers[method](params, request.headers, config)
+    result = rpc_handlers[method](params, request.headers)
     return sanic.response.json(result)
 
 
 @app.route('/legacy', methods=['POST'])
 async def legacy(request):
     """Handle legacy-formatted requests that are intended for the previous Java api."""
-    config = init_config()
-    result = handle_legacy(request.json, request.headers, config)
+    result = handle_legacy(request.json, request.headers)
     return sanic.response.json(result)
 
 
-def _show_config(params, headers, config):
+def _show_config(params, headers):
     """
     Display publicly readable configuration settings for this server.
     Be sure to add new entries here explicitly so that nothing is shown unintentionally.
     """
     return {
-        'elasticsearch_url': config['elasticsearch_url'],
-        'workspace_url': config['workspace_url'],
-        'index_prefix': config['index_prefix']
+        'elasticsearch_url': _CONFIG['elasticsearch_url'],
+        'workspace_url': _CONFIG['workspace_url'],
+        'index_prefix': _CONFIG['index_prefix']
     }
 
 

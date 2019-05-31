@@ -10,6 +10,7 @@ _TYPE_NAME = 'data'
 _INDEX_NAMES = [
     config['index_prefix'] + '.' + 'index1',
     config['index_prefix'] + '.' + 'index2',
+    config['index_prefix'] + '.' + 'narrative',
 ]
 
 
@@ -31,13 +32,13 @@ def _init_elasticsearch():
             raise RuntimeError('Error creating index on ES:', resp.text)
     test_docs = [
         # Public doc
-        {'name': 'public-doc1', 'is_public': True, 'timestamp': 10},
+        {'name': 'public-doc1', 'is_public': True, 'timestamp': 10, 'access_group': 1},
         # Public doc
-        {'name': 'public-doc2', 'is_public': True, 'timestamp': 12},
+        {'name': 'public-doc2', 'is_public': True, 'timestamp': 12, 'access_group': 2},
         # Private but accessible doc
         {'name': 'private-doc1', 'is_public': False, 'access_group': 1, 'timestamp': 7},
         # Private but inaccessible doc
-        {'name': 'private2-doc1', 'is_public': False, 'access_group': 99, 'timestamp': 9},
+        {'name': 'private2-doc1', 'is_public': False, 'access_group': 99, 'timestamp': 9}
     ]
     for doc in test_docs:
         # Note that the 'refresh=wait_for' option must be set in the URL so we can search on it immediately.
@@ -74,7 +75,7 @@ class TestLegacy(unittest.TestCase):
     def tearDownClass(cls):
         _tear_down_elasticsearch()
 
-    def test_count(self):
+    def test_basic_text_search(self):
         """
         Test a valid, vanilla call to the search_objects method
         This should match all documents with:
@@ -102,12 +103,11 @@ class TestLegacy(unittest.TestCase):
                         "include_highlight": 1
                     },
                     "access_filter": {
-                        "with_private": 1,
+                        "with_private": 0,
                         "with_public": 1
                     }
                 }]
-            }),
-            headers={'Authorization': 'valid_token'}
+            })
         )
         self.assertTrue(resp.ok)
         resp_json = resp.json()
@@ -121,3 +121,18 @@ class TestLegacy(unittest.TestCase):
         #     {'is_public': True, 'name': 'public-doc1', 'timestamp': 10},
         #     {'is_public': False, 'name': 'private-doc1', 'access_group': 1, 'timestamp': 7}
         # ])
+
+    def test_get_objects(self):
+        """
+        Test the legacy/get_objects method using a list of guids
+        """
+        resp = requests.post(
+            _API_URL + '/legacy',
+            data=json.dumps({
+                'method': 'KBaseSearchAPI.get_objects',
+                'params': [{
+                    'guids': ['public-doc1', 'public-doc2']
+                }]
+            })
+        )
+        print('resp!', resp.text)
