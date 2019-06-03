@@ -62,10 +62,13 @@ def _search_objects(params, headers):
     It also injects any extra info, such as narrative data, for each search result.
     """
     match_filter = params.get('match_filter', {})
-    # Match full text for any field in the objects
-    text_query = {'match': {'_all': match_filter.get('full_text_in_all', '')}}
     # Base query object for ES. Will get mutated and expanded below.
-    query = {'bool': {'must': [text_query]}}
+    query = {
+        'bool': {'must': [], 'must_not': [], 'should': []},
+    }  # type: dict
+    if match_filter.get('full_text_in_all'):
+        # Match full text for any field in the objects
+        query['bool']['must'].append({'match': {'_all': match_filter['full_text_in_all']}})
     # Handle a search on tags, which corresponds to the generic `tags` field in all indexes.
     if match_filter.get('source_tags'):
         # If source_tags_blacklist is `1`, then we are **discluding** these tags.
@@ -74,9 +77,11 @@ def _search_objects(params, headers):
         # Construct a compound query to match every tag using "term"
         tag_query = [{'term': {'tags': tag}} for tag in tags]
         if blacklist_tags:
-            query['bool']['must_not'] = tag_query
+            query['bool']['must_not'] += tag_query
         else:
             query['bool']['must'] += tag_query
+    # Handle match_filter/lookupInKeys
+    query = _handle_lookup_in_keys(match_filter, query)
     # TODO match_filter/exclude_subobjects
     # TODO what is the noindex tag?
     # Handle filtering by object type
@@ -94,11 +99,8 @@ def _search_objects(params, headers):
             prop = sort_rule['property']
         else:
             prop = _SORT_PROP_MAPPING[sort_rule['property']]
-        sort.append({
-            prop: {
-                'order': 'asc' if sort_rule.get('ascending') else 'desc'
-            }
-        })
+        order = 'asc' if sort_rule.get('ascending') else 'desc'
+        sort.append({prop: {'order': order}})
     pagination = params.get('pagination', {})
     access_filter = params.get('access_filter', {})
     with_private = bool(access_filter.get('with_private'))
@@ -108,10 +110,11 @@ def _search_objects(params, headers):
         'size': pagination.get('count', 20),
         'from': pagination.get('start', 0),
         'sort': sort,
-        'only_public': not with_private and with_public,
-        'only_private': not with_public and with_private
+        'public_only': not with_private and with_public,
+        'private_only': not with_public and with_private
     }
     search_results = search_objects(search_params, headers)
+    print('results', search_results)
     narrative_infos = None
     post_processing = params.get('post_processing', {})
     if post_processing.get('add_narrative_info'):
@@ -186,6 +189,36 @@ def _list_types(params, headers):
                     hidden - bool
                     link_key - string
     """
+    return {}
+
+
+def _handle_lookup_in_keys(match_filter, query):
+    """
+    Handle the match_filter/lookupInKeys option from the legacy API.
+    This allows the user to pass a number of field names and term or range values for filtering.
+    """
+    if not match_filter.get('lookupInKeys'):
+        return query
+    # This will be a dict where each key is a field name and each val is a MatchValue type
+    lookup_in_keys = match_filter['lookupInKeys']
+    for (key, match_value) in lookup_in_keys.items():
+        # match_value will be a dict with one of these keys set:
+        # value (string), int_value, double_value, bool_value, min_int,
+        # max_int, min_date, max_date, min_double, max_double.
+        # `term_value` will be any term (full equality) match.
+        term_value = (match_value.get('value') or
+                      match_value.get('int_value') or
+                      match_value.get('double_value') or
+                      match_value.get('bool_value'))
+        # `range_min` and `range_max` will be any values for doing a range query
+        range_min = match_value.get('min_int') or match_value.get('min_date') or match_value.get('min_double')
+        range_max = match_value.get('max_int') or match_value.get('max_date') or match_value.get('max_double')
+        if term_value:
+            query_clause = {'match': {key: term_value}}
+        elif range_min and range_max:
+            query_clause = {'range': {key: {'gte': range_min, 'lte': range_max}}}
+        query['bool']['must'].append(query_clause)
+    return query
 
 
 def _get_object_data_from_search_results(search_results, post_processing):

@@ -1,4 +1,5 @@
 """The main entrypoint for running the Flask server."""
+import os
 import sanic
 import traceback
 from sanic_cors import CORS
@@ -27,14 +28,9 @@ async def root(request):
     json_body = request.json
     method = json_body.get('method', 'show_config')
     params = json_body.get('params', {})
-    rpc_handlers = {
-        'show_config': _show_config,
-        'search_objects': search_objects,
-        'show_indexes': show_indexes
-    }
-    if method not in rpc_handlers:
-        InvalidParameters(f'Unknown method: {method}. Available methods: {rpc_handlers.keys()}')
-    result = rpc_handlers[method](params, request.headers)
+    if method not in _RPC_HANDLERS:
+        InvalidParameters(f'Unknown method: {method}. Available methods: {_RPC_HANDLERS.keys()}')
+    result = _RPC_HANDLERS[method](params, request.headers)  # type: ignore
     return sanic.response.json(result)
 
 
@@ -53,7 +49,8 @@ def _show_config(params, headers):
     return {
         'elasticsearch_url': _CONFIG['elasticsearch_url'],
         'workspace_url': _CONFIG['workspace_url'],
-        'index_prefix': _CONFIG['index_prefix']
+        'index_prefix': _CONFIG['index_prefix'],
+        'global': _CONFIG['global']
     }
 
 
@@ -76,10 +73,18 @@ async def server_error(request, err):
     return sanic.response.json(resp, status=500)
 
 
+# Function handlers for each rpc method.
+_RPC_HANDLERS = {
+    'show_config': _show_config,
+    'search_objects': search_objects,
+    'show_indexes': show_indexes
+}
+
+
 if __name__ == '__main__':
     app.run(
         host='0.0.0.0',  # nosec
         port=5000,
-        workers=8
+        workers=os.environ.get('WORKERS', 8),
         # debug=('DEVELOPMENT' in os.environ)  # XXX couldnt get autoreload to work
     )

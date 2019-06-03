@@ -75,6 +75,7 @@ class TestLegacy(unittest.TestCase):
     def tearDownClass(cls):
         _tear_down_elasticsearch()
 
+    @unittest.skip('x')
     def test_basic_text_search(self):
         """
         Test a valid, vanilla call to the search_objects method
@@ -122,6 +123,7 @@ class TestLegacy(unittest.TestCase):
         #     {'is_public': False, 'name': 'private-doc1', 'access_group': 1, 'timestamp': 7}
         # ])
 
+    @unittest.skip('x')
     def test_get_objects(self):
         """
         Test the legacy/get_objects method using a list of guids
@@ -136,3 +138,69 @@ class TestLegacy(unittest.TestCase):
             })
         )
         print('resp!', resp.text)
+
+    @unittest.skip('x')
+    def test_match_value_structure(self):
+        """
+        Test the per-keyword filtering and the MatchValue type in the original API.
+        """
+        resp = requests.post(
+            _API_URL + '/legacy',
+            data=json.dumps({
+                'method': 'KBaseSearchAPI.search_objects',
+                'params': [{
+                    'match_filter': {
+                        'lookupInKeys': {'access_group': {'value': 1}}
+                    },
+                    'access_filter': {
+                        'with_private': 0,
+                        'with_public': 1
+                    }
+                }]
+            })
+        )
+        print('resp', resp.json())
+
+    def test_match_value_range(self):
+            """
+            Test the per-keyword filtering and the MatchValue type in the original API.
+            """
+            resp = requests.post(
+                _API_URL + '/legacy',
+                data=json.dumps({
+                    'method': 'KBaseSearchAPI.search_objects',
+                    'params': [{
+                        'match_filter': {
+                            'lookupInKeys': {
+                                'timestamp': {'min_int': 7, 'max_int': 10}
+                            }
+                        },
+                        'access_filter': {
+                            'with_private': 1,
+                            'with_public': 1
+                        }
+                    }]
+                }),
+                headers={'Authorization': 'valid_token'}
+            )
+            print('resp', resp.json())
+            resp2 = requests.post(
+                _API_URL + '/legacy',
+                data=json.dumps({
+                    'method': 'KBaseSearchAPI.search_objects',
+                    'params': [{
+                        'match_filter': {
+                            'lookupInKeys': {
+                                'timestamp': {'min_int': 7, 'max_int': 12},
+                                'access_group': {'int_value': 1}
+                            }
+                        },
+                        'access_filter': {
+                            'with_private': 1,
+                            'with_public': 1
+                        }
+                    }]
+                }),
+                headers={'Authorization': 'valid_token'}
+            )
+            print('resp2', resp2.json())

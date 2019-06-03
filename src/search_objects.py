@@ -52,14 +52,10 @@ def search_objects(params, headers):
         query['bool']['filter'] = {'term': {'is_public': True}}
     elif params.get('private_only'):
         # Private workspaces only
-        query['bool']['filter'] = {
-            'bool': {
-                'must': [
-                    {'term': {'is_public': False}},
-                    {'terms': {'access_group': authorized_ws_ids}}
-                ]
-            }
-        }
+        query['bool']['filter'] = [
+            {'term': {'is_public': False}},
+            {'terms': {'access_group': authorized_ws_ids}}
+        ]
     else:
         # Find all documents, whether private or public
         query['bool']['filter'] = {
@@ -89,7 +85,7 @@ def search_objects(params, headers):
     # User-supplied source filters
     if params.get('source'):
         options['_source'] = params.get('source')
-    print('options!', options)
+    print('options!', json.dumps(options, indent=2))
     headers = {'Content-Type': 'application/json'}
     resp = requests.post(url, data=json.dumps(options), headers=headers)
     if not resp.ok:
