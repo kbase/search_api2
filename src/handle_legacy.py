@@ -82,7 +82,6 @@ def _search_objects(params, headers):
             query['bool']['must'] += tag_query
     # Handle match_filter/lookupInKeys
     query = _handle_lookup_in_keys(match_filter, query)
-    # TODO match_filter/exclude_subobjects
     # TODO what is the noindex tag?
     # Handle filtering by object type
     object_types = params.get('object_types', [])
@@ -105,13 +104,15 @@ def _search_objects(params, headers):
     access_filter = params.get('access_filter', {})
     with_private = bool(access_filter.get('with_private'))
     with_public = bool(access_filter.get('with_public'))
+    exclusions = _get_index_exclusions(match_filter)
     search_params = {
         'query': query,
         'size': pagination.get('count', 20),
         'from': pagination.get('start', 0),
         'sort': sort,
         'public_only': not with_private and with_public,
-        'private_only': not with_public and with_private
+        'private_only': not with_public and with_private,
+        'exclude_indexes': exclusions
     }
     search_results = search_objects(search_params, headers)
     print('results', search_results)
@@ -288,6 +289,17 @@ def _get_sources(search_results):
     Pull out the _source document data for every search result from ES.
     """
     return [r['_source'] for r in search_results['hits']['hits']]
+
+
+def _get_index_exclusions(match_filter):
+    """
+    If the `exclude_subobjects` option is truthy, then we want to exclude all
+    indexes considered workspace "subjobjects", such as genome features or
+    pangenome_orthologfamily.
+    """
+    if not match_filter.get('exclude_subobjects'):
+        return None
+    return _CONFIG['global']['ws_subobjects']
 
 
 # Map property names sent to the Java API to the names we actually use in ES
