@@ -61,61 +61,8 @@ def _search_objects(params, headers):
     a call to `search_objects`.
     It also injects any extra info, such as narrative data, for each search result.
     """
-    match_filter = params.get('match_filter', {})
-    # Base query object for ES. Will get mutated and expanded below.
-    query = {
-        'bool': {'must': [], 'must_not': [], 'should': []},
-    }  # type: dict
-    if match_filter.get('full_text_in_all'):
-        # Match full text for any field in the objects
-        query['bool']['must'].append({'match': {'_all': match_filter['full_text_in_all']}})
-    # Handle a search on tags, which corresponds to the generic `tags` field in all indexes.
-    if match_filter.get('source_tags'):
-        # If source_tags_blacklist is `1`, then we are **discluding** these tags.
-        blacklist_tags = bool(match_filter.get('source_tags_blacklist'))
-        tags = match_filter['source_tags']
-        # Construct a compound query to match every tag using "term"
-        tag_query = [{'term': {'tags': tag}} for tag in tags]
-        if blacklist_tags:
-            query['bool']['must_not'] += tag_query
-        else:
-            query['bool']['must'] += tag_query
-    # Handle match_filter/lookupInKeys
-    query = _handle_lookup_in_keys(match_filter, query)
-    # TODO what is the noindex tag?
-    # Handle filtering by object type
-    object_types = params.get('object_types', [])
-    if object_types:
-        query['bool']['should'] = [
-            {'term': {'obj_type_name': obj_type}}
-            for obj_type in object_types
-        ]
-    # Handle sorting options
-    sorting_rules = params.get('sorting_rules', [])
-    sort = []  # type: list
-    for sort_rule in sorting_rules:
-        if sort_rule.get('is_object_property'):
-            prop = sort_rule['property']
-        else:
-            prop = _SORT_PROP_MAPPING[sort_rule['property']]
-        order = 'asc' if sort_rule.get('ascending') else 'desc'
-        sort.append({prop: {'order': order}})
-    pagination = params.get('pagination', {})
-    access_filter = params.get('access_filter', {})
-    with_private = bool(access_filter.get('with_private'))
-    with_public = bool(access_filter.get('with_public'))
-    exclusions = _get_index_exclusions(match_filter)
-    search_params = {
-        'query': query,
-        'size': pagination.get('count', 20),
-        'from': pagination.get('start', 0),
-        'sort': sort,
-        'public_only': not with_private and with_public,
-        'private_only': not with_public and with_private,
-        'exclude_indexes': exclusions
-    }
+    search_params = _get_search_params(params)
     search_results = search_objects(search_params, headers)
-    print('results', search_results)
     narrative_infos = None
     post_processing = params.get('post_processing', {})
     if post_processing.get('add_narrative_info'):
@@ -142,7 +89,33 @@ def _search_types(params, headers):
             with_private - boolean - include private objects
             with_public - boolean - include public objects
             with_all_history - ignored
+    output:
+        type_to_count - dict where keys are type names and vals are counts
+        search_time - int - total time performing search
+    This method constructs the same search parameters as `search_objects`, but
+    aggregates results based on `obj_type_name`.
     """
+    search_params = _get_search_params(params)
+    # Create the aggregation clause using a 'terms aggregation'
+    search_params['aggs'] = {
+        'type_count': {
+            'terms': {'field': 'obj_type_name'}
+        }
+    }
+    search_params['size'] = 0
+    search_results = search_objects(search_params, headers)
+    # Now we need to convert the ES result format into the API format
+    search_time = search_results['took']
+    buckets = search_results['aggregations']['type_count']['buckets']
+    print('search types result?!', search_results)
+    counts_dict = {}  # type: dict
+    for count_obj in buckets:
+        counts_dict[count_obj['key']] = counts_dict.get(count_obj['key'], 0)
+        counts_dict[count_obj['key']] += count_obj['doc_count']
+    return {
+        'type_to_count': counts_dict,
+        'search_time': int(search_time)
+    }
 
 
 def _get_objects(params, headers):
@@ -162,7 +135,6 @@ def _get_objects(params, headers):
     search_results = search_objects({
         'query': {'terms': {'_id': params['guids']}}
     }, headers)
-    # TODO
     objects = _get_object_data_from_search_results(search_results, post_processing)
     narrative_infos = _fetch_narrative_info(search_results, headers)
     return {
@@ -191,6 +163,66 @@ def _list_types(params, headers):
                     link_key - string
     """
     return {}
+
+
+def _get_search_params(params):
+    """
+    Construct object search parameters from a set of request parameters.
+    """
+    match_filter = params.get('match_filter', {})
+    # Base query object for ES. Will get mutated and expanded below.
+    query = {
+        'bool': {'must': [], 'must_not': [], 'should': []},
+    }  # type: dict
+    if match_filter.get('full_text_in_all'):
+        # Match full text for any field in the objects
+        query['bool']['must'].append({'match': {'_all': match_filter['full_text_in_all']}})
+    # Handle a search on tags, which corresponds to the generic `tags` field in all indexes.
+    if match_filter.get('source_tags'):
+        # If source_tags_blacklist is `1`, then we are **discluding** these tags.
+        blacklist_tags = bool(match_filter.get('source_tags_blacklist'))
+        tags = match_filter['source_tags']
+        # Construct a compound query to match every tag using "term"
+        tag_query = [{'term': {'tags': tag}} for tag in tags]
+        if blacklist_tags:
+            query['bool']['must_not'] += tag_query
+        else:
+            query['bool']['must'] += tag_query
+    # Handle match_filter/lookupInKeys
+    query = _handle_lookup_in_keys(match_filter, query)
+    # Handle filtering by object type
+    object_types = params.get('object_types', [])
+    if object_types:
+        query['bool']['should'] = [
+            {'term': {'obj_type_name': obj_type}}
+            for obj_type in object_types
+        ]
+    # Handle sorting options
+    sorting_rules = params.get('sorting_rules', [])
+    sort = []  # type: list
+    for sort_rule in sorting_rules:
+        if sort_rule.get('is_object_property'):
+            prop = sort_rule['property']
+        else:
+            prop = _SORT_PROP_MAPPING[sort_rule['property']]
+        order = 'asc' if sort_rule.get('ascending') else 'desc'
+        sort.append({prop: {'order': order}})
+    pagination = params.get('pagination', {})
+    access_filter = params.get('access_filter', {})
+    with_private = bool(access_filter.get('with_private'))
+    with_public = bool(access_filter.get('with_public'))
+    # Get excluded index names (handles `exclude_subobjects`)
+    exclusions = _get_index_exclusions(match_filter)
+    search_params = {
+        'query': query,
+        'size': pagination.get('count', 20),
+        'from': pagination.get('start', 0),
+        'sort': sort,
+        'public_only': not with_private and with_public,
+        'private_only': not with_public and with_private,
+        'exclude_indexes': exclusions
+    }
+    return search_params
 
 
 def _handle_lookup_in_keys(match_filter, query):

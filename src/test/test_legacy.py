@@ -127,7 +127,6 @@ class TestLegacy(unittest.TestCase):
                 }),
                 headers={'Authorization': 'valid_token'}
             )
-            print('resp', resp.json())
             # 2 for private-doc1 in both indexes, plus 2 for public-doc1 in both indexes
             self.assertEqual(len(resp.json()['objects']), 4)
             resp2 = requests.post(
@@ -148,7 +147,6 @@ class TestLegacy(unittest.TestCase):
                 }),
                 headers={'Authorization': 'valid_token'}
             )
-            print('resp2', resp2.json())
             self.assertEqual(len(resp2.json()['objects']), 6)
 
     def test_exclude_subobjects(self):
@@ -195,6 +193,20 @@ class TestLegacy(unittest.TestCase):
         )
         self.assertEqual(len(resp2.json()['objects']), 0)
 
+    def test_search_types(self):
+        """
+        Test the `search_types` method which takes a match_filter and
+        access_filter and returns a count of each object type.
+        """
+        resp = requests.post(
+            _API_URL + '/legacy',
+            data=json.dumps({
+                'method': 'KBaseSearchAPI.search_types',
+                'params': [{'match_filter': {}}]
+            })
+        )
+        print('result of search types', json.dumps(resp.json(), indent=2))
+
 
 def _init_elasticsearch():
     """
@@ -206,6 +218,17 @@ def _init_elasticsearch():
             data=json.dumps({
                 'settings': {
                     'index': {'number_of_shards': 3, 'number_of_replicas': 1}
+                },
+                'mappings': {
+                    'data': {
+                        'properties': {
+                            'name': {'type': 'keyword'},
+                            'is_public': {'type': 'boolean'},
+                            'timestamp': {'type': 'integer'},
+                            'access_group': {'type': 'integer'},
+                            'obj_type_name': {'type': 'keyword'},
+                        }
+                    }
                 }
             }),
             headers={'Content-Type': 'application/json'}
@@ -214,13 +237,12 @@ def _init_elasticsearch():
             raise RuntimeError('Error creating index on ES:', resp.text)
     test_docs = [
         # Public doc
-        {'name': 'public-doc1', 'is_public': True, 'timestamp': 10, 'access_group': 1},
-        # Public doc
-        {'name': 'public-doc2', 'is_public': True, 'timestamp': 12, 'access_group': 2},
+        {'name': 'public-doc1', 'is_public': True, 'timestamp': 10, 'access_group': 1, 'obj_type_name': 'typea'},
+        {'name': 'public-doc2', 'is_public': True, 'timestamp': 12, 'access_group': 2, 'obj_type_name': 'typeb'},
         # Private but accessible doc
-        {'name': 'private-doc1', 'is_public': False, 'access_group': 1, 'timestamp': 7},
+        {'name': 'private-doc1', 'is_public': False, 'access_group': 1, 'timestamp': 7, 'obj_type_name': 'typea'},
         # Private but inaccessible doc
-        {'name': 'private2-doc1', 'is_public': False, 'access_group': 99, 'timestamp': 9}
+        {'name': 'private2-doc1', 'is_public': False, 'access_group': 99, 'timestamp': 9, 'obj_type_name': 'typeb'}
     ]
     for doc in test_docs:
         # Note that the 'refresh=wait_for' option must be set in the URL so we can search on it immediately.
