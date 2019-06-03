@@ -1,7 +1,44 @@
+"""
+Implements https://github.com/kbase/KBaseSearchAPI/blob/master/KBaseSearchEngine.spec
+
+PostProcessing type:
+    skip_info - disclude 'parent_guid', 'object_name', and 'timestamp'
+    skip_keys - disclude all the type-specific keys ('key_props' in the old indexes)
+    skip_data - disclude "raw data" for the object ('data' and 'parent_data')
+    ids_only - shortcut to mark all three skips as true
+    include_highlight - include highlights of fields that matched the query
+
+
+ObjectData type:
+    guid - string - unique id for the doc ('_id' field in our case)
+    parent_guid - string - id of a parent if there is a parent object
+    object_name - string - name of object
+    timestamp - int - save date of object
+    parent_data - object - parent data
+    data - object - object-specific data
+    key_props
+    object_props - dict
+          general properties for all objects. This mapping contains the keys
+          'creator', 'copied', 'module', 'method', 'module_ver', and 'commit' -
+          respectively the user that originally created the object, the user
+          that copied this incarnation of the object, and the module and method
+          used to create the object and their version and version control
+          commit hash. Not all keys may be present; if not their values were
+          not available in the search data.
+    highlight - dict of string to list of string - search result highlights from ES. TODO
+          The keys are the field names and the list contains the sections in
+          each field that matched the search query. Fields with no hits will
+          not be available. Short fields that matched are shown in their
+          entirety. Longer fields are shown as snippets preceded or followed by
+          "...".
+"""
 from .search_objects import search_objects
+from .utils.config import init_config
+
+_CONFIG = init_config()
 
 
-def handle_legacy(req_body, headers, config):
+def handle_legacy(req_body, headers):
     """
     Handle a JSON RPC request body, making it backwards compatible with the previous Java API.
     """
@@ -14,10 +51,10 @@ def handle_legacy(req_body, headers, config):
         raise RuntimeError(f'Unknown method: {method_short}. Available: {list(_HANDLERS.keys())}')
     handler = _HANDLERS[method_short]
     params = req_body['params'][0]
-    return handler(params, headers, config)
+    return handler(params, headers)
 
 
-def _search_objects(params, headers, config):
+def _search_objects(params, headers):
     """
     Handler for the "search_objects" RPC method, called by `handle_legacy` above.
     This takes all the API parameters to the legacy api and translates them to
@@ -74,18 +111,22 @@ def _search_objects(params, headers, config):
         'only_public': not with_private and with_public,
         'only_private': not with_public and with_private
     }
-    search_results = search_objects(search_params, headers, config)
+    search_results = search_objects(search_params, headers)
     narrative_infos = None
     post_processing = params.get('post_processing', {})
-    # TODO post_processing/include_highlight -- need to add on to search_objects
-    # TODO post_processing/skip_info,skip_keys,skip_data -- look are results in current api
-    # TODO post_processing/ids_only -- look at results in current api
     if post_processing.get('add_narrative_info'):
-        narrative_infos = _fetch_narrative_info(search_results, headers, config)
-    return _create_search_objects_result(params, search_results, narrative_infos)
+        narrative_infos = _fetch_narrative_info(search_results, headers)
+    return {
+        'pagination': params.get('pagination', {}),
+        'sorting_rules': params.get('sorting_rules', []),
+        'total': search_results['hits']['total'],
+        'search_time': search_results['took'],
+        'objects': _get_sources(search_results),
+        'access_group_narrative_info': narrative_infos
+    }
 
 
-def _search_types(params, headers, config):
+def _search_types(params, headers):
     """
     Search for the number of objects of each type, matching constraints.
     params:
@@ -100,13 +141,34 @@ def _search_types(params, headers, config):
     """
 
 
-def _get_objects(params, headers, config):
+def _get_objects(params, headers):
     """
-    Retrieve a list of objects based on their ids.
+    Retrieve a list of objects based on their upas.
+    params:
+        guids - list of string - KBase IDs (upas) to fetch
+        post_processing - object of post-query filters (see PostProcessing def at top of this module)
+    output:
+        objects - list of ObjectData - see the ObjectData type description in the module docstring above.
+        search_time - int - time it took to perform the search on ES
+        access_group_narrative_info - dict of {access_group_id: narrative_info} -
+            Information about the workspaces in which the objects in the
+            results reside. This data only applies to workspace objects.
     """
+    post_processing = params.get('post_processing', {})
+    search_results = search_objects({
+        'query': {'terms': {'_id': params['guids']}}
+    }, headers)
+    # TODO
+    objects = _get_object_data_from_search_results(search_results, post_processing)
+    narrative_infos = _fetch_narrative_info(search_results, headers)
+    return {
+        'search_time': search_results['took'],
+        'objects': objects,
+        'access_group_narrative_info': narrative_infos
+    }
 
 
-def _list_types(params, headers, config):
+def _list_types(params, headers):
     """
     List registered searchable object types.
     params:
@@ -126,29 +188,53 @@ def _list_types(params, headers, config):
     """
 
 
-def _fetch_narrative_info(results, headers, config):
+def _get_object_data_from_search_results(search_results, post_processing):
     """
-    The legacy api has an option for post_processing/add_narrative_info. If
-    this option is `1`, then every search result gets a corresponding narrative
-    info tuple attached. For each result object, we construct a single bulk
-    query to ES that fetches the narrative data. We then construct that data
-    into a "narrative_info" tuple, which contains:
-    (narrative_name, object_id, time_last_saved, owner_username, owner_displayname)
-    Returns a dictionary of workspace_id mapped to the narrative_info tuple above.
+    Construct a list of ObjectData (see the type def in the module docstring at top).
+    Uses the post_processing options (see the type def for PostProcessing at top).
+    """
+    # TODO post_processing/include_highlight -- need to add on to search_objects
+    # TODO post_processing/skip_info,skip_keys,skip_data -- look are results in current api
+    # TODO post_processing/ids_only -- look at results in current api
+    sources = _get_sources(search_results)
+    object_data = []  # type: list
+    # Keys found in every ws object
+    global_keys = ['_id', 'parent_id', 'obj_name', 'timestamp', 'parent_data', 'obj_type_name', 'obj_type_version', 'creator', 'data', 'is_public', 'access_group']  # noqa
+    for source in sources:
+        obj = {}  # type: ignore
+        for key in global_keys:
+            obj[key] = source.get(key)
+        # The nested 'data' is all object-specific, so disclude all global keys
+        obj['data'] = {key: source[key] for key in source if key not in global_keys}
+        object_data.append(obj)
+    return object_data
+
+
+def _fetch_narrative_info(results, headers):
+    """
+    For each result object, we construct a single bulk query to ES that fetches
+    the narrative data. We then construct that data into a "narrative_info"
+    tuple, which contains: (narrative_name, object_id, time_last_saved,
+    owner_username, owner_displayname) Returns a dictionary of workspace_id
+    mapped to the narrative_info tuple above.
     """
     # TODO get "display name" (eg. auth service call)
     #  for now we just use username
     sources = _get_sources(results)
-    workspace_ids = [s['workspace_id'] for s in sources]
+    workspace_ids = [s['access_group'] for s in sources]
     # Every OR boolean clause in the query below
     matches = [
-        {'match': {'workspace_id': wsid}}
+        {'match': {'access_group': wsid}}
         for wsid in workspace_ids
     ]
+    narrative_index_name = _CONFIG['global']['ws_type_to_indexes']['Narrative']
     # ES query params
-    search_params = {'query': {'bool': {'should': matches}}}
+    search_params = {
+        'query': {'bool': {'should': matches}},
+        'indexes': [narrative_index_name]
+    }
     # Make the query for narratives on ES
-    search_results = search_objects(search_params, headers, config)
+    search_results = search_objects(search_params, headers)
     # Get all the source document objects for each narrative result
     search_data_sources = _get_sources(search_results)
     infos = {}  # type: dict
@@ -160,23 +246,8 @@ def _fetch_narrative_info(results, headers, config):
             narr['creator'],
             narr['creator']  # XXX using username for display name
         )
-        infos[int(narr['workspace_id'])] = narr_tuple
+        infos[int(narr['access_group'])] = narr_tuple
     return infos
-
-
-def _create_search_objects_result(params, search_results, narrative_infos):
-    if narrative_infos:
-        # TODO interpolate narrative_infos into the results, if present
-        # Need to look at current api result to get the format for this
-        pass
-    result = {
-        'pagination': params.get('pagination', {}),
-        'sorting_rules': params.get('sorting_rules', []),
-        'total': search_results['hits']['total'],
-        'search_time': search_results['took'],
-        'objects': _get_sources(search_results)
-    }
-    return result
 
 
 def _get_sources(search_results):

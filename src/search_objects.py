@@ -5,9 +5,12 @@ import json
 import requests
 
 from src.workspace_auth import ws_auth
+from src.utils.config import init_config
+
+_CONFIG = init_config()
 
 
-def search_objects(params, headers, config):
+def search_objects(params, headers):
     """
     Make a query on elasticsearch using the given index and options.
 
@@ -22,7 +25,6 @@ def search_objects(params, headers, config):
                 `size` - result length to return for pagination
                 `from` - result offset for pagination
                 `count` - take a count of the query, instead of listing results ? TODO
-        config - comes from src.utils.config.init_config
 
     ES 5.5 search query documentation:
     https://www.elastic.co/guide/en/elasticsearch/reference/5.5/search-request-body.html
@@ -34,11 +36,14 @@ def search_objects(params, headers, config):
         # Used for simple access control
         authorized_ws_ids = ws_auth(headers['Authorization'])
     # Lower-case and prefix every provided index name
-    index_names = [
-        config['index_prefix'] + '.' + name.lower()
-        for name in params.get('indexes', [])
-    ]
-    index_name_str = ','.join(index_names)
+    if params.get('indexes'):
+        index_names = [
+            _CONFIG['index_prefix'] + '.' + name.lower()
+            for name in params['indexes']
+        ]
+        index_name_str = ','.join(index_names)
+    else:
+        index_name_str = _CONFIG['index_prefix'] + '.*'
     # We insert the user's query as a "must" entry
     query = {'bool': {'must': user_query}}
     # Our access control query is then inserted under a "filter" depending on options:
@@ -66,7 +71,7 @@ def search_objects(params, headers, config):
             }
         }
     # Make a query request to elasticsearch
-    url = config['elasticsearch_url'] + '/' + index_name_str + '/_search'
+    url = _CONFIG['elasticsearch_url'] + '/' + index_name_str + '/_search'
     # url += '/_count' if params.get('count') else '/_search'
     options = {
         'query': query,

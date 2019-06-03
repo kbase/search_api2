@@ -1,9 +1,14 @@
 import yaml
 import urllib.request
 import os
+import functools
 
 
+@functools.lru_cache(maxsize=2)
 def init_config():
+    """
+    Initialize configuration data for the whole app
+    """
     ws_url = os.environ.get('WORKSPACE_URL', 'https://ci.kbase.us/services/ws').strip('/')
     es_url = os.environ.get('ELASTICSEARCH_URL', 'http://elasticsearch:9200').strip('/')
     index_prefix = os.environ.get('INDEX_PREFIX', 'test')
