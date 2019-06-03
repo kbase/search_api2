@@ -28,9 +28,10 @@ def check_if_doc_exists(params, headers, config):
         config['elasticsearch_url'] + '/' + index + '/' + params.get('es_datatype', 'data') + '/' + params['doc_id']
     )
     if resp.status_code == 200:
-        return {
-            'result': True
-        }
+        return resp
+        # return {
+        #     'result': True
+        # }
     else:
         # error we are not interested in...
         raise RuntimeError(resp.text)
