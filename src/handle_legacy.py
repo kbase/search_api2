@@ -37,6 +37,27 @@ from .utils.config import init_config
 
 _CONFIG = init_config()
 
+# Field names that are present on all workspace object index documents
+_GLOBAL_FIELDS = list(_CONFIG['global']['global_mappings']['ws_object'].keys())
+_GLOBAL_FIELDS += ['_id']
+
+# Mappings from search2 document fields to search1 fields:
+_KEY_MAPPING = {
+    'guid': '_id',
+    'object_name': 'obj_name',
+    'timestamp': 'timestamp',
+    'type': 'obj_type_name',
+    'ver': 'obj_type_version',
+    'creator': 'creator'
+}
+
+# Mapping of special sorting properties names from the Java API to search2 key names
+_SORT_PROP_MAPPING = {
+    'access_group_id': 'access_group',
+    'type': 'obj_type_name',
+    'timestamp': 'timestamp'
+}
+
 
 def handle_legacy(req_body, headers):
     """
@@ -51,7 +72,11 @@ def handle_legacy(req_body, headers):
         raise RuntimeError(f'Unknown method: {method_short}. Available: {list(_HANDLERS.keys())}')
     handler = _HANDLERS[method_short]
     params = req_body['params'][0]
-    return handler(params, headers)
+    results = handler(params, headers)
+    return {
+        'version': '1.1',
+        'result': [results]  # For some reason, all results are wrapped in a list in the java API
+    }
 
 
 def _search_objects(params, headers):
@@ -107,7 +132,6 @@ def _search_types(params, headers):
     # Now we need to convert the ES result format into the API format
     search_time = search_results['took']
     buckets = search_results['aggregations']['type_count']['buckets']
-    print('search types result?!', search_results)
     counts_dict = {}  # type: dict
     for count_obj in buckets:
         counts_dict[count_obj['key']] = counts_dict.get(count_obj['key'], 0)
@@ -132,9 +156,7 @@ def _get_objects(params, headers):
             results reside. This data only applies to workspace objects.
     """
     post_processing = params.get('post_processing', {})
-    search_results = search_objects({
-        'query': {'terms': {'_id': params['guids']}}
-    }, headers)
+    search_results = search_objects({'query': {'terms': {'_id': params['guids']}}}, headers)
     objects = _get_object_data_from_search_results(search_results, post_processing)
     narrative_infos = _fetch_narrative_info(search_results, headers)
     return {
@@ -161,13 +183,15 @@ def _list_types(params, headers):
                     key_value_title - string
                     hidden - bool
                     link_key - string
+    For now, we're leaving this as a no-op, because we haven't seen this in use
+    in KBase codebases anywhere.
     """
     return {}
 
 
 def _get_search_params(params):
     """
-    Construct object search parameters from a set of request parameters.
+    Construct object search parameters from a set of legacy request parameters.
     """
     match_filter = params.get('match_filter', {})
     # Base query object for ES. Will get mutated and expanded below.
@@ -265,13 +289,12 @@ def _get_object_data_from_search_results(search_results, post_processing):
     sources = _get_sources(search_results)
     object_data = []  # type: list
     # Keys found in every ws object
-    global_keys = ['_id', 'parent_id', 'obj_name', 'timestamp', 'parent_data', 'obj_type_name', 'obj_type_version', 'creator', 'data', 'is_public', 'access_group']  # noqa
     for source in sources:
         obj = {}  # type: ignore
-        for key in global_keys:
-            obj[key] = source.get(key)
+        for (search1Key, search2Key) in _KEY_MAPPING.items():
+            obj[search1Key] = source.get(search2Key)
         # The nested 'data' is all object-specific, so disclude all global keys
-        obj['data'] = {key: source[key] for key in source if key not in global_keys}
+        obj['data'] = {key: source[key] for key in source if key not in _GLOBAL_FIELDS}
         object_data.append(obj)
     return object_data
 
@@ -332,14 +355,6 @@ def _get_index_exclusions(match_filter):
     if not match_filter.get('exclude_subobjects'):
         return None
     return _CONFIG['global']['ws_subobjects']
-
-
-# Map property names sent to the Java API to the names we actually use in ES
-_SORT_PROP_MAPPING = {
-    'access_group_id': 'access_group',
-    'type': 'obj_type',
-    'timestamp': 'timestamp'
-}
 
 
 # RPC method handler index

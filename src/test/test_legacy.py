@@ -61,11 +61,12 @@ class TestLegacy(unittest.TestCase):
         )
         self.assertTrue(resp.ok)
         resp_json = resp.json()
-        self.assertEqual(resp_json['total'], 4)
-        self.assertEqual(resp_json['pagination'], {'start': 0, 'count': 10})
-        self.assertEqual(resp_json['sorting_rules'], [])
-        self.assertTrue('search_time' in resp_json)
-        self.assertEqual(len(resp_json['objects']), 4)
+        result = resp_json['result'][0]
+        self.assertEqual(result['total'], 4)
+        self.assertEqual(result['pagination'], {'start': 0, 'count': 10})
+        self.assertEqual(result['sorting_rules'], [])
+        self.assertTrue('search_time' in result)
+        self.assertEqual(len(result['objects']), 4)
 
     def test_get_objects(self):
         """
@@ -80,7 +81,8 @@ class TestLegacy(unittest.TestCase):
                 }]
             })
         )
-        self.assertEqual(len(resp.json()['objects']), 4)
+        results = resp.json()['result'][0]
+        self.assertEqual(len(results['objects']), 4)
 
     def test_match_value_structure(self):
         """
@@ -103,7 +105,8 @@ class TestLegacy(unittest.TestCase):
         )
         # Count of 2 for public-doc1 in both indexes
         # Plus 1 more for the genome feature doc
-        self.assertEqual(len(resp.json()['objects']), 3)
+        result = resp.json()['result'][0]
+        self.assertEqual(len(result['objects']), 3)
 
     def test_match_value_range(self):
             """
@@ -128,8 +131,9 @@ class TestLegacy(unittest.TestCase):
                 headers={'Authorization': 'valid_token'}
             )
             # 2 for private-doc1 in both indexes, plus 2 for public-doc1 in both indexes
-            self.assertEqual(len(resp.json()['objects']), 4)
-            resp2 = requests.post(
+            result = resp.json()['result'][0]
+            self.assertEqual(len(result['objects']), 4)
+            resp = requests.post(
                 _API_URL + '/legacy',
                 data=json.dumps({
                     'method': 'KBaseSearchAPI.search_objects',
@@ -147,7 +151,8 @@ class TestLegacy(unittest.TestCase):
                 }),
                 headers={'Authorization': 'valid_token'}
             )
-            self.assertEqual(len(resp2.json()['objects']), 6)
+            result = resp.json()['result'][0]
+            self.assertEqual(len(result['objects']), 6)
 
     def test_exclude_subobjects(self):
         """
@@ -172,8 +177,9 @@ class TestLegacy(unittest.TestCase):
             }),
             headers={'Authorization': 'valid_token'}
         )
-        self.assertEqual(len(resp.json()['objects']), 1)
-        resp2 = requests.post(
+        result = resp.json()['result'][0]
+        self.assertEqual(len(result['objects']), 1)
+        resp = requests.post(
             _API_URL + '/legacy',
             data=json.dumps({
                 'method': 'KBaseSearchAPI.search_objects',
@@ -191,7 +197,8 @@ class TestLegacy(unittest.TestCase):
             }),
             headers={'Authorization': 'valid_token'}
         )
-        self.assertEqual(len(resp2.json()['objects']), 0)
+        result = resp.json()['result'][0]
+        self.assertEqual(len(result['objects']), 0)
 
     def test_search_types(self):
         """
@@ -205,7 +212,9 @@ class TestLegacy(unittest.TestCase):
                 'params': [{'match_filter': {}}]
             })
         )
-        print('result of search types', json.dumps(resp.json(), indent=2))
+        result = resp.json()['result'][0]
+        self.assertTrue('search_time' in result)
+        self.assertEqual(result['type_to_count'], {'typea': 2, 'typeb': 2})
 
 
 def _init_elasticsearch():
