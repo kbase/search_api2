@@ -39,7 +39,7 @@ class TestLegacy(unittest.TestCase):
                 'params': [{
                     "match_filter": {
                         "full_text_in_all": "public",
-                        "exclude_subobjects": 1
+                        'exclude_subobjects': 1
                     },
                     "pagination": {
                         "start": 0,
@@ -231,7 +231,7 @@ def _init_elasticsearch():
                 'mappings': {
                     'data': {
                         'properties': {
-                            'name': {'type': 'keyword'},
+                            'obj_name': {'type': 'keyword'},
                             'is_public': {'type': 'boolean'},
                             'timestamp': {'type': 'integer'},
                             'access_group': {'type': 'integer'},
@@ -246,12 +246,12 @@ def _init_elasticsearch():
             raise RuntimeError('Error creating index on ES:', resp.text)
     test_docs = [
         # Public doc
-        {'name': 'public-doc1', 'is_public': True, 'timestamp': 10, 'access_group': 1, 'obj_type_name': 'typea'},
-        {'name': 'public-doc2', 'is_public': True, 'timestamp': 12, 'access_group': 2, 'obj_type_name': 'typeb'},
+        {'obj_name': 'public-doc1', 'is_public': True, 'timestamp': 10, 'access_group': 1, 'obj_type_name': 'typea'},
+        {'obj_name': 'public-doc2', 'is_public': True, 'timestamp': 12, 'access_group': 2, 'obj_type_name': 'typeb'},
         # Private but accessible doc
-        {'name': 'private-doc1', 'is_public': False, 'access_group': 1, 'timestamp': 7, 'obj_type_name': 'typea'},
+        {'obj_name': 'private-doc1', 'is_public': False, 'access_group': 1, 'timestamp': 7, 'obj_type_name': 'typea'},
         # Private but inaccessible doc
-        {'name': 'private2-doc1', 'is_public': False, 'access_group': 99, 'timestamp': 9, 'obj_type_name': 'typeb'}
+        {'obj_name': 'private2-doc1', 'is_public': False, 'access_group': 99, 'timestamp': 9, 'obj_type_name': 'typeb'}
     ]
     for doc in test_docs:
         # Note that the 'refresh=wait_for' option must be set in the URL so we can search on it immediately.
@@ -260,7 +260,7 @@ def _init_elasticsearch():
                 _CONFIG['elasticsearch_url'],
                 _INDEX_NAMES[i],
                 _TYPE_NAME,
-                doc['name'],
+                doc['obj_name'],
                 '?refresh=wait_for'
             ])
             resp = requests.put(url, data=json.dumps(doc), headers={'Content-Type': 'application/json'})

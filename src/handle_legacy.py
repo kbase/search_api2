@@ -43,11 +43,11 @@ _GLOBAL_FIELDS += ['_id']
 
 # Mappings from search2 document fields to search1 fields:
 _KEY_MAPPING = {
-    'guid': '_id',
-    'object_name': 'obj_name',
+    '_id': 'guid',
+    'obj_name': 'object_name',
     'timestamp': 'timestamp',
-    'type': 'obj_type_name',
-    'ver': 'obj_type_version',
+    'obj_type_name': 'type',
+    'obj_type_version': 'ver',
     'creator': 'creator'
 }
 
@@ -87,17 +87,17 @@ def _search_objects(params, headers):
     It also injects any extra info, such as narrative data, for each search result.
     """
     search_params = _get_search_params(params)
+    search_params['highlight'] = {'*': {}}
     search_results = search_objects(search_params, headers)
-    narrative_infos = None
     post_processing = params.get('post_processing', {})
-    if post_processing.get('add_narrative_info'):
-        narrative_infos = _fetch_narrative_info(search_results, headers)
+    narrative_infos = _fetch_narrative_info(search_results, headers)
+    objects = _get_object_data_from_search_results(search_results, post_processing)
     return {
         'pagination': params.get('pagination', {}),
         'sorting_rules': params.get('sorting_rules', []),
         'total': search_results['hits']['total'],
         'search_time': search_results['took'],
-        'objects': _get_sources(search_results),
+        'objects': objects,
         'access_group_narrative_info': narrative_infos
     }
 
@@ -244,7 +244,7 @@ def _get_search_params(params):
         'sort': sort,
         'public_only': not with_private and with_public,
         'private_only': not with_public and with_private,
-        'exclude_indexes': exclusions
+        'exclude_indexes': exclusions,
     }
     return search_params
 
@@ -286,15 +286,24 @@ def _get_object_data_from_search_results(search_results, post_processing):
     # TODO post_processing/include_highlight -- need to add on to search_objects
     # TODO post_processing/skip_info,skip_keys,skip_data -- look are results in current api
     # TODO post_processing/ids_only -- look at results in current api
-    sources = _get_sources(search_results)
     object_data = []  # type: list
     # Keys found in every ws object
-    for source in sources:
+    for result in search_results['hits']['hits']:
+        source = result['_source']
         obj = {}  # type: ignore
-        for (search1Key, search2Key) in _KEY_MAPPING.items():
-            obj[search1Key] = source.get(search2Key)
+        for (search2_key, search1_key) in _KEY_MAPPING.items():
+            obj[search1_key] = source.get(search2_key)
         # The nested 'data' is all object-specific, so disclude all global keys
         obj['data'] = {key: source[key] for key in source if key not in _GLOBAL_FIELDS}
+        # Handle the highlighted field data
+        if result.get('highlight'):
+            hl = result['highlight']
+            for key in result['highlight']:
+                if key in _KEY_MAPPING:
+                    search2_key = _KEY_MAPPING[key]
+                    hl[search2_key] = hl[key]
+                    del hl[key]
+            obj['highlight'] = hl
         object_data.append(obj)
     return object_data
 
