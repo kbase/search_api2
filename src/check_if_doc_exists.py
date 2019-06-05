@@ -5,7 +5,7 @@ from src.utils.config import init_config
 
 _CONFIG = init_config()
 
-schema = {
+_SCHEMA = {
     'type': 'object',
     'properties': {
         'doc_id': {'type': 'string'},
@@ -24,15 +24,14 @@ def check_if_doc_exists(params, headers):
         es_datatype - elasticsearch document data type
     """
     # verify inputs
-    jsonschema.validate(instance=params, schema=schema)
+    jsonschema.validate(instance=params, schema=_SCHEMA)
     index = _CONFIG['index_prefix'] + '.' + params['index']
-
     resp = requests.head(
         _CONFIG['elasticsearch_url'] + '/' + index + '/' + params.get('es_datatype', 'data') + '/' + params['doc_id']
     )
     if resp.status_code == 200:
         return resp
-    if resp.status_code == 404:
+    elif resp.status_code == 404:
         raise sanic.exceptions.NotFound(f"Document with ID '{params['doc_id']}' does not exist.")
     else:
         # error we are not interested in...

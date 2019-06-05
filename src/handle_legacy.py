@@ -1,6 +1,8 @@
 """
 Implements https://github.com/kbase/KBaseSearchAPI/blob/master/KBaseSearchEngine.spec
 
+Quick type references:
+
 PostProcessing type:
     skip_info - disclude 'parent_guid', 'object_name', and 'timestamp'
     skip_keys - disclude all the type-specific keys ('key_props' in the old indexes)
@@ -195,15 +197,23 @@ def _get_search_params(params):
     """
     match_filter = params.get('match_filter', {})
     # Base query object for ES. Will get mutated and expanded below.
-    query = {
-        'bool': {'must': [], 'must_not': [], 'should': []},
-    }  # type: dict
+    query = {'bool': {'must': [], 'must_not': [], 'should': []}}  # type: dict
     if match_filter.get('full_text_in_all'):
         # Match full text for any field in the objects
         query['bool']['must'].append({'match': {'_all': match_filter['full_text_in_all']}})
+    if match_filter.get('object_name'):
+        query['bool']['must'].append({'match': {'obj_name': str(match_filter['object_name'])}})
+    if match_filter.get('timestamp'):
+        ts = match_filter['timestamp']
+        min_ts = ts.get('min_date') or ts.get('min_int') or ts.get('min_double')
+        max_ts = ts.get('max_date') or ts.get('max_int') or ts.get('max_double')
+        if min_ts and max_ts:
+            query['bool']['must'].append({'range': {'timestamp': {'gte': min_ts, 'lte': max_ts}}})
+        else:
+            raise RuntimeError("Invalid timestamp range in match_filter/timestamp.")
     # Handle a search on tags, which corresponds to the generic `tags` field in all indexes.
     if match_filter.get('source_tags'):
-        # If source_tags_blacklist is `1`, then we are **discluding** these tags.
+        # If source_tags_blacklist is `1`, then we are **excluding** these tags.
         blacklist_tags = bool(match_filter.get('source_tags_blacklist'))
         tags = match_filter['source_tags']
         # Construct a compound query to match every tag using "term"
