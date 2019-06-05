@@ -35,15 +35,8 @@ def search_objects(params, headers):
         # Fetch the workspace IDs that the user can read
         # Used for simple access control
         authorized_ws_ids = ws_auth(headers['Authorization'])
-    # Lower-case and prefix every provided index name
-    if params.get('indexes'):
-        index_names = [
-            _CONFIG['index_prefix'] + '.' + name.lower()
-            for name in params['indexes']
-        ]
-        index_name_str = ','.join(index_names)
-    else:
-        index_name_str = _CONFIG['index_prefix'] + '.*'
+    # Get the index name(s) to include and exclude (used in the URL below)
+    index_name_str = _construct_index_name(params)
     # We insert the user's query as a "must" entry
     query = {'bool': {'must': user_query}}
     # Our access control query is then inserted under a "filter" depending on options:
@@ -52,14 +45,10 @@ def search_objects(params, headers):
         query['bool']['filter'] = {'term': {'is_public': True}}
     elif params.get('private_only'):
         # Private workspaces only
-        query['bool']['filter'] = {
-            'bool': {
-                'must': [
-                    {'term': {'is_public': False}},
-                    {'terms': {'access_group': authorized_ws_ids}}
-                ]
-            }
-        }
+        query['bool']['filter'] = [
+            {'term': {'is_public': False}},
+            {'terms': {'access_group': authorized_ws_ids}}
+        ]
     else:
         # Find all documents, whether private or public
         query['bool']['filter'] = {
@@ -89,9 +78,38 @@ def search_objects(params, headers):
     # User-supplied source filters
     if params.get('source'):
         options['_source'] = params.get('source')
-    print('options!', options)
+    # Search results highlighting
+    if params.get('highlight'):
+        options['highlight'] = {'require_field_match': False, 'fields': params['highlight']}
     headers = {'Content-Type': 'application/json'}
+    print('options', options)
+    print('url', url)
     resp = requests.post(url, data=json.dumps(options), headers=headers)
+    print('resp', resp.text)
     if not resp.ok:
         raise RuntimeError(resp.text)
     return resp.json()
+
+
+def _construct_index_name(params):
+    """
+    Given the search_objects params, construct the index name for use in the
+    URL of the query.
+    See the docs about how this works:
+        https://www.elastic.co/guide/en/elasticsearch/reference/5.5/multi-index.html
+    """
+    prefix = _CONFIG['index_prefix']
+    index_name_str = _CONFIG['index_prefix'] + '.*'
+    if params.get('indexes'):
+        index_names = [
+            prefix + '.' + name.lower()
+            for name in params['indexes']
+        ]
+        # Replace the index_name_str with all explicitly included index names
+        index_name_str = ','.join(index_names)
+    # Append any index name exclusions, if necessary
+    if params.get('exclude_indexes'):
+        exclusions = params['exclude_indexes']
+        exclusions_str = ','.join('-' + prefix + '.' + name for name in exclusions)
+        index_name_str += ',' + exclusions_str
+    return index_name_str
