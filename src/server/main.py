@@ -9,6 +9,7 @@ from src.utils.config import init_config
 from src.search_objects import search_objects
 from src.handle_legacy import handle_legacy
 from src.show_indexes import show_indexes
+from src.check_if_doc_exists import check_if_doc_exists
 
 app = sanic.Sanic()
 CORS(app, automatic_options=True)
@@ -77,7 +78,8 @@ async def server_error(request, err):
 _RPC_HANDLERS = {
     'show_config': _show_config,
     'search_objects': search_objects,
-    'show_indexes': show_indexes
+    'show_indexes': show_indexes,
+    'check_if_doc_exists': check_if_doc_exists
 }
 
 
