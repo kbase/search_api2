@@ -78,7 +78,8 @@ async def server_error(request, err):
 _RPC_HANDLERS = {
     'show_config': _show_config,
     'search_objects': search_objects,
-    'show_indexes': show_indexes
+    'show_indexes': show_indexes,
+    'check_if_doc_exists': check_if_doc_exists
 }
 
 
