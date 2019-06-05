@@ -1,6 +1,9 @@
 import requests
 import jsonschema
 import sanic
+from src.utils.config import init_config
+
+_CONFIG = init_config()
 
 schema = {
     'type': 'object',
@@ -12,7 +15,7 @@ schema = {
 }
 
 
-def check_if_doc_exists(params, headers, config):
+def check_if_doc_exists(params, headers):
     """
     Given
     params:
@@ -22,10 +25,10 @@ def check_if_doc_exists(params, headers, config):
     """
     # verify inputs
     jsonschema.validate(instance=params, schema=schema)
-    index = config['index_prefix'] + '.' + params['index']
+    index = _CONFIG['index_prefix'] + '.' + params['index']
 
     resp = requests.head(
-        config['elasticsearch_url'] + '/' + index + '/' + params.get('es_datatype', 'data') + '/' + params['doc_id']
+        _CONFIG['elasticsearch_url'] + '/' + index + '/' + params.get('es_datatype', 'data') + '/' + params['doc_id']
     )
     if resp.status_code == 200:
         return resp
