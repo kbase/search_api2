@@ -1,9 +1,6 @@
 import requests
 import jsonschema
-from sanic.exceptions import NotFound
-from sanic import Sanic
-
-app = Sanic()
+import sanic
 
 schema = {
     'type': 'object',
@@ -32,14 +29,8 @@ def check_if_doc_exists(params, headers, config):
     )
     if resp.status_code == 200:
         return resp
-        # return {
-        #     'result': True
-        # }
+    if resp.status_code == 404:
+        raise sanic.exceptions.NotFound(f"Document with ID '{params['doc_id']}' does not exist.")
     else:
         # error we are not interested in...
         raise RuntimeError(resp.text)
-
-
-@app.exception(NotFound)
-async def I_AM_NOT_FOUND_WOWWIIEEE(request, exception):
-    return exception
