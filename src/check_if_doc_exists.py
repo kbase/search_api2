@@ -1,14 +1,17 @@
-import request
+import requests
 import jsonschema
 from sanic.exceptions import NotFound
+from sanic import Sanic
+
+app = Sanic()
 
 schema = {
-    'type': 'object'
+    'type': 'object',
     'properties': {
         'doc_id': {'type': 'string'},
         'index': {'type': 'string'},
         'es_datatype': {'type': 'string'}
-    } 
+    }
 }
 
 
@@ -35,6 +38,7 @@ def check_if_doc_exists(params, headers, config):
     else:
         # error we are not interested in...
         raise RuntimeError(resp.text)
+
 
 @app.exception(NotFound)
 async def I_AM_NOT_FOUND_WOWWIIEEE(request, exception):
