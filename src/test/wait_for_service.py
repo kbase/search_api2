@@ -8,7 +8,6 @@ import time
 service_healthy = False
 timeout = 60
 start_time = int(time.time())
-elapsed = 0
 
 while not service_healthy:
     print("Waiting for API to be healthy..")
@@ -17,8 +16,7 @@ while not service_healthy:
         service_healthy = True
     except Exception:
         print("Unable to connect to API, waiting..")
-        elapsed = int(time.time()) - start_time
-        if elapsed > timeout:
+        if (int(time.time()) - start_time) > timeout:
             raise RuntimeError('Service did not start in {timeout}s. Check the app logs.')
         time.sleep(5)
 
