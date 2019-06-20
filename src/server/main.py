@@ -2,6 +2,8 @@
 import os
 import sanic
 import traceback
+import requests
+import time
 from sanic_cors import CORS
 
 from src.exceptions import InvalidParameters
@@ -84,6 +86,17 @@ _RPC_HANDLERS = {
 
 
 if __name__ == '__main__':
+    print('Checking connection to elasticsearch..')
+    elasticsearch_available = False
+    while not elasticsearch_available:
+        print('Attempting to connect to elasticsearch..')
+        try:
+            requests.get(_CONFIG['elasticsearch_url']).raise_for_status()
+            print('Elasticsearch is online! Continuing..')
+            elasticsearch_available = True
+        except Exception:
+            print('Unable to connect to Elasticsearch. Waiting..')
+            time.sleep(5)
     app.run(
         host='0.0.0.0',  # nosec
         port=5000,

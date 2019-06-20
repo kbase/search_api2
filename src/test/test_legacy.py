@@ -104,9 +104,9 @@ class TestLegacy(unittest.TestCase):
             })
         )
         # Count of 2 for public-doc1 in both indexes
-        # Plus 1 more for the genome feature doc
+        # Excludes the genome feature doc by default
         result = resp.json()['result'][0]
-        self.assertEqual(len(result['objects']), 3)
+        self.assertEqual(len(result['objects']), 2)
 
     def test_match_value_range(self):
             """
@@ -164,9 +164,9 @@ class TestLegacy(unittest.TestCase):
             data=json.dumps({
                 'method': 'KBaseSearchAPI.search_objects',
                 'params': [{
+                    'object_types': ['GenomeFeature'],
                     'match_filter': {
                         'full_text_in_all': 'featurexyz',
-                        # 'lookupInKeys': {'name': {'value': 'featurexyz'}},
                         'exclude_subobjects': 0
                     },
                     'access_filter': {
@@ -222,23 +222,18 @@ def _init_elasticsearch():
     Initialize the indexes and documents on elasticsearch before running tests.
     """
     for index_name in _INDEX_NAMES:
+        test_mapping = {
+            'obj_name': {'type': 'keyword'},
+            'is_public': {'type': 'boolean'},
+            'timestamp': {'type': 'integer'},
+            'access_group': {'type': 'integer'},
+            'obj_type_name': {'type': 'keyword'},
+        }
         resp = requests.put(
             _CONFIG['elasticsearch_url'] + '/' + index_name,
             data=json.dumps({
-                'settings': {
-                    'index': {'number_of_shards': 3, 'number_of_replicas': 1}
-                },
-                'mappings': {
-                    'data': {
-                        'properties': {
-                            'obj_name': {'type': 'keyword'},
-                            'is_public': {'type': 'boolean'},
-                            'timestamp': {'type': 'integer'},
-                            'access_group': {'type': 'integer'},
-                            'obj_type_name': {'type': 'keyword'},
-                        }
-                    }
-                }
+                'settings': {'index': {'number_of_shards': 3, 'number_of_replicas': 1}},
+                'mappings': {'data': {'properties': test_mapping}}
             }),
             headers={'Content-Type': 'application/json'}
         )

@@ -30,22 +30,12 @@ services:
       - bootstrap.memory_lock=true
       - discovery.type=single-node
       - xpack.security.enabled=false
-    volumes:
-      - esdata1:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
       - 9300:9300
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
 
   # Mock workspace server (see src/test/mock_workspace/endpoints.json)
   workspace:
     image: mockservices/mock_json_service
     volumes:
       - ${PWD}/src/test/mock_workspace:/config
-
-volumes:
-  esdata1:
-    driver: local

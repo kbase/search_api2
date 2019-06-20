@@ -373,9 +373,9 @@ def _fetch_narrative_info(results, headers):
     #  for now we just use username
     sources = _get_sources(results)
     # TODO workspace timestamp
-    narr_infos = {s['access_group']: (None, None, 0, s['creator'], s['creator']) for s in sources}
+    narr_infos = {s['access_group']: (None, None, 0, s.get('creator', ''), s.get('creator', '')) for s in sources}
     ws_infos = {
-        s['access_group']: (s['access_group'], '', s['creator'])
+        s['access_group']: (s['access_group'], '', s.get('creator', ''))
         for s in sources
     }
     workspace_ids = [s['access_group'] for s in sources]
@@ -401,8 +401,8 @@ def _fetch_narrative_info(results, headers):
             narr['narrative_title'],
             narr['obj_id'],
             narr['timestamp'],
-            narr['creator'],
-            narr['creator']  # XXX using username for display name
+            narr.get('creator'),
+            narr.get('creator')  # XXX using username for display name
         )
         narr_infos[int(narr['access_group'])] = narr_tuple
     return (narr_infos, ws_infos)
