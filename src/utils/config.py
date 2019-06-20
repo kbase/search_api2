@@ -19,6 +19,7 @@ def init_config():
     with urllib.request.urlopen(config_url) as res:  # nosec
         global_config = yaml.safe_load(res)  # type: ignore
     return {
+        'dev': bool(os.environ.get('DEVELOPMENT')),
         'global': global_config,
         'elasticsearch_url': es_url,
         'index_prefix': index_prefix,

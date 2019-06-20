@@ -36,20 +36,21 @@ ObjectData type:
 """
 from .search_objects import search_objects
 from .utils.config import init_config
+import re
 
 _CONFIG = init_config()
 
-# Field names that are present on all workspace object index documents
-_GLOBAL_FIELDS = list(_CONFIG['global']['global_mappings']['ws_object'].keys())
-_GLOBAL_FIELDS += ['_id']
+_GENOME_FEATURES_IDX_NAME = 'genome_features:2'
 
 # Mappings from search2 document fields to search1 fields:
 _KEY_MAPPING = {
-    '_id': 'guid',
     'obj_name': 'object_name',
+    'access_group': 'access_group',
+    'obj_id': 'obj_id',
+    'version': 'version',
     'timestamp': 'timestamp',
     'obj_type_name': 'type',
-    'obj_type_version': 'ver',
+    'obj_type_version': 'type_ver',
     'creator': 'creator'
 }
 
@@ -73,7 +74,7 @@ def handle_legacy(req_body, headers):
     if method_short not in _HANDLERS:
         raise RuntimeError(f'Unknown method: {method_short}. Available: {list(_HANDLERS.keys())}')
     handler = _HANDLERS[method_short]
-    params = req_body['params'][0]
+    params = req_body['params'][0] if req_body.get('params') else None
     results = handler(params, headers)
     return {
         'version': '1.1',
@@ -92,7 +93,7 @@ def _search_objects(params, headers):
     search_params['highlight'] = {'*': {}}
     search_results = search_objects(search_params, headers)
     post_processing = params.get('post_processing', {})
-    narrative_infos = _fetch_narrative_info(search_results, headers)
+    (narrative_infos, ws_infos) = _fetch_narrative_info(search_results, headers)
     objects = _get_object_data_from_search_results(search_results, post_processing)
     return {
         'pagination': params.get('pagination', {}),
@@ -100,7 +101,8 @@ def _search_objects(params, headers):
         'total': search_results['hits']['total'],
         'search_time': search_results['took'],
         'objects': objects,
-        'access_group_narrative_info': narrative_infos
+        'access_group_narrative_info': narrative_infos,
+        'access_groups_info': ws_infos
     }
 
 
@@ -160,11 +162,32 @@ def _get_objects(params, headers):
     post_processing = params.get('post_processing', {})
     search_results = search_objects({'query': {'terms': {'_id': params['guids']}}}, headers)
     objects = _get_object_data_from_search_results(search_results, post_processing)
-    narrative_infos = _fetch_narrative_info(search_results, headers)
+    (narrative_infos, ws_infos) = _fetch_narrative_info(search_results, headers)
     return {
         'search_time': search_results['took'],
         'objects': objects,
-        'access_group_narrative_info': narrative_infos
+        'access_group_narrative_info': narrative_infos,
+        'access_groups_info': ws_infos
+    }
+
+
+def _server_status(params, headers):
+    """
+    Example status response from the Java API:
+    [{
+        "state": "OK",
+        "message":"",
+        "version":"0.2.2-dev1",
+        "git_url":"https://github.com/kbase/KBaseSearchEngine.git",
+        "git_commit_hash":"1935768d49d0fe6032a1195de10156d9f319d8ce"}]
+    }]
+    """
+    return {
+        'state': 'OK',
+        'version': '0.1.1',
+        'message': '',
+        'git_url': '',
+        'git_commit_hash': ''
     }
 
 
@@ -227,9 +250,12 @@ def _get_search_params(params):
     # Handle filtering by object type
     object_types = params.get('object_types', [])
     if object_types:
+        # For this fake type, we search on the specific index instead (see lower down).
+        type_blacklist = ['GenomeFeature']
         query['bool']['should'] = [
             {'term': {'obj_type_name': obj_type}}
             for obj_type in object_types
+            if obj_type not in type_blacklist
         ]
     # Handle sorting options
     sorting_rules = params.get('sorting_rules', [])
@@ -237,25 +263,28 @@ def _get_search_params(params):
     for sort_rule in sorting_rules:
         if sort_rule.get('is_object_property'):
             prop = sort_rule['property']
-        else:
+        elif _SORT_PROP_MAPPING.get(sort_rule['property']):
             prop = _SORT_PROP_MAPPING[sort_rule['property']]
-        order = 'asc' if sort_rule.get('ascending') else 'desc'
-        sort.append({prop: {'order': order}})
+        if prop:
+            order = 'asc' if sort_rule.get('ascending') else 'desc'
+            sort.append({prop: {'order': order}})
     pagination = params.get('pagination', {})
     access_filter = params.get('access_filter', {})
     with_private = bool(access_filter.get('with_private'))
     with_public = bool(access_filter.get('with_public'))
     # Get excluded index names (handles `exclude_subobjects`)
-    exclusions = _get_index_exclusions(match_filter)
     search_params = {
         'query': query,
         'size': pagination.get('count', 20),
         'from': pagination.get('start', 0),
         'sort': sort,
         'public_only': not with_private and with_public,
-        'private_only': not with_public and with_private,
-        'exclude_indexes': exclusions,
+        'private_only': not with_public and with_private
     }
+    if 'GenomeFeature' in object_types:
+        search_params['indexes'] = [_GENOME_FEATURES_IDX_NAME]
+    else:
+        search_params['exclude_indexes'] = [_GENOME_FEATURES_IDX_NAME]
     return search_params
 
 
@@ -292,6 +321,7 @@ def _get_object_data_from_search_results(search_results, post_processing):
     """
     Construct a list of ObjectData (see the type def in the module docstring at top).
     Uses the post_processing options (see the type def for PostProcessing at top).
+    We translate fields from our current ES indexes to naming conventions used by the legacy API/UI.
     """
     # TODO post_processing/include_highlight -- need to add on to search_objects
     # TODO post_processing/skip_info,skip_keys,skip_data -- look are results in current api
@@ -304,16 +334,26 @@ def _get_object_data_from_search_results(search_results, post_processing):
         for (search2_key, search1_key) in _KEY_MAPPING.items():
             obj[search1_key] = source.get(search2_key)
         # The nested 'data' is all object-specific, so disclude all global keys
-        obj['data'] = {key: source[key] for key in source if key not in _GLOBAL_FIELDS}
-        # Handle the highlighted field data
+        obj['data'] = {key: source[key] for key in source if key not in _KEY_MAPPING}
+        # Set some more top-level data manually that we use in the UI
+        obj['key_props'] = obj['data']
+        obj['guid'] = _get_guid_from_doc(result)
+        obj['kbase_id'] = obj['guid'].strip('WS:')
+        # For the UI, make the type field "GenomeFeature" instead of Genome for features.
+        if 'feature_type' in source:
+            obj['type'] = 'GenomeFeature'
+        # Handle the highlighted field data, converting field names, if necessary
         if result.get('highlight'):
             hl = result['highlight']
+            obj['highlight'] = {}
             for key in result['highlight']:
                 if key in _KEY_MAPPING:
                     search2_key = _KEY_MAPPING[key]
-                    hl[search2_key] = hl[key]
-                    del hl[key]
-            obj['highlight'] = hl
+                    obj[search2_key] = hl[key]
+                else:
+                    obj[key] = hl[key]
+        else:
+            obj['highlight'] = {}
         object_data.append(obj)
     return object_data
 
@@ -325,11 +365,22 @@ def _fetch_narrative_info(results, headers):
     tuple, which contains: (narrative_name, object_id, time_last_saved,
     owner_username, owner_displayname) Returns a dictionary of workspace_id
     mapped to the narrative_info tuple above.
+
+    This also returns a dictionary of workspace infos for each object:
+    (id, name, owner, save_date, max_objid, user_perm, global_perm, lockstat, metadata)
     """
     # TODO get "display name" (eg. auth service call)
     #  for now we just use username
     sources = _get_sources(results)
+    # TODO workspace timestamp
+    narr_infos = {s['access_group']: (None, None, 0, s['creator'], s['creator']) for s in sources}
+    ws_infos = {
+        s['access_group']: (s['access_group'], '', s['creator'])
+        for s in sources
+    }
     workspace_ids = [s['access_group'] for s in sources]
+    if not workspace_ids:
+        return ({}, {})
     # Every OR boolean clause in the query below
     matches = [
         {'match': {'access_group': wsid}}
@@ -345,7 +396,6 @@ def _fetch_narrative_info(results, headers):
     search_results = search_objects(search_params, headers)
     # Get all the source document objects for each narrative result
     search_data_sources = _get_sources(search_results)
-    infos = {}  # type: dict
     for narr in search_data_sources:
         narr_tuple = (
             narr['narrative_title'],
@@ -354,8 +404,8 @@ def _fetch_narrative_info(results, headers):
             narr['creator'],
             narr['creator']  # XXX using username for display name
         )
-        infos[int(narr['access_group'])] = narr_tuple
-    return infos
+        narr_infos[int(narr['access_group'])] = narr_tuple
+    return (narr_infos, ws_infos)
 
 
 def _get_sources(search_results):
@@ -365,19 +415,27 @@ def _get_sources(search_results):
     return [r['_source'] for r in search_results['hits']['hits']]
 
 
-def _get_index_exclusions(match_filter):
+def _get_guid_from_doc(doc):
     """
-    If the `exclude_subobjects` option is truthy, then we want to exclude all
-    indexes considered workspace "subjobjects", such as genome features or
-    pangenome_orthologfamily.
+    Construct a legacy-style "guid" in the form "WS:1/2/3"
     """
-    if not match_filter.get('exclude_subobjects'):
-        return None
-    return _CONFIG['global']['ws_subobjects']
+    # Remove the first namespace
+    _id = doc['_id'].replace('WS::', '')
+    # Remove any secondary namespace
+    _id = re.sub(r'::..::.+', '', _id)
+    # Replace colon delimiters with slashes
+    _id = _id.replace(':', '/')
+    # Add a single-colon delimited workspace namespace
+    _id = 'WS:' + _id
+    # Append the object version
+    ver = str(doc.get('obj_type_version', 1))
+    _id = _id + '/' + ver
+    return _id
 
 
 # RPC method handler index
 _HANDLERS = {
+    'status': _server_status,
     'search_objects': _search_objects,
     'search_types': _search_types,
     'list_types': _list_types,
