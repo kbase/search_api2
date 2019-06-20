@@ -140,6 +140,37 @@ class TestApi(unittest.TestCase):
             {'key': 'test.index2', 'doc_count': 2}
         ])
 
+    def test_check_if_doc_exists(self):
+        """
+        Test the check_if_doc_exists function
+        """
+        # check on doc that exists
+        resp = requests.post(
+            _API_URL + '/rpc',
+            data=json.dumps({
+                'method': 'check_if_doc_exists',
+                'params': {
+                    'index': 'index1',
+                    'doc_id': 'public-doc1',
+                    'es_datatype': _TYPE_NAME
+                }
+            })
+        )
+        self.assertTrue(resp.ok)
+        # check on doc that does not exist
+        resp = requests.post(
+            _API_URL + '/rpc',
+            data=json.dumps({
+                'method': 'check_if_doc_exists',
+                'params': {
+                    'index': 'index1',
+                    'doc_id': 'public-doc3',  # nonexistent doc
+                    'es_datatype': _TYPE_NAME
+                }
+            })
+        )
+        self.assertTrue(resp.status_code == 404)
+
     def test_show_indexes(self):
         """
         Test the show_indexes function.
