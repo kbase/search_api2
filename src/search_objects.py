@@ -25,6 +25,9 @@ def search_objects(params, headers):
                 `size` - result length to return for pagination
                 `from` - result offset for pagination
                 `count` - take a count of the query, instead of listing results ? TODO
+                `sort` -  JSON structure of how to sort array. see:
+                    https://www.elastic.co/guide/en/elasticsearch/reference/5.5/search-request-sort.html
+                `namespace` - namespace prefix for id's of documents in elasticsearch, default="WS"
 
     ES 5.5 search query documentation:
     https://www.elastic.co/guide/en/elasticsearch/reference/5.5/search-request-body.html
@@ -99,10 +102,11 @@ def _construct_index_name(params):
         https://www.elastic.co/guide/en/elasticsearch/reference/5.5/multi-index.html
     """
     prefix = _CONFIG['index_prefix']
-    index_name_str = _CONFIG['index_prefix'] + '.*'
+    namespace = params.get('namespace', "ws").lower()
+    index_name_str = prefix + "." + namespace + '.*'
     if params.get('indexes'):
         index_names = [
-            prefix + '.' + name.lower()
+            prefix + '.' + namespace + '.' + name.lower()
             for name in params['indexes']
         ]
         # Replace the index_name_str with all explicitly included index names
@@ -110,6 +114,6 @@ def _construct_index_name(params):
     # Append any index name exclusions, if necessary
     if params.get('exclude_indexes'):
         exclusions = params['exclude_indexes']
-        exclusions_str = ','.join('-' + prefix + '.' + name for name in exclusions)
+        exclusions_str = ','.join('-' + prefix + '.' + namespace + '.' + name for name in exclusions)
         index_name_str += ',' + exclusions_str
     return index_name_str

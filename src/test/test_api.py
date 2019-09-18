@@ -8,8 +8,8 @@ _API_URL = 'http://web:5000'
 config = init_config()
 _TYPE_NAME = 'data'
 _INDEX_NAMES = [
-    config['index_prefix'] + '.' + 'index1',
-    config['index_prefix'] + '.' + 'index2',
+    config['index_prefix'] + '.ws.' + 'index1',
+    config['index_prefix'] + '.ws.' + 'index2',
 ]
 
 
@@ -136,8 +136,8 @@ class TestApi(unittest.TestCase):
         resp_json = resp.json()
         results = resp_json['aggregations']['count_by_index']['buckets']
         self.assertEqual(results, [
-            {'key': 'test.index1', 'doc_count': 2},
-            {'key': 'test.index2', 'doc_count': 2}
+            {'key': 'test.ws.index1', 'doc_count': 2},
+            {'key': 'test.ws.index2', 'doc_count': 2}
         ])
 
     def test_check_if_doc_exists(self):
@@ -182,7 +182,7 @@ class TestApi(unittest.TestCase):
         self.assertTrue(resp.ok)
         resp_json = resp.json()
         names = [r['index'] for r in resp_json]
-        self.assertEqual(set(names), {'test.index2', 'test.index1'})
+        self.assertEqual(set(names), {'test.ws.index2', 'test.ws.index1'})
         counts = [int(r['docs.count']) for r in resp_json]
         self.assertEqual(counts, [4, 4])
 
@@ -212,6 +212,6 @@ class TestApi(unittest.TestCase):
         self.assertEqual(set(timestamps), {10, 7})
         # results = resp_json['aggregations']['count_by_index']['buckets']
         # self.assertEqual(results, [
-        #     {'key': 'test.index1', 'doc_count': 2},
-        #     {'key': 'test.index2', 'doc_count': 2}
+        #     {'key': 'test.ws.index1', 'doc_count': 2},
+        #     {'key': 'test.ws.index2', 'doc_count': 2}
         # ])
