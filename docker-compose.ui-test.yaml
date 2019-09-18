@@ -1,0 +1,23 @@
+version: '3'
+
+# This docker-compose is for developer convenience, not for running in production.
+
+services:
+
+  # For running the python consumers
+  web:
+    build:
+      context: .
+      args:
+        DEVELOPMENT: 1
+    network_mode: host
+    volumes:
+      - ${PWD}:/app
+    ports:
+      - 5000:5000
+    environment:
+      - DEVELOPMENT=1
+      - PYTHONUNBUFFERED=true
+      - WORKSPACE_URL=https://ci.kbase.us/services/ws
+      - ELASTICSEARCH_URL=http://localhost:9200
+      - INDEX_PREFIX=search2

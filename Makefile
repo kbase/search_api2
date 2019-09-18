@@ -1,11 +1,11 @@
 .PHONY: test reset
 
 test:
-	docker-compose restart web
-	docker-compose run web sh scripts/run_tests.sh
+	docker-compose up -d
+	docker-compose exec web python src/test/wait_for_service.py
+	docker-compose exec web sh scripts/run_tests.sh
+	docker-compose down
 
 reset:
-	docker-compose down
-	docker-compose rm -vf
+	docker-compose down -v --remove-orphans --rmi all
 	docker-compose build --no-cache
-	docker-compose up
