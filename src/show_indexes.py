@@ -11,7 +11,7 @@ def show_indexes(params, headers):
     prefix = _CONFIG['index_prefix']
     resp = requests.get(
         _CONFIG['elasticsearch_url'] + '/_cat/indices/' + prefix + '*?format=json',
-        headers={'Content-Type': 'application/json'}
+        headers={'Content-Type': 'application/json'},
     )
     if not resp.ok:
         raise RuntimeError(resp.text)

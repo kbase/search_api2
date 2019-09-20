@@ -25,7 +25,7 @@ def _init_elasticsearch():
                     'index': {'number_of_shards': 3, 'number_of_replicas': 1}
                 }
             }),
-            headers={'Content-Type': 'application/json'}
+            headers={'Content-Type': 'application/json'},
         )
         if not resp.ok and resp.json()['error']['type'] != 'index_already_exists_exception':
             raise RuntimeError('Error creating index on ES:', resp.text)

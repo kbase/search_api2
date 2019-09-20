@@ -8,9 +8,9 @@ _API_URL = 'http://web:5000'
 _CONFIG = init_config()
 _TYPE_NAME = 'data'  # TODO pull this out of global config
 _INDEX_NAMES = [
-    _CONFIG['index_prefix'] + '.' + 'index1',
-    _CONFIG['index_prefix'] + '.' + 'index2',
+    _CONFIG['index_prefix'] + '.' + 'index:1',
     _CONFIG['index_prefix'] + '.' + 'narrative',
+    _CONFIG['index_prefix'] + '.' + 'index:2',
     *[_CONFIG['index_prefix'] + '.' + name for name in _CONFIG['global']['ws_subobjects']]
 ]
 
@@ -57,7 +57,7 @@ class TestLegacy(unittest.TestCase):
                         "with_public": 1
                     }
                 }]
-            })
+            }),
         )
         self.assertTrue(resp.ok)
         resp_json = resp.json()
@@ -67,6 +67,9 @@ class TestLegacy(unittest.TestCase):
         self.assertEqual(result['sorting_rules'], [])
         self.assertTrue('search_time' in result)
         self.assertEqual(len(result['objects']), 4)
+        obj = result['objects'][0]
+        print('OBJ', obj)
+        self.assertTrue(obj['index_ver'])
 
     def test_get_objects(self):
         """

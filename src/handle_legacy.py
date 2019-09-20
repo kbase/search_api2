@@ -323,7 +323,6 @@ def _get_object_data_from_search_results(search_results, post_processing):
     Uses the post_processing options (see the type def for PostProcessing at top).
     We translate fields from our current ES indexes to naming conventions used by the legacy API/UI.
     """
-    # TODO post_processing/include_highlight -- need to add on to search_objects
     # TODO post_processing/skip_info,skip_keys,skip_data -- look are results in current api
     # TODO post_processing/ids_only -- look at results in current api
     object_data = []  # type: list
@@ -339,8 +338,13 @@ def _get_object_data_from_search_results(search_results, post_processing):
         obj['key_props'] = obj['data']
         obj['guid'] = _get_guid_from_doc(result)
         obj['kbase_id'] = obj['guid'].strip('WS:')
+        idx_pieces = result['_index'].split(':')
+        idx_name = idx_pieces[0]
+        idx_ver = int(idx_pieces[1] or 0) if len(idx_pieces) == 2 else 0
+        obj['index_name'] = idx_name
+        obj['index_ver'] = idx_ver
         # For the UI, make the type field "GenomeFeature" instead of Genome for features.
-        if 'feature_type' in source:
+        if 'genome_feature_type' in source:
             obj['type'] = 'GenomeFeature'
         # Handle the highlighted field data, converting field names, if necessary
         if result.get('highlight'):
@@ -398,9 +402,9 @@ def _fetch_narrative_info(results, headers):
     search_data_sources = _get_sources(search_results)
     for narr in search_data_sources:
         narr_tuple = (
-            narr['narrative_title'],
-            narr['obj_id'],
-            narr['timestamp'],
+            narr.get('narrative_title'),
+            narr.get('obj_id'),
+            narr.get('timestamp'),
             narr.get('creator'),
             narr.get('creator')  # XXX using username for display name
         )
