@@ -4,7 +4,7 @@ import json
 
 from src.utils.config import init_config
 
-_API_URL = 'http://web:5000'
+_API_URL = 'http://localhost:5000'
 config = init_config()
 _TYPE_NAME = 'data'
 _INDEX_NAMES = [

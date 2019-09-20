@@ -12,7 +12,7 @@ start_time = int(time.time())
 while not service_healthy:
     print("Waiting for API to be healthy..")
     try:
-        requests.get('http://web:5000/').raise_for_status()
+        requests.get('http://localhost:5000/').raise_for_status()
         service_healthy = True
     except Exception:
         print("Unable to connect to API, waiting..")
