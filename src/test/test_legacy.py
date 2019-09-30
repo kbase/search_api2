@@ -8,15 +8,15 @@ _API_URL = 'http://localhost:5000'
 _CONFIG = init_config()
 _TYPE_NAME = 'data'  # TODO pull this out of global config
 _INDEX_NAMES = [
-    _CONFIG['index_prefix'] + '.index1',
-    _CONFIG['index_prefix'] + '.index2',
+    _CONFIG['index_prefix'] + '.index:1',
+    _CONFIG['index_prefix'] + '.index:2',
     _CONFIG['index_prefix'] + '.narrative',
     *[_CONFIG['index_prefix'] + '.' + name for name in _CONFIG['global']['ws_subobjects']]
 ]
 
 _NON_SUB_NAMES = [
-    _CONFIG['index_prefix'] + '.index1',
-    _CONFIG['index_prefix'] + '.index2',
+    _CONFIG['index_prefix'] + '.index:1',
+    _CONFIG['index_prefix'] + '.index:2',
     _CONFIG['index_prefix'] + '.narrative'
 ]
 
