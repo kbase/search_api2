@@ -14,6 +14,12 @@ _INDEX_NAMES = [
     *[_CONFIG['index_prefix'] + '.' + name for name in _CONFIG['global']['ws_subobjects']]
 ]
 
+_NON_SUB_NAMES = [
+    _CONFIG['index_prefix'] + '.index1',
+    _CONFIG['index_prefix'] + '.index2',
+    _CONFIG['index_prefix'] + '.narrative'
+]
+
 
 class TestLegacy(unittest.TestCase):
 
@@ -59,9 +65,12 @@ class TestLegacy(unittest.TestCase):
                 }]
             })
         )
+        try:
+            resp_json = resp.json()
+            result = resp_json['result'][0]
+        except Exception as err:
+            raise RuntimeError(resp.text)
         self.assertTrue(resp.ok)
-        resp_json = resp.json()
-        result = resp_json['result'][0]
         self.assertEqual(result['total'], 4)
         self.assertEqual(result['pagination'], {'start': 0, 'count': 10})
         self.assertEqual(result['sorting_rules'], [])
@@ -108,7 +117,10 @@ class TestLegacy(unittest.TestCase):
         )
         # Count of 2 for public-doc1 in both indexes
         # Excludes the genome feature doc by default
-        result = resp.json()['result'][0]
+        try:
+            result = resp.json()['result'][0]
+        except Exception as err:
+            raise RuntimeError(resp.text)
         self.assertEqual(len(result['objects']), 2, msg=f"contents of result = {result}")
 
     def test_match_value_range(self):
@@ -213,7 +225,7 @@ class TestLegacy(unittest.TestCase):
         if 'error' in respj:
             raise RuntimeError(json.dumps(respj))
         result = respj['result'][0]
-        self.assertEqual(len(result['objects']), 0)
+        self.assertEqual(len(result['objects']), 0, msg=f"contents of result = {result}")
 
     def test_search_types(self):
         """
@@ -305,7 +317,7 @@ def _init_elasticsearch():
         '_aliases'
     ])
     body = {
-        "actions": [{"add": {"indices": _INDEX_NAMES, "alias": "default_search"}}]
+        "actions": [{"add": {"indices": _NON_SUB_NAMES, "alias": "default_search"}}]
     }
     resp = requests.post(url, data=json.dumps(body), headers={'Content-Type': 'application/json'})
     if not resp.ok:

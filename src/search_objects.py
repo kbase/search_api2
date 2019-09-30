@@ -103,7 +103,7 @@ def _construct_index_name(params):
         https://www.elastic.co/guide/en/elasticsearch/reference/5.5/multi-index.html
     """
     prefix = _CONFIG['index_prefix']
-    # index_name_str = prefix + "."  # "default_search"
+    # index_name_str = prefix + "."
     index_name_str = "default_search"
     if params.get('indexes'):
         index_names = [
