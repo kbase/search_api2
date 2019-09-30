@@ -42,9 +42,10 @@ def search_objects(params, headers):
     index_name_str = _construct_index_name(params)
     # We insert the user's query as a "must" entry
     if params.get('should'):
-        user_should = params.get('should', {})
-        query = {'bool': {'must': user_query, 'should': {}}}
-    query = {'bool': {'must': user_query}}
+        user_should = params.get('should')
+        query = {'bool': {'must': user_query, 'should': user_should}}
+    else:
+        query = {'bool': {'must': user_query}}
     # Our access control query is then inserted under a "filter" depending on options:
     if params.get('public_only'):
         # Public workspaces only; most efficient

@@ -283,8 +283,6 @@ def _get_search_params(params):
     }
     if 'GenomeFeature' in object_types:
         search_params['indexes'] = [_GENOME_FEATURES_IDX_NAME]
-    # else:
-    #     search_params['exclude_indexes'] = [_GENOME_FEATURES_IDX_NAME]
     return search_params
 
 
