@@ -4,7 +4,6 @@ import sanic
 import traceback
 import requests
 import time
-from sanic_cors import CORS
 
 from src.exceptions import InvalidParameters
 from src.utils.config import init_config
@@ -14,7 +13,6 @@ from src.show_indexes import show_indexes
 from src.check_if_doc_exists import check_if_doc_exists
 
 app = sanic.Sanic()
-CORS(app, automatic_options=True)
 _CONFIG = init_config()
 
 
@@ -55,6 +53,14 @@ def _show_config(params, headers):
         'index_prefix': _CONFIG['index_prefix'],
         'global': _CONFIG['global']
     }
+
+
+@app.middleware('response')
+async def cors_resp(req, res):
+    """Handle cors response headers."""
+    res.headers['Access-Control-Allow-Origin'] = '*'
+    res.headers['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS'
+    res.headers['Access-Control-Allow-Headers'] = '*'
 
 
 @app.exception(sanic.exceptions.NotFound)

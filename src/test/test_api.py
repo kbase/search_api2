@@ -4,7 +4,7 @@ import json
 
 from src.utils.config import init_config
 
-_API_URL = 'http://web:5000'
+_API_URL = 'http://localhost:5000'
 config = init_config()
 _TYPE_NAME = 'data'
 _INDEX_NAMES = [
@@ -25,7 +25,7 @@ def _init_elasticsearch():
                     'index': {'number_of_shards': 3, 'number_of_replicas': 1}
                 }
             }),
-            headers={'Content-Type': 'application/json'}
+            headers={'Content-Type': 'application/json'},
         )
         if not resp.ok and resp.json()['error']['type'] != 'index_already_exists_exception':
             raise RuntimeError('Error creating index on ES:', resp.text)

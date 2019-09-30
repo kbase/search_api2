@@ -4,7 +4,7 @@ import json
 
 from src.utils.config import init_config
 
-_API_URL = 'http://web:5000'
+_API_URL = 'http://localhost:5000'
 _CONFIG = init_config()
 _TYPE_NAME = 'data'  # TODO pull this out of global config
 _INDEX_NAMES = [
@@ -63,7 +63,7 @@ class TestLegacy(unittest.TestCase):
                         "with_public": 1
                     }
                 }]
-            })
+            }),
         )
         try:
             resp_json = resp.json()
@@ -76,6 +76,9 @@ class TestLegacy(unittest.TestCase):
         self.assertEqual(result['sorting_rules'], [])
         self.assertTrue('search_time' in result)
         self.assertEqual(len(result['objects']), 4)
+        obj = result['objects'][0]
+        print('OBJ', obj)
+        self.assertTrue(obj['index_ver'])
 
     def test_get_objects(self):
         """
