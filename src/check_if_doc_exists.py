@@ -22,12 +22,10 @@ def check_if_doc_exists(params, headers):
         doc_id - in format "DataSource:workspace_id:object_id"
         index - elasticsearch index to search (required)
         es_datatype - elasticsearch document data type
-        namespace - namespace of index to search (default "WS")
     """
     # verify inputs
-    namespace = params.get('namespace', "ws").lower()
     jsonschema.validate(instance=params, schema=_SCHEMA)
-    index = _CONFIG['index_prefix'] + '.' + namespace + '.' + params['index']
+    index = _CONFIG['index_prefix'] + '.' + params['index']
     resp = requests.head(
         _CONFIG['elasticsearch_url'] + '/' + index + '/' + params.get('es_datatype', 'data') + '/' + params['doc_id']
     )

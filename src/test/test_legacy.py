@@ -8,10 +8,10 @@ _API_URL = 'http://web:5000'
 _CONFIG = init_config()
 _TYPE_NAME = 'data'  # TODO pull this out of global config
 _INDEX_NAMES = [
-    _CONFIG['index_prefix'] + '.ws.' + 'index1',
-    _CONFIG['index_prefix'] + '.ws.' + 'index2',
-    _CONFIG['index_prefix'] + '.ws.' + 'narrative',
-    *[_CONFIG['index_prefix'] + '.ws.' + name for name in _CONFIG['global']['ws_subobjects']]
+    _CONFIG['index_prefix'] + '.index1',
+    _CONFIG['index_prefix'] + '.index2',
+    _CONFIG['index_prefix'] + '.narrative',
+    *[_CONFIG['index_prefix'] + '.' + name for name in _CONFIG['global']['ws_subobjects']]
 ]
 
 
@@ -81,7 +81,10 @@ class TestLegacy(unittest.TestCase):
                 }]
             })
         )
-        results = resp.json()['result'][0]
+        try:
+            results = resp.json()['result'][0]
+        except Exception as err:
+            raise RuntimeError(resp.text)
         self.assertEqual(len(results['objects']), 4)
 
     def test_match_value_structure(self):
@@ -106,7 +109,7 @@ class TestLegacy(unittest.TestCase):
         # Count of 2 for public-doc1 in both indexes
         # Excludes the genome feature doc by default
         result = resp.json()['result'][0]
-        self.assertEqual(len(result['objects']), 2)
+        self.assertEqual(len(result['objects']), 2, msg=f"contents of result = {result}")
 
     def test_match_value_range(self):
             """
@@ -131,7 +134,10 @@ class TestLegacy(unittest.TestCase):
                 headers={'Authorization': 'valid_token'}
             )
             # 2 for private-doc1 in both indexes, plus 2 for public-doc1 in both indexes
-            result = resp.json()['result'][0]
+            try:
+                result = resp.json()['result'][0]
+            except Exception as err:
+                raise RuntimeError(resp.text)            
             self.assertEqual(len(result['objects']), 4)
             resp = requests.post(
                 _API_URL + '/legacy',
@@ -151,7 +157,10 @@ class TestLegacy(unittest.TestCase):
                 }),
                 headers={'Authorization': 'valid_token'}
             )
-            result = resp.json()['result'][0]
+            try:
+                result = resp.json()['result'][0]
+            except Exception as err:
+                raise RuntimeError(resp.text)        
             self.assertEqual(len(result['objects']), 6)
 
     def test_exclude_subobjects(self):
@@ -177,7 +186,10 @@ class TestLegacy(unittest.TestCase):
             }),
             headers={'Authorization': 'valid_token'}
         )
-        result = resp.json()['result'][0]
+        try:
+            result = resp.json()['result'][0]
+        except Exception as err:
+            raise RuntimeError(resp.text)
         self.assertEqual(len(result['objects']), 1, msg=f"contents of result: {result}")
         resp = requests.post(
             _API_URL + '/legacy',
@@ -197,7 +209,10 @@ class TestLegacy(unittest.TestCase):
             }),
             headers={'Authorization': 'valid_token'}
         )
-        result = resp.json()['result'][0]
+        respj = resp.json()
+        if 'error' in respj:
+            raise RuntimeError(json.dumps(respj))
+        result = respj['result'][0]
         self.assertEqual(len(result['objects']), 0)
 
     def test_search_types(self):
@@ -212,7 +227,10 @@ class TestLegacy(unittest.TestCase):
                 'params': [{'match_filter': {}}]
             })
         )
-        result = resp.json()['result'][0]
+        try:
+            result = resp.json()['result'][0]
+        except Exception as err:
+            raise RuntimeError(resp.text)
         self.assertTrue('search_time' in result)
         self.assertEqual(result['type_to_count'], {'typea': 2, 'typeb': 2})
 
@@ -263,7 +281,7 @@ def _init_elasticsearch():
                 raise RuntimeError('Error creating doc on ES:', resp.text)
     # Create a special test index that is considered a workspace "subobject" by the global config
     # This way we can test the `exclude_subobjects` option.
-    subobj_idx_name = _CONFIG['index_prefix'] + '.ws.' + _CONFIG['global']['ws_subobjects'][0]
+    subobj_idx_name = _CONFIG['index_prefix'] + '.' + _CONFIG['global']['ws_subobjects'][0]
     subobj_doc = {
         'name': 'featurexyz',
         'is_public': True,
@@ -281,6 +299,18 @@ def _init_elasticsearch():
     if not resp.ok:
         raise RuntimeError('Error creating doc on ES:', resp.text)
 
+    # create default_search alias for all fields.
+    url = '/'.join([
+        _CONFIG['elasticsearch_url'],
+        '_aliases'
+    ])
+    body = {
+        "actions": [{"add": {"indices": _INDEX_NAMES, "alias": "default_search"}}]
+    }
+    resp = requests.post(url, data=json.dumps(body), headers={'Content-Type': 'application/json'})
+    if not resp.ok:
+        raise RuntimeError("Error creating aliases on ES:", resp.text)
+    print('elasticsearch aliases applied for legacy...')
 
 def _tear_down_elasticsearch():
     """

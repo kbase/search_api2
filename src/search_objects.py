@@ -27,7 +27,7 @@ def search_objects(params, headers):
                 `count` - take a count of the query, instead of listing results ? TODO
                 `sort` -  JSON structure of how to sort array. see:
                     https://www.elastic.co/guide/en/elasticsearch/reference/5.5/search-request-sort.html
-                `namespace` - namespace prefix for id's of documents in elasticsearch, default="WS"
+                `should_fields` - (optional) user specified fields in "should" region of bool field 
 
     ES 5.5 search query documentation:
     https://www.elastic.co/guide/en/elasticsearch/reference/5.5/search-request-body.html
@@ -41,6 +41,9 @@ def search_objects(params, headers):
     # Get the index name(s) to include and exclude (used in the URL below)
     index_name_str = _construct_index_name(params)
     # We insert the user's query as a "must" entry
+    if params.get('should'):
+        user_should = params.get('should', {})
+        query = {'bool': {'must': user_query, 'should': {}}}
     query = {'bool': {'must': user_query}}
     # Our access control query is then inserted under a "filter" depending on options:
     if params.get('public_only'):
@@ -85,6 +88,7 @@ def search_objects(params, headers):
     if params.get('highlight'):
         options['highlight'] = {'require_field_match': False, 'fields': params['highlight']}
     headers = {'Content-Type': 'application/json'}
+    print(f"request against {url} with options: {options}")
     resp = requests.post(url, data=json.dumps(options), headers=headers)
     if not resp.ok:
         raise RuntimeError(resp.text)
@@ -99,11 +103,11 @@ def _construct_index_name(params):
         https://www.elastic.co/guide/en/elasticsearch/reference/5.5/multi-index.html
     """
     prefix = _CONFIG['index_prefix']
-    namespace = params.get('namespace', "ws").lower()
-    index_name_str = prefix + "." + namespace + '.*'
+    # index_name_str = prefix + "."  # "default_search"
+    index_name_str = "default_search"
     if params.get('indexes'):
         index_names = [
-            prefix + '.' + namespace + '.' + name.lower()
+            prefix + '.' + name.lower()
             for name in params['indexes']
         ]
         # Replace the index_name_str with all explicitly included index names
@@ -111,6 +115,6 @@ def _construct_index_name(params):
     # Append any index name exclusions, if necessary
     if params.get('exclude_indexes'):
         exclusions = params['exclude_indexes']
-        exclusions_str = ','.join('-' + prefix + '.' + namespace + '.' + name for name in exclusions)
+        exclusions_str = ','.join('-' + prefix + '.' + name for name in exclusions)
         index_name_str += ',' + exclusions_str
     return index_name_str
