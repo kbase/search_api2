@@ -31,13 +31,13 @@ def _init_elasticsearch():
             raise RuntimeError('Error creating index on ES:', resp.text)
     test_docs = [
         # Public doc
-        {'name': 'public-doc1', 'is_public': True, 'timestamp': 10, 'field': 'def', 'another_field': 'abc'},
+        {'name': 'public-doc1', 'is_public': True, 'timestamp': 10},
         # Public doc
-        {'name': 'public-doc2', 'is_public': True, 'timestamp': 12, 'field': '456', 'another_field': '123'},
+        {'name': 'public-doc2', 'is_public': True, 'timestamp': 12},
         # Private but accessible doc
-        {'name': 'private-doc1', 'is_public': False, 'access_group': 1, 'timestamp': 7, 'field': 'abc', 'another_field': 'def'},
+        {'name': 'private-doc1', 'is_public': False, 'access_group': 1, 'timestamp': 7},
         # Private but inaccessible doc
-        {'name': 'private2-doc1', 'is_public': False, 'access_group': 99, 'timestamp': 9, 'field': '123', 'another_field': '456'},
+        {'name': 'private2-doc1', 'is_public': False, 'access_group': 99, 'timestamp': 9},
     ]
     for doc in test_docs:
         # Note that the 'refresh=wait_for' option must be set in the URL so we can search on it immediately.
@@ -123,30 +123,8 @@ class TestApi(unittest.TestCase):
         resp_json = resp.json()
         results = [r['_source'] for r in resp_json['hits']['hits']]
         self.assertEqual(results, [
-            {'is_public': True, 'name': 'public-doc1', 'timestamp': 10, 'field': 'def', 'another_field': 'abc'},
-            {'is_public': False, 'name': 'private-doc1', 'access_group': 1, 'timestamp': 7, 'field': 'abc', 'another_field': 'def'}
-        ])
-
-    def test_search_should(self):
-        """"""
-        resp = requests.post(
-            _API_URL + '/rpc',
-            data=json.dumps({
-                "method": "search_objects",
-                "params": {
-                    "indexes": ['Index1'],
-                    "query": {'term': {'name': 'doc1'}},
-                    "should": [{'prefix': {'another_field': 'a'}}, {'prefix': {'field': 'a'}}]
-                }
-            }),
-            headers={'Authorization': 'valid_token'}
-        )
-        self.assertTrue(resp.ok, msg=f"response: {resp.text}")
-        resp_json = resp.json()
-        results = [r['_source'] for r in resp_json['hits']['hits']]
-        self.assertEqual(results, [
-            {'is_public': True, 'name': 'public-doc1', 'timestamp': 10, 'field': 'def', 'another_field': 'abc'},
-            {'is_public': False, 'name': 'private-doc1', 'access_group': 1, 'timestamp': 7, 'field': 'abc', 'another_field': 'def'}
+            {'is_public': True, 'name': 'public-doc1', 'timestamp': 10},
+            {'is_public': False, 'name': 'private-doc1', 'access_group': 1, 'timestamp': 7}
         ])
 
     def test_count_indexes_valid(self):
