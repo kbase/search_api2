@@ -102,7 +102,7 @@ def _construct_index_name(params):
     """
     prefix = _CONFIG['index_prefix']
     # index_name_str = prefix + "."
-    index_name_str = "default_search"
+    index_name_str = prefix + ".default_search"
     if params.get('indexes'):
         index_names = [
             prefix + '.' + name.lower()

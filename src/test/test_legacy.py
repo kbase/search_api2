@@ -320,7 +320,7 @@ def _init_elasticsearch():
         '_aliases'
     ])
     body = {
-        "actions": [{"add": {"indices": _NON_SUB_NAMES, "alias": "default_search"}}]
+        "actions": [{"add": {"indices": _NON_SUB_NAMES, "alias": _CONFIG['index_prefix'] + ".default_search"}}]
     }
     resp = requests.post(url, data=json.dumps(body), headers={'Content-Type': 'application/json'})
     if not resp.ok:
