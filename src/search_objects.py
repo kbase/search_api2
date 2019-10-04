@@ -25,9 +25,10 @@ def search_objects(params, headers):
                 `size` - result length to return for pagination
                 `from` - result offset for pagination
                 `count` - take a count of the query, instead of listing results ? TODO
+                `aggs` - aggregation options for elasticsearch
+                `highlight` - highlight options for elasticsearch
                 `sort` -  JSON structure of how to sort array. see:
                     https://www.elastic.co/guide/en/elasticsearch/reference/5.5/search-request-sort.html
-                `should_fields` - (optional) user specified fields in "should" region of bool field 
 
     ES 5.5 search query documentation:
     https://www.elastic.co/guide/en/elasticsearch/reference/5.5/search-request-body.html
@@ -71,11 +72,12 @@ def search_objects(params, headers):
     # url += '/_count' if params.get('count') else '/_search'
     options = {
         'query': query,
-        'terminate_after': 10000,  # type: ignore
         'size': 0 if params.get('count') else params.get('size', 10),
         'from': params.get('from', 0),
         'timeout': '3m'  # type: ignore
     }
+    if not params.get('count') and params.get('size', 10) > 0:
+        options['terminate_after'] = 10000  # type: ignore
     # User-supplied aggregations
     if params.get('aggs'):
         options['aggs'] = params['aggs']
