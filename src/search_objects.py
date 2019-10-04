@@ -87,7 +87,6 @@ def search_objects(params, headers):
     if params.get('highlight'):
         options['highlight'] = {'require_field_match': False, 'fields': params['highlight']}
     headers = {'Content-Type': 'application/json'}
-    print(f"request against {url} with options: {options}")
     resp = requests.post(url, data=json.dumps(options), headers=headers)
     if not resp.ok:
         raise RuntimeError(resp.text)
