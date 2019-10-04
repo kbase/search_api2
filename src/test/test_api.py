@@ -8,8 +8,8 @@ _API_URL = 'http://localhost:5000'
 config = init_config()
 _TYPE_NAME = 'data'
 _INDEX_NAMES = [
-    config['index_prefix'] + '.' + 'index1',
-    config['index_prefix'] + '.' + 'index2',
+    config['index_prefix'] + '.index1',
+    config['index_prefix'] + '.index2',
 ]
 
 
@@ -53,6 +53,18 @@ def _init_elasticsearch():
             if not resp.ok:
                 raise RuntimeError('Error creating doc on ES:', resp.text)
 
+    # create default_search alias for all fields.
+    url = '/'.join([
+        config['elasticsearch_url'],
+        '_aliases'
+    ])
+    body = {
+        "actions": [{"add": {"indices": _INDEX_NAMES, "alias": config['index_prefix'] + ".default_search"}}]
+    }
+    resp = requests.post(url, data=json.dumps(body), headers={'Content-Type': 'application/json'})
+    if not resp.ok:
+        raise RuntimeError("Error creating aliases on ES:", resp.text)
+    print('elasticsearch aliases applied for rpc...')
 
 def _tear_down_elasticsearch():
     """
@@ -75,7 +87,6 @@ class TestApi(unittest.TestCase):
         _tear_down_elasticsearch()
 
     # TODO invalid json response
-
     def test_status(self):
         resp = requests.get(_API_URL + '/status')
         self.assertEqual(resp.json(), {'status': 'ok'})
@@ -85,7 +96,7 @@ class TestApi(unittest.TestCase):
         Test the show_config RPC method.
         """
         resp = requests.post(_API_URL + '/rpc', data='{}')
-        self.assertTrue(resp.ok)
+        self.assertTrue(resp.ok, msg=f"response: {resp.text}")
         self.assertTrue(resp.json())
 
     def test_search_objects_valid(self):
@@ -108,7 +119,7 @@ class TestApi(unittest.TestCase):
             }),
             headers={'Authorization': 'valid_token'}
         )
-        self.assertTrue(resp.ok)
+        self.assertTrue(resp.ok, msg=f"response: {resp.text}")
         resp_json = resp.json()
         results = [r['_source'] for r in resp_json['hits']['hits']]
         self.assertEqual(results, [
@@ -132,7 +143,7 @@ class TestApi(unittest.TestCase):
                 }
             })
         )
-        self.assertTrue(resp.ok)
+        self.assertTrue(resp.ok, msg=f"response: {resp.text}")
         resp_json = resp.json()
         results = resp_json['aggregations']['count_by_index']['buckets']
         self.assertEqual(results, [
@@ -156,7 +167,7 @@ class TestApi(unittest.TestCase):
                 }
             })
         )
-        self.assertTrue(resp.ok)
+        self.assertTrue(resp.ok, msg=f"response: {resp.text}")
         # check on doc that does not exist
         resp = requests.post(
             _API_URL + '/rpc',
@@ -179,10 +190,10 @@ class TestApi(unittest.TestCase):
             _API_URL + '/rpc',
             data=json.dumps({'method': 'show_indexes'})
         )
-        self.assertTrue(resp.ok)
+        self.assertTrue(resp.ok, msg=f"response: {resp.text}")
         resp_json = resp.json()
         names = [r['index'] for r in resp_json]
-        self.assertTrue(len(names) > 0)
+        self.assertEqual(set(names), {'test.index2', 'test.index1'})
         counts = [int(r['docs.count']) for r in resp_json]
         self.assertEqual(counts, [4, 4])
 
@@ -205,7 +216,7 @@ class TestApi(unittest.TestCase):
             }),
             headers={'Authorization': 'valid_token'}
         )
-        self.assertTrue(resp.ok)
+        self.assertTrue(resp.ok, msg=f"response: {resp.text}")
         resp_json = resp.json()
         results = [r['_source'] for r in resp_json['hits']['hits']]
         timestamps = [r['timestamp'] for r in results]

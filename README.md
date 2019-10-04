@@ -21,6 +21,7 @@ Uses JSON RPC format, so all requests should:
   * `only_private` - only show private workspace data
   * `size` - result length to return for pagination
   * `from` - result offset for pagination
+  * `sort` - optional sorting filter (refer to [the ES docs](https://www.elastic.co/guide/en/elasticsearch/reference/5.5/search-request-sort.html))
 
 ## Development
 

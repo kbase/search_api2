@@ -283,8 +283,6 @@ def _get_search_params(params):
     }
     if 'GenomeFeature' in object_types:
         search_params['indexes'] = [_GENOME_FEATURES_IDX_NAME]
-    else:
-        search_params['exclude_indexes'] = [_GENOME_FEATURES_IDX_NAME]
     return search_params
 
 
@@ -390,7 +388,7 @@ def _fetch_narrative_info(results, headers):
         {'match': {'access_group': wsid}}
         for wsid in workspace_ids
     ]
-    narrative_index_name = _CONFIG['global']['ws_type_to_indexes']['Narrative']
+    narrative_index_name = _CONFIG['global']['ws_type_to_indexes']['KBaseNarrative.Narrative']
     # ES query params
     search_params = {
         'query': {'bool': {'should': matches}},
