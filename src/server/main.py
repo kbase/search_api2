@@ -16,14 +16,21 @@ app = sanic.Sanic()
 _CONFIG = init_config()
 
 
+@app.middleware('request')
+async def cors_options(request):
+    """Handle a CORS OPTIONS request."""
+    if request.method == 'OPTIONS':
+        return sanic.response.raw(b'', status=204)
+
+
 @app.route('/')
-@app.route('/status', methods=['GET'])
+@app.route('/status', methods=['GET', 'OPTIONS'])
 async def health_check(request):
     """Really basic health check; could be expanded if needed."""
     return sanic.response.json({'status': 'ok'})
 
 
-@app.route('/rpc', methods=['POST'])
+@app.route('/rpc', methods=['POST', 'OPTIONS'])
 async def root(request):
     """Handle JSON RPC methods."""
     json_body = request.json
@@ -35,7 +42,7 @@ async def root(request):
     return sanic.response.json(result)
 
 
-@app.route('/legacy', methods=['POST'])
+@app.route('/legacy', methods=['POST', 'OPTIONS'])
 async def legacy(request):
     """Handle legacy-formatted requests that are intended for the previous Java api."""
     result = handle_legacy(request.json, request.headers)
