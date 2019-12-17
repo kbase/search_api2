@@ -307,6 +307,7 @@ def _handle_lookup_in_keys(match_filter, query):
         # `range_min` and `range_max` will be any values for doing a range query
         range_min = match_value.get('min_int') or match_value.get('min_date') or match_value.get('min_double')
         range_max = match_value.get('max_int') or match_value.get('max_date') or match_value.get('max_double')
+        query_clause = {}
         if term_value:
             query_clause = {'match': {key: term_value}}
         elif range_min and range_max:

@@ -68,7 +68,7 @@ class TestLegacy(unittest.TestCase):
         try:
             resp_json = resp.json()
             result = resp_json['result'][0]
-        except Exception as err:
+        except Exception:
             raise RuntimeError(resp.text)
         self.assertTrue(resp.ok)
         self.assertEqual(result['total'], 4)
@@ -77,7 +77,6 @@ class TestLegacy(unittest.TestCase):
         self.assertTrue('search_time' in result)
         self.assertEqual(len(result['objects']), 4)
         obj = result['objects'][0]
-        print('OBJ', obj)
         self.assertTrue(obj['index_ver'])
 
     def test_get_objects(self):
@@ -95,7 +94,7 @@ class TestLegacy(unittest.TestCase):
         )
         try:
             results = resp.json()['result'][0]
-        except Exception as err:
+        except Exception:
             raise RuntimeError(resp.text)
         self.assertEqual(len(results['objects']), 4)
 
@@ -122,61 +121,61 @@ class TestLegacy(unittest.TestCase):
         # Excludes the genome feature doc by default
         try:
             result = resp.json()['result'][0]
-        except Exception as err:
+        except Exception:
             raise RuntimeError(resp.text)
         self.assertEqual(len(result['objects']), 2, msg=f"contents of result = {result}")
 
     def test_match_value_range(self):
-            """
-            Test the per-keyword filtering and the MatchValue type in the original API.
-            """
-            resp = requests.post(
-                _API_URL + '/legacy',
-                data=json.dumps({
-                    'method': 'KBaseSearchAPI.search_objects',
-                    'params': [{
-                        'match_filter': {
-                            'lookupInKeys': {
-                                'timestamp': {'min_int': 7, 'max_int': 10}
-                            }
-                        },
-                        'access_filter': {
-                            'with_private': 1,
-                            'with_public': 1
+        """
+        Test the per-keyword filtering and the MatchValue type in the original API.
+        """
+        resp = requests.post(
+            _API_URL + '/legacy',
+            data=json.dumps({
+                'method': 'KBaseSearchAPI.search_objects',
+                'params': [{
+                    'match_filter': {
+                        'lookupInKeys': {
+                            'timestamp': {'min_int': 7, 'max_int': 10}
                         }
-                    }]
-                }),
-                headers={'Authorization': 'valid_token'}
-            )
-            # 2 for private-doc1 in both indexes, plus 2 for public-doc1 in both indexes
-            try:
-                result = resp.json()['result'][0]
-            except Exception as err:
-                raise RuntimeError(resp.text)            
-            self.assertEqual(len(result['objects']), 4)
-            resp = requests.post(
-                _API_URL + '/legacy',
-                data=json.dumps({
-                    'method': 'KBaseSearchAPI.search_objects',
-                    'params': [{
-                        'match_filter': {
-                            'lookupInKeys': {
-                                'timestamp': {'min_int': 7, 'max_int': 12},
-                            }
-                        },
-                        'access_filter': {
-                            'with_private': 1,
-                            'with_public': 1
+                    },
+                    'access_filter': {
+                        'with_private': 1,
+                        'with_public': 1
+                    }
+                }]
+            }),
+            headers={'Authorization': 'valid_token'}
+        )
+        # 2 for private-doc1 in both indexes, plus 2 for public-doc1 in both indexes
+        try:
+            result = resp.json()['result'][0]
+        except Exception:
+            raise RuntimeError(resp.text)
+        self.assertEqual(len(result['objects']), 4)
+        resp = requests.post(
+            _API_URL + '/legacy',
+            data=json.dumps({
+                'method': 'KBaseSearchAPI.search_objects',
+                'params': [{
+                    'match_filter': {
+                        'lookupInKeys': {
+                            'timestamp': {'min_int': 7, 'max_int': 12},
                         }
-                    }]
-                }),
-                headers={'Authorization': 'valid_token'}
-            )
-            try:
-                result = resp.json()['result'][0]
-            except Exception as err:
-                raise RuntimeError(resp.text)        
-            self.assertEqual(len(result['objects']), 6)
+                    },
+                    'access_filter': {
+                        'with_private': 1,
+                        'with_public': 1
+                    }
+                }]
+            }),
+            headers={'Authorization': 'valid_token'}
+        )
+        try:
+            result = resp.json()['result'][0]
+        except Exception:
+            raise RuntimeError(resp.text)
+        self.assertEqual(len(result['objects']), 6)
 
     def test_exclude_subobjects(self):
         """
@@ -203,7 +202,7 @@ class TestLegacy(unittest.TestCase):
         )
         try:
             result = resp.json()['result'][0]
-        except Exception as err:
+        except Exception:
             raise RuntimeError(resp.text)
         self.assertEqual(len(result['objects']), 1, msg=f"contents of result: {result}")
         resp = requests.post(
@@ -244,10 +243,46 @@ class TestLegacy(unittest.TestCase):
         )
         try:
             result = resp.json()['result'][0]
-        except Exception as err:
+        except Exception:
             raise RuntimeError(resp.text)
         self.assertTrue('search_time' in result)
         self.assertEqual(result['type_to_count'], {'typea': 2, 'typeb': 2})
+
+    def test_narrative_example(self):
+        """
+        Test a real example request from the narrative side-panel
+        """
+        resp = requests.post(
+            _API_URL + '/legacy',
+            data=json.dumps({
+                'method': 'KBaseSearchEngine.search_objects',
+                'params': [{
+                    'object_types': ['Genome'],
+                    'match_filter': {
+                        'full_text_in_all': 's',
+                        'exclude_subobjects': 1,
+                        'source_tags': ['refdata'],
+                        'source_tags_blacklist': 0,
+                        'lookupInKeys': {
+                            'source': {'string_value': 'refseq'},
+                        },
+                        'pagination': {'start': 0, 'count': 20},
+                        'post_processing': {
+                            'ids_only': 0, 'skip_info': 0, 'skip_keys': 0, 'skip_data': 0, 'include_highlight': 0
+                        },
+                        'access_filter': {
+                            'with_private': 0, 'with_public': 1
+                        },
+                        'sorting_rules': [{
+                            'is_object_property': 1, 'property': 'scientific_name_keyword', 'ascending': 1
+                        }]
+                    }
+                }]
+            })
+        )
+        self.assertTrue(resp.ok)
+        resp_json = resp.json()
+        self.assertEqual(resp_json['result'][0]['total'], 0)
 
 
 def _init_elasticsearch():
@@ -326,6 +361,7 @@ def _init_elasticsearch():
     if not resp.ok:
         raise RuntimeError("Error creating aliases on ES:", resp.text)
     print('elasticsearch aliases applied for legacy...')
+
 
 def _tear_down_elasticsearch():
     """
