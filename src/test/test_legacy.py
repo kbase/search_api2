@@ -77,7 +77,7 @@ class TestLegacy(unittest.TestCase):
         self.assertTrue('search_time' in result)
         self.assertEqual(len(result['objects']), 4)
         obj = result['objects'][0]
-        self.assertTrue(obj['index_ver'])
+        self.assertTrue(obj['type_ver'])
 
     def test_get_objects(self):
         """

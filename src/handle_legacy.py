@@ -50,7 +50,7 @@ _KEY_MAPPING = {
     'version': 'version',
     'timestamp': 'timestamp',
     'obj_type_name': 'type',
-    'obj_type_version': 'type_ver',
+    # 'obj_type_version': 'type_ver',
     'creator': 'creator'
 }
 
@@ -342,7 +342,8 @@ def _get_object_data_from_search_results(search_results, post_processing):
         idx_name = idx_pieces[0]
         idx_ver = int(idx_pieces[1] or 0) if len(idx_pieces) == 2 else 0
         obj['index_name'] = idx_name
-        obj['index_ver'] = idx_ver
+        # obj['index_ver'] = idx_ver
+        obj['type_ver'] = idx_ver
         # For the UI, make the type field "GenomeFeature" instead of Genome for features.
         if 'genome_feature_type' in source:
             obj['type'] = 'GenomeFeature'
