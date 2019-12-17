@@ -90,7 +90,8 @@ def _search_objects(params, headers):
     It also injects any extra info, such as narrative data, for each search result.
     """
     search_params = _get_search_params(params)
-    search_params['highlight'] = {'*': {}}
+    if params.get('include_highlight'):
+        search_params['highlight'] = {'*': {}}
     search_results = search_objects(search_params, headers)
     post_processing = params.get('post_processing', {})
     (narrative_infos, ws_infos) = _fetch_narrative_info(search_results, headers)
@@ -307,7 +308,7 @@ def _handle_lookup_in_keys(match_filter, query):
         # `range_min` and `range_max` will be any values for doing a range query
         range_min = match_value.get('min_int') or match_value.get('min_date') or match_value.get('min_double')
         range_max = match_value.get('max_int') or match_value.get('max_date') or match_value.get('max_double')
-        query_clause = {}
+        query_clause = {}  # type: dict
         if term_value:
             query_clause = {'match': {key: term_value}}
         elif range_min and range_max:
