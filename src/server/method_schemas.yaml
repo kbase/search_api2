@@ -1,0 +1,96 @@
+---
+# JSON Schema definitions for every RPC method in this service
+
+# Display public configuration details for the services
+show_config: {}
+
+# Get a list of index and alias names in elasticsearch
+show_indexes:
+  params: {}
+  result:
+    type: object
+    description: Each key is an index/alias name
+    patternProperties:
+      ".*":
+        type: object
+          properties:
+            # If the entry is an alias, a list of other indexes it is aliasing. Otherwise empty
+            alias:
+              type: array
+              items:
+                type: string
+
+# Check if a document exists in the database
+check_if_doc_exists:
+  params:
+    type: object
+    properties:
+      doc_id:
+        type: string
+        title: Document ID
+        description: ID of the document you wish to check.
+      index:
+        type: string
+        title: Index Name
+        description: Name of the index or alias the document resides in.
+  result:
+    type: bool
+
+# Generic search of all objects under an index or alias
+search_objects:
+  params:
+    type: object
+    required: []
+    properties:
+      query:
+        type: object
+        description: Query options
+      source:
+        type: array
+        description: Which fields to return in the results
+      indexes:
+        type: array
+        items:
+          type: string
+        description: An array of index/alias names you want to search
+      only_public:
+        type: bool
+        description: Only return public documents. No auth needed.
+      only_private:
+        type: bool
+        description: Only return private documents and no public. Auth required.
+      size:
+        type: integer
+        title: Page Size
+        description: Number of results to return
+        default: 10
+      from:
+        type: integer
+        title: Offset
+        description: How many records to skip in the results for pagination.
+        default: 0
+      count:
+        type: integer
+        description: Just count the results without returning the documents.
+      aggs:
+        type: object
+        title: Aggregations
+      highlight:
+        type: object
+        description: Result highlight options
+      sort:
+        type: array
+        description: Sorting options for result. An array of property names.
+        items:
+          anyOf:
+            - type: string
+            - type: object
+                patternProperties:
+                  ".*":
+                      type: object
+                      properties:
+                        type: string
+                        enum: [desc, asc]
+    result:
+      type: object
+      # TODO

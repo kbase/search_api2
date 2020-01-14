@@ -14,21 +14,7 @@ def search_objects(params, headers):
     """
     Make a query on elasticsearch using the given index and options.
 
-    Args:
-        params - dict of parameters from the JSON RPC request to the server
-            can contain:
-                `query` options for elasticsearch
-                `source` - array of field names to return in the "_source"
-                `indexes` - array of index names (without any prefix)
-                `only_public` - only show public workspace data
-                `only_private` - only show private workspace data
-                `size` - result length to return for pagination
-                `from` - result offset for pagination
-                `count` - take a count of the query, instead of listing results ? TODO
-                `aggs` - aggregation options for elasticsearch
-                `highlight` - highlight options for elasticsearch
-                `sort` -  JSON structure of how to sort array. see:
-                    https://www.elastic.co/guide/en/elasticsearch/reference/5.5/search-request-sort.html
+    See method_schemas.json for a definition of the params
 
     ES 5.5 search query documentation:
     https://www.elastic.co/guide/en/elasticsearch/reference/5.5/search-request-body.html
@@ -65,7 +51,6 @@ def search_objects(params, headers):
         }
     # Make a query request to elasticsearch
     url = _CONFIG['elasticsearch_url'] + '/' + index_name_str + '/_search'
-    # url += '/_count' if params.get('count') else '/_search'
     options = {
         'query': query,
         'size': 0 if params.get('count') else params.get('size', 10),
@@ -89,6 +74,7 @@ def search_objects(params, headers):
     headers = {'Content-Type': 'application/json'}
     resp = requests.post(url, data=json.dumps(options), headers=headers)
     if not resp.ok:
+        # Unexpected elasticsearch error
         raise RuntimeError(resp.text)
     return resp.json()
 

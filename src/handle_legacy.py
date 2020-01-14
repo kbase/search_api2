@@ -78,6 +78,7 @@ def handle_legacy(req_body, headers):
     results = handler(params, headers)
     return {
         'version': '1.1',
+        'id': req_body.get('id'),
         'result': [results]  # For some reason, all results are wrapped in a list in the java API
     }
 
