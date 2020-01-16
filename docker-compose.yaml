@@ -24,7 +24,7 @@ services:
       - WORKSPACE_URL=http://workspace:5000
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:5.5.3
+    image: elasticsearch:7.5.0
     environment:
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - bootstrap.memory_lock=true

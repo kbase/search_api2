@@ -3,11 +3,14 @@ Search objects on elasticsearch
 """
 import json
 import requests
+import logging
 
 from src.workspace_auth import ws_auth
 from src.utils.config import init_config
 
 _CONFIG = init_config()
+
+logger = logging.getLogger('searchapi2')
 
 
 def search_objects(params, headers):
@@ -19,7 +22,7 @@ def search_objects(params, headers):
     ES 5.5 search query documentation:
     https://www.elastic.co/guide/en/elasticsearch/reference/5.5/search-request-body.html
     """
-    user_query = params.get('query', {})
+    user_query = params.get('query')
     authorized_ws_ids = []  # type: list
     if not params.get('public_only') and headers.get('Authorization'):
         # Fetch the workspace IDs that the user can read
@@ -28,7 +31,9 @@ def search_objects(params, headers):
     # Get the index name(s) to include and exclude (used in the URL below)
     index_name_str = _construct_index_name(params)
     # We insert the user's query as a "must" entry
-    query = {'bool': {'must': user_query}}
+    query = {'bool': {}}  # type: dict
+    if user_query:
+        query['bool']['must'] = user_query
     # Our access control query is then inserted under a "filter" depending on options:
     if params.get('public_only'):
         # Public workspaces only; most efficient
@@ -51,6 +56,7 @@ def search_objects(params, headers):
         }
     # Make a query request to elasticsearch
     url = _CONFIG['elasticsearch_url'] + '/' + index_name_str + '/_search'
+    logger.debug(f"QUERY: {query}")
     options = {
         'query': query,
         'size': 0 if params.get('count') else params.get('size', 10),
@@ -84,7 +90,7 @@ def _construct_index_name(params):
     Given the search_objects params, construct the index name for use in the
     URL of the query.
     See the docs about how this works:
-        https://www.elastic.co/guide/en/elasticsearch/reference/5.5/multi-index.html
+        https://www.elastic.co/guide/en/elasticsearch/reference/current/multi-index.html
     """
     prefix = _CONFIG['index_prefix']
     # index_name_str = prefix + "."

@@ -40,7 +40,7 @@ import re
 
 _CONFIG = init_config()
 
-_GENOME_FEATURES_IDX_NAME = 'genome_features:2'
+_GENOME_FEATURES_IDX_NAME = 'genome_features_2'
 
 # Mappings from search2 document fields to search1 fields:
 _KEY_MAPPING = {
@@ -93,6 +93,7 @@ def _search_objects(params, headers):
     search_params = _get_search_params(params)
     if params.get('include_highlight'):
         search_params['highlight'] = {'*': {}}
+    print('search_paramsxyz', search_params)
     search_results = search_objects(search_params, headers)
     post_processing = params.get('post_processing', {})
     (narrative_infos, ws_infos) = _fetch_narrative_info(search_results, headers)
@@ -222,17 +223,21 @@ def _get_search_params(params):
     """
     match_filter = params.get('match_filter', {})
     # Base query object for ES. Will get mutated and expanded below.
-    query = {'bool': {'must': [], 'must_not': [], 'should': []}}  # type: dict
+    # query = {'bool': {'must': [], 'must_not': [], 'should': []}}  # type: dict
+    query = {'bool': {}}  # type: dict
     if match_filter.get('full_text_in_all'):
         # Match full text for any field in the objects
-        query['bool']['must'].append({'match': {'_all': match_filter['full_text_in_all']}})
+        query['bool']['must'] = []
+        query['bool']['must'].append({'match': {'agg_fields': match_filter['full_text_in_all']}})
     if match_filter.get('object_name'):
+        query['bool']['must'] = query['bool'].get('must', [])
         query['bool']['must'].append({'match': {'obj_name': str(match_filter['object_name'])}})
     if match_filter.get('timestamp'):
         ts = match_filter['timestamp']
         min_ts = ts.get('min_date') or ts.get('min_int') or ts.get('min_double')
         max_ts = ts.get('max_date') or ts.get('max_int') or ts.get('max_double')
         if min_ts and max_ts:
+            query['bool']['must'] = query['bool'].get('must', [])
             query['bool']['must'].append({'range': {'timestamp': {'gte': min_ts, 'lte': max_ts}}})
         else:
             raise RuntimeError("Invalid timestamp range in match_filter/timestamp.")
@@ -244,8 +249,9 @@ def _get_search_params(params):
         # Construct a compound query to match every tag using "term"
         tag_query = [{'term': {'tags': tag}} for tag in tags]
         if blacklist_tags:
-            query['bool']['must_not'] += tag_query
+            query['bool']['must_not'] = tag_query
         else:
+            query['bool']['must'] = query['bool'].get('must', [])
             query['bool']['must'] += tag_query
     # Handle match_filter/lookupInKeys
     query = _handle_lookup_in_keys(match_filter, query)
@@ -314,7 +320,9 @@ def _handle_lookup_in_keys(match_filter, query):
             query_clause = {'match': {key: term_value}}
         elif range_min and range_max:
             query_clause = {'range': {key: {'gte': range_min, 'lte': range_max}}}
-        query['bool']['must'].append(query_clause)
+        if query_clause:
+            query['bool']['must'] = query['bool'].get('must', [])
+            query['bool']['must'].append(query_clause)
     return query
 
 
@@ -387,17 +395,18 @@ def _fetch_narrative_info(results, headers):
     workspace_ids = [s['access_group'] for s in sources]
     if not workspace_ids:
         return ({}, {})
-    # Every OR boolean clause in the query below
-    matches = [
-        {'match': {'access_group': wsid}}
-        for wsid in workspace_ids
-    ]
     narrative_index_name = _CONFIG['global']['ws_type_to_indexes']['KBaseNarrative.Narrative']
     # ES query params
     search_params = {
-        'query': {'bool': {'should': matches}},
         'indexes': [narrative_index_name]
-    }
+    }  # type: dict
+    if workspace_ids:
+        # Filter by workspace ID
+        matches = [
+            {'match': {'access_group': wsid}}
+            for wsid in workspace_ids
+        ]
+        search_params['bool'] = {'should': matches}
     # Make the query for narratives on ES
     search_results = search_objects(search_params, headers)
     # Get all the source document objects for each narrative result

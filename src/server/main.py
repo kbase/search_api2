@@ -6,6 +6,8 @@ import requests
 import time
 import yaml
 import jsonschema
+import logging
+import sys
 from jsonschema.exceptions import ValidationError
 
 from src.exceptions import InvalidParameters, UnknownMethod
@@ -13,13 +15,14 @@ from src.utils.config import init_config
 from src.search_objects import search_objects
 from src.handle_legacy import handle_legacy
 from src.show_indexes import show_indexes
-from src.check_if_doc_exists import check_if_doc_exists
 
 app = sanic.Sanic()
 _CONFIG = init_config()
-_SCHEMAS_PATH = 'src/server/method_schemas.json'
+_SCHEMAS_PATH = 'src/server/method_schemas.yaml'
 with open(_SCHEMAS_PATH) as fd:
     _SCHEMAS = yaml.safe_load(fd)
+
+logger = logging.getLogger('searchapi2')
 
 
 @app.middleware('request')
@@ -79,8 +82,7 @@ def _show_config(params, headers):
 _RPC_HANDLERS = {
     'show_config': _show_config,
     'search_objects': search_objects,
-    'show_indexes': show_indexes,
-    'check_if_doc_exists': check_if_doc_exists
+    'show_indexes': show_indexes
 }
 
 
@@ -146,11 +148,11 @@ async def invalid_params(request, err):
 # Any other exception -> 500
 @app.exception(Exception)
 async def server_error(request, err):
-    print('=' * 80)
-    print('500 Server Error')
-    print('-' * 80)
-    traceback.print_exc()
-    print('=' * 80)
+    logger.error('=' * 80)
+    logger.error('500 Server Error')
+    logger.error('-' * 80)
+    logger.error(traceback.format_exc())
+    logger.error('=' * 80)
     resp = {
         'jsonrpc': '2.0',
         'id': request.json.get('id'),
@@ -165,17 +167,39 @@ async def server_error(request, err):
     return sanic.response.json(resp, status=500)
 
 
+def init_logger():
+    """
+    Initialize log settings. Mutates the `logger` object.
+    """
+    # Set the log level
+    level = os.environ.get('LOGLEVEL', 'DEBUG').upper()
+    logger.setLevel(level)
+    logger.propagate = False  # Don't print duplicate messages
+    logging.basicConfig(level=level)
+    # Create the formatter
+    fmt = "%(asctime)s %(levelname)-8s %(message)s (%(filename)s:%(lineno)s)"
+    time_fmt = "%Y-%m-%d %H:%M:%S"
+    formatter = logging.Formatter(fmt, time_fmt)
+    # Stdout
+    stdout_handler = logging.StreamHandler(sys.stdout)
+    stdout_handler.setFormatter(formatter)
+    logger.addHandler(stdout_handler)
+    print(f'Logger and level: {logger}')
+
+
 if __name__ == '__main__':
-    print('Checking connection to elasticsearch..')
+    logging.getLogger("urllib3").setLevel(logging.WARNING)
+    init_logger()
+    logger.info('Checking connection to elasticsearch..')
     elasticsearch_available = False
     while not elasticsearch_available:
-        print('Attempting to connect to elasticsearch..')
+        logger.info('Attempting to connect to elasticsearch..')
         try:
             requests.get(_CONFIG['elasticsearch_url']).raise_for_status()
-            print('Elasticsearch is online! Continuing..')
+            logger.info('Elasticsearch is online! Continuing..')
             elasticsearch_available = True
         except Exception:
-            print('Unable to connect to Elasticsearch. Waiting..')
+            logger.info('Unable to connect to Elasticsearch. Waiting..')
             time.sleep(5)
     app.run(
         host='0.0.0.0',  # nosec

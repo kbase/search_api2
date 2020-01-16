@@ -2,7 +2,9 @@
 # JSON Schema definitions for every RPC method in this service
 
 # Display public configuration details for the services
-show_config: {}
+show_config:
+  params: {}
+  result: {}
 
 # Get a list of index and alias names in elasticsearch
 show_indexes:
@@ -13,28 +15,12 @@ show_indexes:
     patternProperties:
       ".*":
         type: object
-          properties:
-            # If the entry is an alias, a list of other indexes it is aliasing. Otherwise empty
-            alias:
-              type: array
-              items:
-                type: string
-
-# Check if a document exists in the database
-check_if_doc_exists:
-  params:
-    type: object
-    properties:
-      doc_id:
-        type: string
-        title: Document ID
-        description: ID of the document you wish to check.
-      index:
-        type: string
-        title: Index Name
-        description: Name of the index or alias the document resides in.
-  result:
-    type: bool
+        properties:
+          # If the entry is an alias, a list of other indexes it is aliasing. Otherwise empty
+          alias:
+            type: array
+            items:
+              type: string
 
 # Generic search of all objects under an index or alias
 search_objects:
@@ -54,10 +40,10 @@ search_objects:
           type: string
         description: An array of index/alias names you want to search
       only_public:
-        type: bool
+        type: boolean
         description: Only return public documents. No auth needed.
       only_private:
-        type: bool
+        type: boolean
         description: Only return private documents and no public. Auth required.
       size:
         type: integer
@@ -85,12 +71,13 @@ search_objects:
           anyOf:
             - type: string
             - type: object
-                patternProperties:
-                  ".*":
-                      type: object
-                      properties:
-                        type: string
-                        enum: [desc, asc]
+              patternProperties:
+                ".*":
+                  type: object
+                  properties:
+                    order:
+                      type: string
+                      enum: [desc, asc]
     result:
       type: object
       # TODO

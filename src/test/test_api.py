@@ -6,7 +6,6 @@ from src.utils.config import init_config
 
 _API_URL = 'http://localhost:5000'
 config = init_config()
-_TYPE_NAME = 'data'
 _INDEX_NAMES = [
     config['index_prefix'] + '.index1',
     config['index_prefix'] + '.index2',
@@ -45,7 +44,7 @@ def _init_elasticsearch():
             url = '/'.join([  # type: ignore
                 config['elasticsearch_url'],
                 _INDEX_NAMES[i],
-                _TYPE_NAME,
+                '_doc',
                 doc['name'],
                 '?refresh=wait_for'
             ])
@@ -65,6 +64,7 @@ def _init_elasticsearch():
     if not resp.ok:
         raise RuntimeError("Error creating aliases on ES:", resp.text)
     print('elasticsearch aliases applied for rpc...')
+
 
 def _tear_down_elasticsearch():
     """
@@ -121,13 +121,14 @@ class TestApi(unittest.TestCase):
         )
         self.assertTrue(resp.ok, msg=f"response: {resp.text}")
         resp_json = resp.json()
-        results = [r['_source'] for r in resp_json['hits']['hits']]
+        result = resp_json['result']
+        results = [r['_source'] for r in result['hits']['hits']]
         self.assertEqual(results, [
             {'is_public': True, 'name': 'public-doc1', 'timestamp': 10},
             {'is_public': False, 'name': 'private-doc1', 'access_group': 1, 'timestamp': 7}
         ])
 
-    def test_count_indexes_valid(self):
+    def test_count_valid(self):
         """
         Test the search_objects function, where we aggregate counts by index name.
         """
@@ -145,42 +146,12 @@ class TestApi(unittest.TestCase):
         )
         self.assertTrue(resp.ok, msg=f"response: {resp.text}")
         resp_json = resp.json()
-        results = resp_json['aggregations']['count_by_index']['buckets']
+        result = resp_json['result']
+        results = result['aggregations']['count_by_index']['buckets']
         self.assertEqual(results, [
             {'key': 'test.index1', 'doc_count': 2},
             {'key': 'test.index2', 'doc_count': 2}
         ])
-
-    def test_check_if_doc_exists(self):
-        """
-        Test the check_if_doc_exists function
-        """
-        # check on doc that exists
-        resp = requests.post(
-            _API_URL + '/rpc',
-            data=json.dumps({
-                'method': 'check_if_doc_exists',
-                'params': {
-                    'index': 'index1',
-                    'doc_id': 'public-doc1',
-                    'es_datatype': _TYPE_NAME
-                }
-            })
-        )
-        self.assertTrue(resp.ok, msg=f"response: {resp.text}")
-        # check on doc that does not exist
-        resp = requests.post(
-            _API_URL + '/rpc',
-            data=json.dumps({
-                'method': 'check_if_doc_exists',
-                'params': {
-                    'index': 'index1',
-                    'doc_id': 'public-doc3',  # nonexistent doc
-                    'es_datatype': _TYPE_NAME
-                }
-            })
-        )
-        self.assertTrue(resp.status_code == 404)
 
     def test_show_indexes(self):
         """
@@ -192,9 +163,10 @@ class TestApi(unittest.TestCase):
         )
         self.assertTrue(resp.ok, msg=f"response: {resp.text}")
         resp_json = resp.json()
-        names = [r['index'] for r in resp_json]
+        result = resp_json['result']
+        names = [r['index'] for r in result]
         self.assertEqual(set(names), {'test.index2', 'test.index1'})
-        counts = [int(r['docs.count']) for r in resp_json]
+        counts = [int(r['docs.count']) for r in result]
         self.assertEqual(counts, [4, 4])
 
     def test_custom_sort(self):
@@ -218,7 +190,8 @@ class TestApi(unittest.TestCase):
         )
         self.assertTrue(resp.ok, msg=f"response: {resp.text}")
         resp_json = resp.json()
-        results = [r['_source'] for r in resp_json['hits']['hits']]
+        result = resp_json['result']
+        results = [r['_source'] for r in result['hits']['hits']]
         timestamps = [r['timestamp'] for r in results]
         self.assertEqual(set(timestamps), {10, 7})
         # results = resp_json['aggregations']['count_by_index']['buckets']
