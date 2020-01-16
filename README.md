@@ -4,6 +4,17 @@ This is a small HTTP interface around KBase's elasticsearch indexes.
 
 ## API
 
+### Documents and indexes
+
+The [search configuration file](https://github.com/kbase/index_runner_spec/blob/master/config.yaml) details all of the indexes and document types found in the KBase Elasticsearch database.
+
+* `ws_type_to_indexes` shows which KBase workspace types (without versions) map to which unversioned index names
+* `ws_subobjects` is a list of indexes that represent KBase "subobjects", such as genome features, that don't have their own dedicated type in the workspace, but do have a dedicated index in Elasticsearch.
+* `global_mappings` are Elasticsearch type definitions that are reused in many of the indexes below.
+* `latest_versions` map the unversioned index names to the versioned index names that represent the latest type mapping version.
+* `aliases` is a list of Elasticsearch index aliases to a list of index names. These are all searchable as index names.
+* `mappings` gives the type definitions for every specific index in the Elasticsearch database. Use these type definitions to find out what kind of data you will get back in the search results.
+
 ### <url>/rpc
 
 Uses JSON RPC 2.0 format, so all requests should:
@@ -56,12 +67,6 @@ Show the names of all indexes, and show what aliases stand for what indexes.
 
 See [method_schemas.yaml](./src/server/method_schemas.yaml) for JSON Schemas of the request parameters and results.
 
-#### `check_if_doc_exists`
-
-Check for the existence of a doc in some index.
-
-See [method_schemas.yaml](./src/server/method_schemas.yaml) for JSON Schemas of the request parameters and results.
-
 #### Error codes
 
 In a JSON RPC error response, you will find the following error codes:
@@ -73,7 +78,7 @@ In a JSON RPC error response, you will find the following error codes:
 
 ### <url>/legacy
 
-A JSON RPC 1.1 API that mimics the legacy Java server, [found here](https://github.com/kbase/KBaseSearchEngin://github.com/kbase/KBaseSearchEngine)
+A JSON RPC 1.1 API that mimics the legacy Java server, [found here](https://github.com/kbase/KBaseSearchEngin://github.com/kbase/KBaseSearchEngine). Refer to the KBaseSearchEngine.spec KIDL file for the API.
 
 ## Development
 
