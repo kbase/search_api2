@@ -93,7 +93,6 @@ def _search_objects(params, headers):
     search_params = _get_search_params(params)
     if params.get('include_highlight'):
         search_params['highlight'] = {'*': {}}
-    print('search_paramsxyz', search_params)
     search_results = search_objects(search_params, headers)
     post_processing = params.get('post_processing', {})
     (narrative_infos, ws_infos) = _fetch_narrative_info(search_results, headers)

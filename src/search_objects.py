@@ -56,7 +56,6 @@ def search_objects(params, headers):
         }
     # Make a query request to elasticsearch
     url = _CONFIG['elasticsearch_url'] + '/' + index_name_str + '/_search'
-    logger.debug(f"QUERY: {query}")
     options = {
         'query': query,
         'size': 0 if params.get('count') else params.get('size', 10),

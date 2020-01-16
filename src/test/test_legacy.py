@@ -69,7 +69,6 @@ class TestLegacy(unittest.TestCase):
             result = resp_json['result'][0]
         except Exception:
             raise RuntimeError(resp.text)
-        print('resp_json!!!', resp_json)
         self.assertTrue(resp.ok)
         self.assertEqual(result['total']['value'], 4)
         self.assertEqual(result['pagination'], {'start': 0, 'count': 10})
@@ -339,7 +338,6 @@ def _init_elasticsearch():
         'access_group': 1,
         'timestamp': 15
     }
-    print('idx!!!', subobj_idx_name)
     url = '/'.join([
         _CONFIG['elasticsearch_url'],
         subobj_idx_name,

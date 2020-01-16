@@ -10,17 +10,18 @@ show_config:
 show_indexes:
   params: {}
   result:
-    type: object
-    description: Each key is an index/alias name
-    patternProperties:
-      ".*":
-        type: object
-        properties:
-          # If the entry is an alias, a list of other indexes it is aliasing. Otherwise empty
-          alias:
-            type: array
-            items:
-              type: string
+    type: array
+    items:
+      type: object
+      required: [name, count]
+      additionalProperties: false
+      properties:
+        name:
+          title: Index name
+          type: string
+        count:
+          title: Document count
+          type: integer
 
 # Generic search of all objects under an index or alias
 search_objects:

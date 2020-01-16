@@ -1,6 +1,8 @@
 import unittest
 import requests
 import json
+import yaml
+import jsonschema
 
 from src.utils.config import init_config
 
@@ -10,6 +12,9 @@ _INDEX_NAMES = [
     config['index_prefix'] + '.index1',
     config['index_prefix'] + '.index2',
 ]
+_SCHEMAS_PATH = 'src/server/method_schemas.yaml'
+with open(_SCHEMAS_PATH) as fd:
+    _SCHEMAS = yaml.safe_load(fd)
 
 
 def _init_elasticsearch():
@@ -164,10 +169,11 @@ class TestApi(unittest.TestCase):
         self.assertTrue(resp.ok, msg=f"response: {resp.text}")
         resp_json = resp.json()
         result = resp_json['result']
-        names = [r['index'] for r in result]
-        self.assertEqual(set(names), {'test.index2', 'test.index1'})
-        counts = [int(r['docs.count']) for r in result]
+        names = [r['name'] for r in result]
+        self.assertEqual(set(names), {'index2', 'index1'})
+        counts = [int(r['count']) for r in result]
         self.assertEqual(counts, [4, 4])
+        jsonschema.validate(result, _SCHEMAS['show_indexes']['result'])
 
     def test_custom_sort(self):
         """
