@@ -88,6 +88,10 @@ def search_objects(params, headers):
 
 
 def _handle_response(resp_json):
+    """
+    Translation layer between the Elasticsearch response and our API's response.
+    When the Elasticsearch API changes, we need to update this function.
+    """
     prefix = _CONFIG['index_prefix']
     hits = []
     for hit in resp_json['hits']['hits']:
@@ -99,11 +103,26 @@ def _handle_response(resp_json):
             'doc': hit['_source']
         }
         hits.append(doc)
+    resp_aggs = resp_json.get('aggregations', {})
+    aggs = {}  # type: dict
+    for (agg_key, resp_agg) in resp_aggs.items():
+        counts = []
+        for bucket in resp_agg['buckets']:
+            count = {
+                'key': bucket['key'],
+                'count': bucket['doc_count']
+            }
+            counts.append(count)
+        aggs[agg_key] = {
+            'count_err_upper_bound': resp_agg.get('doc_count_error_upper_bound', 0),
+            'count_other_docs': resp_agg.get('sum_other_doc_count'),
+            'counts': counts
+        }
     result = {
         'count': resp_json['hits']['total']['value'],
         'hits': hits,
         'search_time': resp_json['took'],
-        'aggregations': resp_json.get('aggregations')
+        'aggregations': aggs
     }
     return result
 

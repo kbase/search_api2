@@ -79,6 +79,50 @@ search_objects:
                     order:
                       type: string
                       enum: [desc, asc]
-    result:
-      type: object
-      # TODO
+  # search_objects result schema
+  result:
+    type: object
+    required: [count, hits, search_time, aggregations]
+    properties:
+      count:
+        description: Total count of results
+        type: integer
+      search_time:
+        type: integer
+        description: Time in milliseconds that the request took for processing on Elasticsearch
+      aggregations:
+        type: object
+        patternProperties:
+          # The key will be the aggregator name
+          ".*":
+            type: object
+            properties:
+              count_err_upper_bound:
+                type: integer
+                description: Upper bound on the count inaccuracy for each aggregation
+              count_other_docs:
+                type: integer
+                description: Count of docs that were not aggregated
+              counts:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    count: {type: integer}
+                    key:
+                      type: string
+                      description: Aggregation group identifier (eg. field name)
+      hits:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              description: "Elasticsearch document id (stored as '_id')"
+              type: string
+            index:
+              title: Index name
+              type: string
+            doc:
+              description: Content of the document -- the actual fields and values.
+              type: object

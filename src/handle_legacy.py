@@ -137,11 +137,11 @@ def _search_types(params, headers):
     search_results = search_objects(search_params, headers)
     # Now we need to convert the ES result format into the API format
     search_time = search_results['search_time']
-    buckets = search_results['aggregations']['type_count']['buckets']
+    buckets = search_results['aggregations']['type_count']['counts']
     counts_dict = {}  # type: dict
     for count_obj in buckets:
         counts_dict[count_obj['key']] = counts_dict.get(count_obj['key'], 0)
-        counts_dict[count_obj['key']] += count_obj['doc_count']
+        counts_dict[count_obj['key']] += count_obj['count']
     return {
         'type_to_count': counts_dict,
         'search_time': int(search_time)

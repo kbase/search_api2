@@ -132,6 +132,7 @@ class TestApi(unittest.TestCase):
             {'is_public': True, 'name': 'public-doc1', 'timestamp': 10},
             {'is_public': False, 'name': 'private-doc1', 'access_group': 1, 'timestamp': 7}
         ])
+        jsonschema.validate(result, _SCHEMAS['search_objects']['result'])
 
     def test_count_valid(self):
         """
@@ -152,12 +153,12 @@ class TestApi(unittest.TestCase):
         self.assertTrue(resp.ok, msg=f"response: {resp.text}")
         resp_json = resp.json()
         result = resp_json['result']
-        print('result!!! test_count_valid', result)
-        results = result['aggregations']['count_by_index']['buckets']
+        results = result['aggregations']['count_by_index']['counts']
         self.assertEqual(results, [
-            {'key': 'test.index1', 'doc_count': 2},
-            {'key': 'test.index2', 'doc_count': 2}
+            {'key': 'test.index1', 'count': 2},
+            {'key': 'test.index2', 'count': 2}
         ])
+        jsonschema.validate(result, _SCHEMAS['search_objects']['result'])
 
     def test_show_indexes(self):
         """
