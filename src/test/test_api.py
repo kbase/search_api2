@@ -127,7 +127,7 @@ class TestApi(unittest.TestCase):
         self.assertTrue(resp.ok, msg=f"response: {resp.text}")
         resp_json = resp.json()
         result = resp_json['result']
-        results = [r['_source'] for r in result['hits']['hits']]
+        results = [r['doc'] for r in result['hits']]
         self.assertEqual(results, [
             {'is_public': True, 'name': 'public-doc1', 'timestamp': 10},
             {'is_public': False, 'name': 'private-doc1', 'access_group': 1, 'timestamp': 7}
@@ -152,6 +152,7 @@ class TestApi(unittest.TestCase):
         self.assertTrue(resp.ok, msg=f"response: {resp.text}")
         resp_json = resp.json()
         result = resp_json['result']
+        print('result!!! test_count_valid', result)
         results = result['aggregations']['count_by_index']['buckets']
         self.assertEqual(results, [
             {'key': 'test.index1', 'doc_count': 2},
@@ -197,11 +198,6 @@ class TestApi(unittest.TestCase):
         self.assertTrue(resp.ok, msg=f"response: {resp.text}")
         resp_json = resp.json()
         result = resp_json['result']
-        results = [r['_source'] for r in result['hits']['hits']]
-        timestamps = [r['timestamp'] for r in results]
-        self.assertEqual(set(timestamps), {10, 7})
-        # results = resp_json['aggregations']['count_by_index']['buckets']
-        # self.assertEqual(results, [
-        #     {'key': 'test.index1', 'doc_count': 2},
-        #     {'key': 'test.index2', 'doc_count': 2}
-        # ])
+        docs = [r['doc'] for r in result['hits']]
+        timestamps = [r['timestamp'] for r in docs]
+        self.assertEqual(timestamps, [10, 10, 7, 7])

@@ -100,8 +100,8 @@ def _search_objects(params, headers):
     return {
         'pagination': params.get('pagination', {}),
         'sorting_rules': params.get('sorting_rules', []),
-        'total': search_results['hits']['total'],
-        'search_time': search_results['took'],
+        'total': search_results['count'],
+        'search_time': search_results['search_time'],
         'objects': objects,
         'access_group_narrative_info': narrative_infos,
         'access_groups_info': ws_infos
@@ -136,7 +136,7 @@ def _search_types(params, headers):
     search_params['size'] = 0
     search_results = search_objects(search_params, headers)
     # Now we need to convert the ES result format into the API format
-    search_time = search_results['took']
+    search_time = search_results['search_time']
     buckets = search_results['aggregations']['type_count']['buckets']
     counts_dict = {}  # type: dict
     for count_obj in buckets:
@@ -166,7 +166,7 @@ def _get_objects(params, headers):
     objects = _get_object_data_from_search_results(search_results, post_processing)
     (narrative_infos, ws_infos) = _fetch_narrative_info(search_results, headers)
     return {
-        'search_time': search_results['took'],
+        'search_time': search_results['search_time'],
         'objects': objects,
         'access_group_narrative_info': narrative_infos,
         'access_groups_info': ws_infos
@@ -335,8 +335,8 @@ def _get_object_data_from_search_results(search_results, post_processing):
     # TODO post_processing/ids_only -- look at results in current api
     object_data = []  # type: list
     # Keys found in every ws object
-    for result in search_results['hits']['hits']:
-        source = result['_source']
+    for result in search_results['hits']:
+        source = result['doc']
         obj = {}  # type: ignore
         for (search2_key, search1_key) in _KEY_MAPPING.items():
             obj[search1_key] = source.get(search2_key)
@@ -346,7 +346,7 @@ def _get_object_data_from_search_results(search_results, post_processing):
         obj['key_props'] = obj['data']
         obj['guid'] = _get_guid_from_doc(result)
         obj['kbase_id'] = obj['guid'].strip('WS:')
-        idx_pieces = result['_index'].split(':')
+        idx_pieces = result['index'].split(':')
         idx_name = idx_pieces[0]
         idx_ver = int(idx_pieces[1] or 0) if len(idx_pieces) == 2 else 0
         obj['index_name'] = idx_name
@@ -384,7 +384,7 @@ def _fetch_narrative_info(results, headers):
     """
     # TODO get "display name" (eg. auth service call)
     #  for now we just use username
-    sources = _get_sources(results)
+    sources = [hit['doc'] for hit in results['hits']]
     # TODO workspace timestamp
     narr_infos = {s['access_group']: (None, None, 0, s.get('creator', ''), s.get('creator', '')) for s in sources}
     ws_infos = {
@@ -409,7 +409,7 @@ def _fetch_narrative_info(results, headers):
     # Make the query for narratives on ES
     search_results = search_objects(search_params, headers)
     # Get all the source document objects for each narrative result
-    search_data_sources = _get_sources(search_results)
+    search_data_sources = [hit['doc'] for hit in search_results['hits']]
     for narr in search_data_sources:
         narr_tuple = (
             narr.get('narrative_title'),
@@ -422,19 +422,12 @@ def _fetch_narrative_info(results, headers):
     return (narr_infos, ws_infos)
 
 
-def _get_sources(search_results):
-    """
-    Pull out the _source document data for every search result from ES.
-    """
-    return [r['_source'] for r in search_results['hits']['hits']]
-
-
 def _get_guid_from_doc(doc):
     """
     Construct a legacy-style "guid" in the form "WS:1/2/3"
     """
     # Remove the first namespace
-    _id = doc['_id'].replace('WS::', '')
+    _id = doc['id'].replace('WS::', '')
     # Remove any secondary namespace
     _id = re.sub(r'::..::.+', '', _id)
     # Replace colon delimiters with slashes

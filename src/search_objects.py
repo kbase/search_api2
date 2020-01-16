@@ -1,6 +1,7 @@
 """
 Search objects on elasticsearch
 """
+import re
 import json
 import requests
 import logging
@@ -81,7 +82,30 @@ def search_objects(params, headers):
     if not resp.ok:
         # Unexpected elasticsearch error
         raise RuntimeError(resp.text)
-    return resp.json()
+    resp_json = resp.json()
+    result = _handle_response(resp_json)
+    return result
+
+
+def _handle_response(resp_json):
+    prefix = _CONFIG['index_prefix']
+    hits = []
+    for hit in resp_json['hits']['hits']:
+        # Display the index name without prefix
+        index_name = re.sub(f"^{prefix}.", "", hit['_index'])
+        doc = {
+            'index': index_name,
+            'id': hit['_id'],
+            'doc': hit['_source']
+        }
+        hits.append(doc)
+    result = {
+        'count': resp_json['hits']['total']['value'],
+        'hits': hits,
+        'search_time': resp_json['took'],
+        'aggregations': resp_json.get('aggregations')
+    }
+    return result
 
 
 def _construct_index_name(params):

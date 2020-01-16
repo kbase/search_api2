@@ -70,7 +70,7 @@ class TestLegacy(unittest.TestCase):
         except Exception:
             raise RuntimeError(resp.text)
         self.assertTrue(resp.ok)
-        self.assertEqual(result['total']['value'], 4)
+        self.assertEqual(result['total'], 4)
         self.assertEqual(result['pagination'], {'start': 0, 'count': 10})
         self.assertEqual(result['sorting_rules'], [])
         self.assertTrue('search_time' in result)
@@ -279,9 +279,9 @@ class TestLegacy(unittest.TestCase):
                 }]
             })
         )
-        self.assertTrue(resp.ok)
+        self.assertTrue(resp.ok, msg=f"resp: {resp.text}")
         resp_json = resp.json()
-        self.assertEqual(resp_json['result'][0]['total']['value'], 0)
+        self.assertEqual(resp_json['result'][0]['total'], 0)
 
 
 def _init_elasticsearch():
