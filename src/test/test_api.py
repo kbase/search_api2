@@ -223,3 +223,17 @@ class TestApi(unittest.TestCase):
         result = resp_json['result']
         highlights = {hit['highlight']['name'][0] for hit in result['hits']}
         self.assertEqual(highlights, {'public-<em>doc1</em>', 'private-<em>doc1</em>'})
+
+    def test_invalid_json(self):
+        """
+        Test a request body with invalid JSON syntax.
+        """
+        resp = requests.post(
+            _API_URL + '/rpc',
+            data='!hi!'
+        )
+        self.assertEqual(resp.status_code, 400)
+        resp_json = resp.json()
+        self.assertEqual(resp_json['id'], None)
+        self.assertEqual(resp_json['error']['code'], -32700)
+        self.assertTrue('JSON parsing error' in resp_json['error']['message'])

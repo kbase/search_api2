@@ -6,11 +6,12 @@ import requests
 import time
 import yaml
 import jsonschema
+import jsonschema.exceptions
 import logging
 import sys
-from jsonschema.exceptions import ValidationError
+import json
 
-from src.exceptions import InvalidParameters, UnknownMethod
+from src.exceptions import InvalidParameters, UnknownMethod, InvalidJSON
 from src.utils.config import init_config
 from src.search_objects import search_objects
 from src.handle_legacy import handle_legacy
@@ -42,14 +43,20 @@ async def health_check(request):
 @app.route('/rpc', methods=['POST', 'OPTIONS'])
 async def root(request):
     """Handle JSON RPC methods."""
-    json_body = request.json  # TODO try/except
+    try:
+        json_body = json.loads(request.body)
+    except json.JSONDecodeError as err:
+        raise InvalidJSON(f"JSON parsing error: {err}")
     req_id = json_body.get('id')
     method = json_body.get('method', 'show_config')
     params = json_body.get('params', {})
     if method not in _SCHEMAS:
-        UnknownMethod(f'Unknown method: {method}. Available methods: {_RPC_HANDLERS.keys()}')
+        UnknownMethod(method, req_id)
     param_schema = _SCHEMAS[method]['params']
-    jsonschema.validate(params, param_schema)
+    try:
+        jsonschema.validate(params, param_schema)
+    except jsonschema.exceptions.ValidationError as err:
+        raise InvalidParameters(err, req_id)
     result = _RPC_HANDLERS[method](params, request.headers)  # type: ignore
     return sanic.response.json({
         'jsonrpc': "2.0",
@@ -100,19 +107,31 @@ async def page_not_found(request, err):
 
 
 # TODO json parsing error
+@app.exception(InvalidJSON)
+async def invalid_json_syntax(request, err):
+    resp = {
+        'jsonrpc': '2.0',
+        'id': None,
+        'error': {
+            'code': -32700,
+            'message': str(err)
+        }
+    }
+    return sanic.response.json(resp, status=400)
 
-@app.exception(ValidationError)
+
+@app.exception(InvalidParameters)
 async def params_invalid(request, err):
     resp = {
         'jsonrpc': '2.0',
-        'id': request.json.get('id'),
+        'id': err.request_id,
         'error': {
             'code': -32602,
-            'message': err.message,
+            'message': err.jsonschema_err.message,
             'data': {
-                'failed_validator': err.validator,
-                'value': err.instance,
-                'path': list(err.absolute_path)
+                'failed_validator': err.jsonschema_err.validator,
+                'value': err.jsonschema_err.instance,
+                'path': list(err.jsonschema_err.absolute_path)
             }
         }
     }
@@ -123,23 +142,10 @@ async def params_invalid(request, err):
 async def unknown_method(request, err):
     resp = {
         'jsonrpc': '2.0',
-        'id': request.json.get('id'),
+        'id': err.request_id,
         'error': {
             'code': -32601,
-            'message': str(err)
-        }
-    }
-    return sanic.response.json(resp, status=400)
-
-
-@app.exception(InvalidParameters)
-async def invalid_params(request, err):
-    resp = {
-        'jsonrpc': '2.0',
-        'id': request.json.get('id'),
-        'error': {
-            'code': -32602,
-            'message': f'Invalid parameters: {err}'
+            'message': f'Unknown method: {err.method}. Available methods: {_RPC_HANDLERS.keys()}'
         }
     }
     return sanic.response.json(resp, status=400)
