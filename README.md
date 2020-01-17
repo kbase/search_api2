@@ -76,6 +76,8 @@ In a JSON RPC error response, you will find the following error codes:
 * `-32602` - Invalid request params
 * `-32700` - JSON parsing error
 
+More useful details of the error will be found in the `message` and `data` properties in the response.
+
 ### <url>/legacy
 
 A JSON RPC 1.1 API that mimics the legacy Java server, [found here](https://github.com/kbase/KBaseSearchEngin://github.com/kbase/KBaseSearchEngine). Refer to the KBaseSearchEngine.spec KIDL file for the API.
