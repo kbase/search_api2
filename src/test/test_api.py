@@ -1,16 +1,20 @@
 import unittest
 import requests
 import json
+import yaml
+import jsonschema
 
 from src.utils.config import init_config
 
 _API_URL = 'http://localhost:5000'
 config = init_config()
-_TYPE_NAME = 'data'
 _INDEX_NAMES = [
     config['index_prefix'] + '.index1',
     config['index_prefix'] + '.index2',
 ]
+_SCHEMAS_PATH = 'src/server/method_schemas.yaml'
+with open(_SCHEMAS_PATH) as fd:
+    _SCHEMAS = yaml.safe_load(fd)
 
 
 def _init_elasticsearch():
@@ -45,7 +49,7 @@ def _init_elasticsearch():
             url = '/'.join([  # type: ignore
                 config['elasticsearch_url'],
                 _INDEX_NAMES[i],
-                _TYPE_NAME,
+                '_doc',
                 doc['name'],
                 '?refresh=wait_for'
             ])
@@ -64,7 +68,7 @@ def _init_elasticsearch():
     resp = requests.post(url, data=json.dumps(body), headers={'Content-Type': 'application/json'})
     if not resp.ok:
         raise RuntimeError("Error creating aliases on ES:", resp.text)
-    print('elasticsearch aliases applied for rpc...')
+
 
 def _tear_down_elasticsearch():
     """
@@ -121,13 +125,15 @@ class TestApi(unittest.TestCase):
         )
         self.assertTrue(resp.ok, msg=f"response: {resp.text}")
         resp_json = resp.json()
-        results = [r['_source'] for r in resp_json['hits']['hits']]
+        result = resp_json['result']
+        results = [r['doc'] for r in result['hits']]
         self.assertEqual(results, [
             {'is_public': True, 'name': 'public-doc1', 'timestamp': 10},
             {'is_public': False, 'name': 'private-doc1', 'access_group': 1, 'timestamp': 7}
         ])
+        jsonschema.validate(result, _SCHEMAS['search_objects']['result'])
 
-    def test_count_indexes_valid(self):
+    def test_count_valid(self):
         """
         Test the search_objects function, where we aggregate counts by index name.
         """
@@ -145,42 +151,13 @@ class TestApi(unittest.TestCase):
         )
         self.assertTrue(resp.ok, msg=f"response: {resp.text}")
         resp_json = resp.json()
-        results = resp_json['aggregations']['count_by_index']['buckets']
+        result = resp_json['result']
+        results = result['aggregations']['count_by_index']['counts']
         self.assertEqual(results, [
-            {'key': 'test.index1', 'doc_count': 2},
-            {'key': 'test.index2', 'doc_count': 2}
+            {'key': 'test.index1', 'count': 2},
+            {'key': 'test.index2', 'count': 2}
         ])
-
-    def test_check_if_doc_exists(self):
-        """
-        Test the check_if_doc_exists function
-        """
-        # check on doc that exists
-        resp = requests.post(
-            _API_URL + '/rpc',
-            data=json.dumps({
-                'method': 'check_if_doc_exists',
-                'params': {
-                    'index': 'index1',
-                    'doc_id': 'public-doc1',
-                    'es_datatype': _TYPE_NAME
-                }
-            })
-        )
-        self.assertTrue(resp.ok, msg=f"response: {resp.text}")
-        # check on doc that does not exist
-        resp = requests.post(
-            _API_URL + '/rpc',
-            data=json.dumps({
-                'method': 'check_if_doc_exists',
-                'params': {
-                    'index': 'index1',
-                    'doc_id': 'public-doc3',  # nonexistent doc
-                    'es_datatype': _TYPE_NAME
-                }
-            })
-        )
-        self.assertTrue(resp.status_code == 404)
+        jsonschema.validate(result, _SCHEMAS['search_objects']['result'])
 
     def test_show_indexes(self):
         """
@@ -192,10 +169,12 @@ class TestApi(unittest.TestCase):
         )
         self.assertTrue(resp.ok, msg=f"response: {resp.text}")
         resp_json = resp.json()
-        names = [r['index'] for r in resp_json]
-        self.assertEqual(set(names), {'test.index2', 'test.index1'})
-        counts = [int(r['docs.count']) for r in resp_json]
+        result = resp_json['result']
+        names = [r['name'] for r in result]
+        self.assertEqual(set(names), {'index2', 'index1'})
+        counts = [int(r['count']) for r in result]
         self.assertEqual(counts, [4, 4])
+        jsonschema.validate(result, _SCHEMAS['show_indexes']['result'])
 
     def test_custom_sort(self):
         """
@@ -218,11 +197,43 @@ class TestApi(unittest.TestCase):
         )
         self.assertTrue(resp.ok, msg=f"response: {resp.text}")
         resp_json = resp.json()
-        results = [r['_source'] for r in resp_json['hits']['hits']]
-        timestamps = [r['timestamp'] for r in results]
-        self.assertEqual(set(timestamps), {10, 7})
-        # results = resp_json['aggregations']['count_by_index']['buckets']
-        # self.assertEqual(results, [
-        #     {'key': 'test.index1', 'doc_count': 2},
-        #     {'key': 'test.index2', 'doc_count': 2}
-        # ])
+        result = resp_json['result']
+        docs = [r['doc'] for r in result['hits']]
+        timestamps = [r['timestamp'] for r in docs]
+        self.assertEqual(timestamps, [10, 10, 7, 7])
+
+    def test_highlights(self):
+        """
+        Test the elasticsearch result highlighting feature.
+        """
+        resp = requests.post(
+            _API_URL + '/rpc',
+            data=json.dumps({
+                'method': 'search_objects',
+                'params': {
+                    'indexes': ['index1', 'index2'],
+                    'query': {'term': {'name': 'doc1'}},
+                    'highlight': {'name': {}}
+                }
+            }),
+            headers={'Authorization': 'valid_token'}
+        )
+        self.assertTrue(resp.ok, msg=f"response: {resp.text}")
+        resp_json = resp.json()
+        result = resp_json['result']
+        highlights = {hit['highlight']['name'][0] for hit in result['hits']}
+        self.assertEqual(highlights, {'public-<em>doc1</em>', 'private-<em>doc1</em>'})
+
+    def test_invalid_json(self):
+        """
+        Test a request body with invalid JSON syntax.
+        """
+        resp = requests.post(
+            _API_URL + '/rpc',
+            data='!hi!'
+        )
+        self.assertEqual(resp.status_code, 400)
+        resp_json = resp.json()
+        self.assertEqual(resp_json['id'], None)
+        self.assertEqual(resp_json['error']['code'], -32700)
+        self.assertTrue('JSON parsing error' in resp_json['error']['message'])

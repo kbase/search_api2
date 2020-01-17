@@ -1,3 +1,4 @@
+import re
 import requests
 from .utils.config import init_config
 
@@ -16,4 +17,13 @@ def show_indexes(params, headers):
     if not resp.ok:
         raise RuntimeError(resp.text)
     resp_json = resp.json()
-    return resp_json
+    result = []
+    for each in resp_json:
+        regex = f"^{_CONFIG['index_prefix']}."
+        name = re.sub(regex, '', each['index'])
+        idx = {
+            'name': name,
+            'count': int(each['docs.count'])
+        }
+        result.append(idx)
+    return result

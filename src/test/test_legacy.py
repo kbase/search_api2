@@ -6,17 +6,16 @@ from src.utils.config import init_config
 
 _API_URL = 'http://localhost:5000'
 _CONFIG = init_config()
-_TYPE_NAME = 'data'  # TODO pull this out of global config
 _INDEX_NAMES = [
-    _CONFIG['index_prefix'] + '.index:1',
-    _CONFIG['index_prefix'] + '.index:2',
+    _CONFIG['index_prefix'] + '.index_1',
+    _CONFIG['index_prefix'] + '.index_2',
     _CONFIG['index_prefix'] + '.narrative',
     *[_CONFIG['index_prefix'] + '.' + name for name in _CONFIG['global']['ws_subobjects']]
 ]
 
 _NON_SUB_NAMES = [
-    _CONFIG['index_prefix'] + '.index:1',
-    _CONFIG['index_prefix'] + '.index:2',
+    _CONFIG['index_prefix'] + '.index_1',
+    _CONFIG['index_prefix'] + '.index_2',
     _CONFIG['index_prefix'] + '.narrative'
 ]
 
@@ -76,8 +75,9 @@ class TestLegacy(unittest.TestCase):
         self.assertEqual(result['sorting_rules'], [])
         self.assertTrue('search_time' in result)
         self.assertEqual(len(result['objects']), 4)
-        obj = result['objects'][0]
-        self.assertTrue(obj['type_ver'])
+        objects = result['objects']
+        names = {obj['object_name'] for obj in objects}
+        self.assertEqual(names, {'public-doc1', 'public-doc2'})
 
     def test_get_objects(self):
         """
@@ -177,7 +177,7 @@ class TestLegacy(unittest.TestCase):
             raise RuntimeError(resp.text)
         self.assertEqual(len(result['objects']), 6)
 
-    def test_exclude_subobjects(self):
+    def test_search_subobjects(self):
         """
         Test that the `exclude_subobjects` parameter excludes the genome
         feature test document created in _init_elasticsearch
@@ -189,7 +189,7 @@ class TestLegacy(unittest.TestCase):
                 'params': [{
                     'object_types': ['GenomeFeature'],
                     'match_filter': {
-                        'full_text_in_all': 'featurexyz',
+                        'lookupInKeys': {'name': {'value': 'featurexyz'}},
                         'exclude_subobjects': 0
                     },
                     'access_filter': {
@@ -211,8 +211,7 @@ class TestLegacy(unittest.TestCase):
                 'method': 'KBaseSearchAPI.search_objects',
                 'params': [{
                     'match_filter': {
-                        'full_text_in_all': 'featurexyz',
-                        # 'lookupInKeys': {'name': {'value': 'featurexyz'}},
+                        'lookupInKeys': {'name': {'value': 'featurexyz'}},
                         'exclude_subobjects': 1
                     },
                     'access_filter': {
@@ -280,7 +279,7 @@ class TestLegacy(unittest.TestCase):
                 }]
             })
         )
-        self.assertTrue(resp.ok)
+        self.assertTrue(resp.ok, msg=f"resp: {resp.text}")
         resp_json = resp.json()
         self.assertEqual(resp_json['result'][0]['total'], 0)
 
@@ -291,17 +290,18 @@ def _init_elasticsearch():
     """
     for index_name in _INDEX_NAMES:
         test_mapping = {
-            'obj_name': {'type': 'keyword'},
+            'agg_fields': {'type': 'text'},
+            'obj_name': {'type': 'keyword', 'copy_to': 'agg_fields'},
             'is_public': {'type': 'boolean'},
             'timestamp': {'type': 'integer'},
             'access_group': {'type': 'integer'},
-            'obj_type_name': {'type': 'keyword'},
+            'obj_type_name': {'type': 'keyword', 'copy_to': 'agg_fields'},
         }
         resp = requests.put(
             _CONFIG['elasticsearch_url'] + '/' + index_name,
             data=json.dumps({
                 'settings': {'index': {'number_of_shards': 3, 'number_of_replicas': 1}},
-                'mappings': {'data': {'properties': test_mapping}}
+                'mappings': {'properties': test_mapping}
             }),
             headers={'Content-Type': 'application/json'}
         )
@@ -322,7 +322,7 @@ def _init_elasticsearch():
             url = '/'.join([  # type: ignore
                 _CONFIG['elasticsearch_url'],
                 _INDEX_NAMES[i],
-                _TYPE_NAME,
+                '_doc',
                 doc['obj_name'],
                 '?refresh=wait_for'
             ])
@@ -341,7 +341,7 @@ def _init_elasticsearch():
     url = '/'.join([
         _CONFIG['elasticsearch_url'],
         subobj_idx_name,
-        _TYPE_NAME,
+        '_doc',
         'featurexyz',
         '?refresh=wait_for'
     ])
