@@ -76,7 +76,7 @@ def search_objects(params, headers):
         options['_source'] = params.get('source')
     # Search results highlighting
     if params.get('highlight'):
-        options['highlight'] = {'require_field_match': False, 'fields': params['highlight']}
+        options['highlight'] = {'fields': params['highlight']}
     headers = {'Content-Type': 'application/json'}
     resp = requests.post(url, data=json.dumps(options), headers=headers)
     if not resp.ok:
@@ -100,8 +100,10 @@ def _handle_response(resp_json):
         doc = {
             'index': index_name,
             'id': hit['_id'],
-            'doc': hit['_source']
+            'doc': hit['_source'],
         }
+        if hit.get('highlight'):
+            doc['highlight'] = hit['highlight']
         hits.append(doc)
     resp_aggs = resp_json.get('aggregations', {})
     aggs = {}  # type: dict

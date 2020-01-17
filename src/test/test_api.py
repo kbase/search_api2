@@ -68,7 +68,6 @@ def _init_elasticsearch():
     resp = requests.post(url, data=json.dumps(body), headers={'Content-Type': 'application/json'})
     if not resp.ok:
         raise RuntimeError("Error creating aliases on ES:", resp.text)
-    print('elasticsearch aliases applied for rpc...')
 
 
 def _tear_down_elasticsearch():
@@ -202,3 +201,25 @@ class TestApi(unittest.TestCase):
         docs = [r['doc'] for r in result['hits']]
         timestamps = [r['timestamp'] for r in docs]
         self.assertEqual(timestamps, [10, 10, 7, 7])
+
+    def test_highlights(self):
+        """
+        Test the elasticsearch result highlighting feature.
+        """
+        resp = requests.post(
+            _API_URL + '/rpc',
+            data=json.dumps({
+                'method': 'search_objects',
+                'params': {
+                    'indexes': ['index1', 'index2'],
+                    'query': {'term': {'name': 'doc1'}},
+                    'highlight': {'name': {}}
+                }
+            }),
+            headers={'Authorization': 'valid_token'}
+        )
+        self.assertTrue(resp.ok, msg=f"response: {resp.text}")
+        resp_json = resp.json()
+        result = resp_json['result']
+        highlights = {hit['highlight']['name'][0] for hit in result['hits']}
+        self.assertEqual(highlights, {'public-<em>doc1</em>', 'private-<em>doc1</em>'})
