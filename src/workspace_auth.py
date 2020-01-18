@@ -18,7 +18,7 @@ def ws_auth(auth_token):
         return []  # anonymous users
     ws_url = _CONFIG['workspace_url']
     # TODO session cache this
-    # Make a request to the workspace using the user's auth token to find their readable workspce IDs
+    # Make a request to the workspace using the user's auth token to find their readable workspace IDs
     payload = {
         'method': 'Workspace.list_workspace_ids',
         'version': '1.1',

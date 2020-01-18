@@ -40,7 +40,7 @@ import re
 
 _CONFIG = init_config()
 
-_GENOME_FEATURES_IDX_NAME = 'genome_features:2'
+_GENOME_FEATURES_IDX_NAME = 'genome_features_2'
 
 # Mappings from search2 document fields to search1 fields:
 _KEY_MAPPING = {
@@ -50,7 +50,7 @@ _KEY_MAPPING = {
     'version': 'version',
     'timestamp': 'timestamp',
     'obj_type_name': 'type',
-    'obj_type_version': 'type_ver',
+    # 'obj_type_version': 'type_ver',
     'creator': 'creator'
 }
 
@@ -78,6 +78,7 @@ def handle_legacy(req_body, headers):
     results = handler(params, headers)
     return {
         'version': '1.1',
+        'id': req_body.get('id'),
         'result': [results]  # For some reason, all results are wrapped in a list in the java API
     }
 
@@ -90,7 +91,8 @@ def _search_objects(params, headers):
     It also injects any extra info, such as narrative data, for each search result.
     """
     search_params = _get_search_params(params)
-    search_params['highlight'] = {'*': {}}
+    if params.get('include_highlight'):
+        search_params['highlight'] = {'*': {}}
     search_results = search_objects(search_params, headers)
     post_processing = params.get('post_processing', {})
     (narrative_infos, ws_infos) = _fetch_narrative_info(search_results, headers)
@@ -98,8 +100,8 @@ def _search_objects(params, headers):
     return {
         'pagination': params.get('pagination', {}),
         'sorting_rules': params.get('sorting_rules', []),
-        'total': search_results['hits']['total'],
-        'search_time': search_results['took'],
+        'total': search_results['count'],
+        'search_time': search_results['search_time'],
         'objects': objects,
         'access_group_narrative_info': narrative_infos,
         'access_groups_info': ws_infos
@@ -134,12 +136,12 @@ def _search_types(params, headers):
     search_params['size'] = 0
     search_results = search_objects(search_params, headers)
     # Now we need to convert the ES result format into the API format
-    search_time = search_results['took']
-    buckets = search_results['aggregations']['type_count']['buckets']
+    search_time = search_results['search_time']
+    buckets = search_results['aggregations']['type_count']['counts']
     counts_dict = {}  # type: dict
     for count_obj in buckets:
         counts_dict[count_obj['key']] = counts_dict.get(count_obj['key'], 0)
-        counts_dict[count_obj['key']] += count_obj['doc_count']
+        counts_dict[count_obj['key']] += count_obj['count']
     return {
         'type_to_count': counts_dict,
         'search_time': int(search_time)
@@ -164,7 +166,7 @@ def _get_objects(params, headers):
     objects = _get_object_data_from_search_results(search_results, post_processing)
     (narrative_infos, ws_infos) = _fetch_narrative_info(search_results, headers)
     return {
-        'search_time': search_results['took'],
+        'search_time': search_results['search_time'],
         'objects': objects,
         'access_group_narrative_info': narrative_infos,
         'access_groups_info': ws_infos
@@ -220,17 +222,21 @@ def _get_search_params(params):
     """
     match_filter = params.get('match_filter', {})
     # Base query object for ES. Will get mutated and expanded below.
-    query = {'bool': {'must': [], 'must_not': [], 'should': []}}  # type: dict
+    # query = {'bool': {'must': [], 'must_not': [], 'should': []}}  # type: dict
+    query = {'bool': {}}  # type: dict
     if match_filter.get('full_text_in_all'):
         # Match full text for any field in the objects
-        query['bool']['must'].append({'match': {'_all': match_filter['full_text_in_all']}})
+        query['bool']['must'] = []
+        query['bool']['must'].append({'match': {'agg_fields': match_filter['full_text_in_all']}})
     if match_filter.get('object_name'):
+        query['bool']['must'] = query['bool'].get('must', [])
         query['bool']['must'].append({'match': {'obj_name': str(match_filter['object_name'])}})
     if match_filter.get('timestamp'):
         ts = match_filter['timestamp']
         min_ts = ts.get('min_date') or ts.get('min_int') or ts.get('min_double')
         max_ts = ts.get('max_date') or ts.get('max_int') or ts.get('max_double')
         if min_ts and max_ts:
+            query['bool']['must'] = query['bool'].get('must', [])
             query['bool']['must'].append({'range': {'timestamp': {'gte': min_ts, 'lte': max_ts}}})
         else:
             raise RuntimeError("Invalid timestamp range in match_filter/timestamp.")
@@ -242,8 +248,9 @@ def _get_search_params(params):
         # Construct a compound query to match every tag using "term"
         tag_query = [{'term': {'tags': tag}} for tag in tags]
         if blacklist_tags:
-            query['bool']['must_not'] += tag_query
+            query['bool']['must_not'] = tag_query
         else:
+            query['bool']['must'] = query['bool'].get('must', [])
             query['bool']['must'] += tag_query
     # Handle match_filter/lookupInKeys
     query = _handle_lookup_in_keys(match_filter, query)
@@ -307,11 +314,14 @@ def _handle_lookup_in_keys(match_filter, query):
         # `range_min` and `range_max` will be any values for doing a range query
         range_min = match_value.get('min_int') or match_value.get('min_date') or match_value.get('min_double')
         range_max = match_value.get('max_int') or match_value.get('max_date') or match_value.get('max_double')
+        query_clause = {}  # type: dict
         if term_value:
             query_clause = {'match': {key: term_value}}
         elif range_min and range_max:
             query_clause = {'range': {key: {'gte': range_min, 'lte': range_max}}}
-        query['bool']['must'].append(query_clause)
+        if query_clause:
+            query['bool']['must'] = query['bool'].get('must', [])
+            query['bool']['must'].append(query_clause)
     return query
 
 
@@ -325,8 +335,8 @@ def _get_object_data_from_search_results(search_results, post_processing):
     # TODO post_processing/ids_only -- look at results in current api
     object_data = []  # type: list
     # Keys found in every ws object
-    for result in search_results['hits']['hits']:
-        source = result['_source']
+    for result in search_results['hits']:
+        source = result['doc']
         obj = {}  # type: ignore
         for (search2_key, search1_key) in _KEY_MAPPING.items():
             obj[search1_key] = source.get(search2_key)
@@ -336,11 +346,12 @@ def _get_object_data_from_search_results(search_results, post_processing):
         obj['key_props'] = obj['data']
         obj['guid'] = _get_guid_from_doc(result)
         obj['kbase_id'] = obj['guid'].strip('WS:')
-        idx_pieces = result['_index'].split(':')
+        idx_pieces = result['index'].split(':')
         idx_name = idx_pieces[0]
         idx_ver = int(idx_pieces[1] or 0) if len(idx_pieces) == 2 else 0
         obj['index_name'] = idx_name
-        obj['index_ver'] = idx_ver
+        # obj['index_ver'] = idx_ver
+        obj['type_ver'] = idx_ver
         # For the UI, make the type field "GenomeFeature" instead of Genome for features.
         if 'genome_feature_type' in source:
             obj['type'] = 'GenomeFeature'
@@ -373,7 +384,7 @@ def _fetch_narrative_info(results, headers):
     """
     # TODO get "display name" (eg. auth service call)
     #  for now we just use username
-    sources = _get_sources(results)
+    sources = [hit['doc'] for hit in results['hits']]
     # TODO workspace timestamp
     narr_infos = {s['access_group']: (None, None, 0, s.get('creator', ''), s.get('creator', '')) for s in sources}
     ws_infos = {
@@ -383,21 +394,22 @@ def _fetch_narrative_info(results, headers):
     workspace_ids = [s['access_group'] for s in sources]
     if not workspace_ids:
         return ({}, {})
-    # Every OR boolean clause in the query below
-    matches = [
-        {'match': {'access_group': wsid}}
-        for wsid in workspace_ids
-    ]
     narrative_index_name = _CONFIG['global']['ws_type_to_indexes']['KBaseNarrative.Narrative']
     # ES query params
     search_params = {
-        'query': {'bool': {'should': matches}},
         'indexes': [narrative_index_name]
-    }
+    }  # type: dict
+    if workspace_ids:
+        # Filter by workspace ID
+        matches = [
+            {'match': {'access_group': wsid}}
+            for wsid in workspace_ids
+        ]
+        search_params['bool'] = {'should': matches}
     # Make the query for narratives on ES
     search_results = search_objects(search_params, headers)
     # Get all the source document objects for each narrative result
-    search_data_sources = _get_sources(search_results)
+    search_data_sources = [hit['doc'] for hit in search_results['hits']]
     for narr in search_data_sources:
         narr_tuple = (
             narr.get('narrative_title'),
@@ -410,19 +422,12 @@ def _fetch_narrative_info(results, headers):
     return (narr_infos, ws_infos)
 
 
-def _get_sources(search_results):
-    """
-    Pull out the _source document data for every search result from ES.
-    """
-    return [r['_source'] for r in search_results['hits']['hits']]
-
-
 def _get_guid_from_doc(doc):
     """
     Construct a legacy-style "guid" in the form "WS:1/2/3"
     """
     # Remove the first namespace
-    _id = doc['_id'].replace('WS::', '')
+    _id = doc['id'].replace('WS::', '')
     # Remove any secondary namespace
     _id = re.sub(r'::..::.+', '', _id)
     # Replace colon delimiters with slashes
