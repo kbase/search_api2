@@ -6,6 +6,8 @@ import requests
 
 from src.utils.config import init_config
 
+_CONFIG = init_config()
+
 
 def ws_auth(auth_token):
     """
@@ -14,10 +16,9 @@ def ws_auth(auth_token):
     """
     if not auth_token:
         return []  # anonymous users
-    config = init_config()
-    ws_url = config['workspace_url']
+    ws_url = _CONFIG['workspace_url']
     # TODO session cache this
-    # Make a request to the workspace using the user's auth token to find their readable workspce IDs
+    # Make a request to the workspace using the user's auth token to find their readable workspace IDs
     payload = {
         'method': 'Workspace.list_workspace_ids',
         'version': '1.1',
@@ -25,9 +26,9 @@ def ws_auth(auth_token):
     }
     headers = {'Authorization': auth_token}
     resp = requests.post(
-        ws_url,
+        url=ws_url,
         data=json.dumps(payload),
-        headers=headers
+        headers=headers,
     )
     if not resp.ok:
         raise RuntimeError(ws_url, resp.text)

@@ -16,7 +16,7 @@ services:
     volumes:
       - ${PWD}:/app
     ports:
-      - 5000:5000
+      - "127.0.0.1:5000:5000"
     environment:
       - DEVELOPMENT=1
       - PYTHONUNBUFFERED=true
@@ -24,28 +24,18 @@ services:
       - WORKSPACE_URL=http://workspace:5000
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:5.5.3
+    image: elasticsearch:7.5.0
     environment:
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - bootstrap.memory_lock=true
       - discovery.type=single-node
       - xpack.security.enabled=false
-    volumes:
-      - esdata1:/usr/share/elasticsearch/data
     ports:
-      - 9200:9200
-      - 9300:9300
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
+      - "127.0.0.1:9200:9200"
+      - "127.0.0.1:9300:9300"
 
   # Mock workspace server (see src/test/mock_workspace/endpoints.json)
   workspace:
     image: mockservices/mock_json_service
     volumes:
       - ${PWD}/src/test/mock_workspace:/config
-
-volumes:
-  esdata1:
-    driver: local
