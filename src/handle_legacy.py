@@ -40,7 +40,7 @@ import re
 
 _CONFIG = init_config()
 
-_GENOME_FEATURES_IDX_NAME = 'genome_features_2'
+_GENOME_FEATURES_IDX_NAME = _CONFIG['latest_versions'][_CONFIG['genome_features_current_index_name']]
 
 # Mappings from search2 document fields to search1 fields:
 _KEY_MAPPING = {
