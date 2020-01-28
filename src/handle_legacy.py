@@ -40,7 +40,7 @@ import re
 
 _CONFIG = init_config()
 
-_GENOME_FEATURES_IDX_NAME = _CONFIG['latest_versions'][_CONFIG['genome_features_current_index_name']]
+_GENOME_FEATURES_IDX_NAME = _CONFIG['global']['latest_versions'][_CONFIG['global']['genome_features_current_index_name']]
 
 # Mappings from search2 document fields to search1 fields:
 _KEY_MAPPING = {
@@ -346,7 +346,7 @@ def _get_object_data_from_search_results(search_results, post_processing):
         obj['key_props'] = obj['data']
         obj['guid'] = _get_guid_from_doc(result)
         obj['kbase_id'] = obj['guid'].strip('WS:')
-        idx_pieces = result['index'].split(':')
+        idx_pieces = result['index'].split('_')
         idx_name = idx_pieces[0]
         idx_ver = int(idx_pieces[1] or 0) if len(idx_pieces) == 2 else 0
         obj['index_name'] = idx_name
