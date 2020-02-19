@@ -77,6 +77,8 @@ def search_objects(params, headers):
     # Search results highlighting
     if params.get('highlight'):
         options['highlight'] = {'fields': params['highlight']}
+    if params.get('track_total_hits'):
+        options['track_total_hits'] = params.get('track_total_hits')
     headers = {'Content-Type': 'application/json'}
     resp = requests.post(url, data=json.dumps(options), headers=headers)
     if not resp.ok:
