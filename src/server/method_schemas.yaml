@@ -68,6 +68,10 @@ search_objects:
         # Reference: https://www.elastic.co/guide/en/elasticsearch/reference/7.5/search-request-body.html#request-body-search-highlighting
         type: object
         description: Result highlight options
+      track_total_hits:
+        type: boolean
+        title: Track total hits
+        description: Track the true total of hits. Gets past 10000 document limit if True
       sort:
         # Reference: https://www.elastic.co/guide/en/elasticsearch/reference/7.5/search-request-body.html#request-body-search-sort
         type: array

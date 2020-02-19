@@ -202,6 +202,26 @@ class TestApi(unittest.TestCase):
         timestamps = [r['timestamp'] for r in docs]
         self.assertEqual(timestamps, [10, 10, 7, 7])
 
+    def test_track_total_hits(self):
+        """
+        Test the elasticsearch track total hits feature.
+        TODO: figure out what to assert.
+        """
+        resp = requests.post(
+            _API_URL + '/rpc',
+            data=json.dumps({
+                'method': 'search_objects',
+                'params': {
+                    'indexes': ['index1', 'index2'],
+                    'query': {'term': {'name': 'doc1'}},
+                    'track_total_hits': True
+                }
+            })
+        )
+        self.assertTrue(resp.ok, msg=f"response: {resp.text}")
+        resp_json = resp.json()
+        result = resp_json['result']
+
     def test_highlights(self):
         """
         Test the elasticsearch result highlighting feature.
