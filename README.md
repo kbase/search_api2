@@ -54,7 +54,8 @@ requests.post(
       "indexes": ["narrative"],
       "fields": [],
       "size": 20,
-      "from": 20
+      "from": 20,
+      "track_total_hits": False,
     }
   }),
   headers={'Authorization': token}
