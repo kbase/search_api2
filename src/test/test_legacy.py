@@ -6,9 +6,14 @@ from src.utils.config import init_config
 
 _API_URL = 'http://localhost:5000'
 _CONFIG = init_config()
+# TODO: we need aliases too. E.g. obj_types is translated from KBase workspace type names
+# (note w/o module name prefix) to index alias (the original implementation here was just
+# a filter on the type field, which doesn't work when sorting too).
 _INDEX_NAMES = [
     _CONFIG['index_prefix'] + '.index_1',
     _CONFIG['index_prefix'] + '.index_2',
+    _CONFIG['index_prefix'] + '.genome',  # since there are no aliases, we use the plain index name
+    _CONFIG['index_prefix'] + '.genome_feature',
     _CONFIG['index_prefix'] + '.narrative',
     *[_CONFIG['index_prefix'] + '.' + name for name in _CONFIG['global']['ws_subobjects']]
 ]
@@ -40,15 +45,17 @@ class TestLegacy(unittest.TestCase):
         resp = requests.post(
             _API_URL + '/legacy',
             data=json.dumps({
-                'method': 'SearchAPIThing.search_objects',
+                'method': 'KBaseSearchEngine.search_objects',
+                'version': '1.1',
+                'id': '12345',
                 'params': [{
                     "match_filter": {
                         "full_text_in_all": "public",
                         'exclude_subobjects': 1
                     },
-                    "pagination": {
-                        "start": 0,
-                        "count": 10
+                    'pagination': {
+                        'start': 0,
+                        'count': 20,
                     },
                     "post_processing": {
                         "ids_only": 1,
@@ -63,6 +70,7 @@ class TestLegacy(unittest.TestCase):
                     }
                 }]
             }),
+            headers={'Authorization': 'valid_token'}
         )
         try:
             resp_json = resp.json()
@@ -86,11 +94,14 @@ class TestLegacy(unittest.TestCase):
         resp = requests.post(
             _API_URL + '/legacy',
             data=json.dumps({
-                'method': 'KBaseSearchAPI.get_objects',
+                'method': 'KBaseSearchEngine.get_objects',
+                'version': '1.1',
+                'id': '12345',
                 'params': [{
                     'guids': ['public-doc1', 'public-doc2']
                 }]
-            })
+            }),
+            headers={'Authorization': 'valid_token'}
         )
         try:
             results = resp.json()['result'][0]
@@ -105,17 +116,20 @@ class TestLegacy(unittest.TestCase):
         resp = requests.post(
             _API_URL + '/legacy',
             data=json.dumps({
-                'method': 'KBaseSearchAPI.search_objects',
+                'method': 'KBaseSearchEngine.search_objects',
+                'version': '1.1',
+                'id': '12345',
                 'params': [{
                     'match_filter': {
-                        'lookupInKeys': {'access_group': {'value': 1}}
+                        'lookupInKeys': {'access_group': {'int_value': 1}}
                     },
                     'access_filter': {
                         'with_private': 0,
                         'with_public': 1
                     }
                 }]
-            })
+            }),
+            headers={'Authorization': 'valid_token'}
         )
         # Count of 2 for public-doc1 in both indexes
         # Excludes the genome feature doc by default
@@ -132,7 +146,9 @@ class TestLegacy(unittest.TestCase):
         resp = requests.post(
             _API_URL + '/legacy',
             data=json.dumps({
-                'method': 'KBaseSearchAPI.search_objects',
+                'method': 'KBaseSearchEngine.search_objects',
+                'version': '1.1',
+                'id': '12345',
                 'params': [{
                     'match_filter': {
                         'lookupInKeys': {
@@ -156,7 +172,9 @@ class TestLegacy(unittest.TestCase):
         resp = requests.post(
             _API_URL + '/legacy',
             data=json.dumps({
-                'method': 'KBaseSearchAPI.search_objects',
+                'method': 'KBaseSearchEngine.search_objects',
+                'version': '1.1',
+                'id': '12345',
                 'params': [{
                     'match_filter': {
                         'lookupInKeys': {
@@ -185,7 +203,9 @@ class TestLegacy(unittest.TestCase):
         resp = requests.post(
             _API_URL + '/legacy',
             data=json.dumps({
-                'method': 'KBaseSearchAPI.search_objects',
+                'method': 'KBaseSearchEngine.search_objects',
+                'version': '1.1',
+                'id': '12345',
                 'params': [{
                     'object_types': ['GenomeFeature'],
                     'match_filter': {
@@ -208,10 +228,12 @@ class TestLegacy(unittest.TestCase):
         resp = requests.post(
             _API_URL + '/legacy',
             data=json.dumps({
-                'method': 'KBaseSearchAPI.search_objects',
+                'method': 'KBaseSearchEngine.search_objects',
+                'version': '1.1',
+                'id': '12345',
                 'params': [{
                     'match_filter': {
-                        'lookupInKeys': {'name': {'value': 'featurexyz'}},
+                        'lookupInKeys': {'obj_name': {'value': 'featurexyz'}},
                         'exclude_subobjects': 1
                     },
                     'access_filter': {
@@ -236,16 +258,19 @@ class TestLegacy(unittest.TestCase):
         resp = requests.post(
             _API_URL + '/legacy',
             data=json.dumps({
-                'method': 'KBaseSearchAPI.search_types',
+                'version': '1.1',
+                'id': '12345',
+                'method': 'KBaseSearchEngine.search_types',
                 'params': [{'match_filter': {}}]
-            })
+            }),
+            headers={'Authorization': 'valid_token'}
         )
         try:
             result = resp.json()['result'][0]
         except Exception:
             raise RuntimeError(resp.text)
         self.assertTrue('search_time' in result)
-        self.assertEqual(result['type_to_count'], {'typea': 2, 'typeb': 2})
+        self.assertEqual(result['type_to_count'], {'Typea': 4, 'Typeb': 2})
 
     def test_narrative_example(self):
         """
@@ -255,6 +280,8 @@ class TestLegacy(unittest.TestCase):
             _API_URL + '/legacy',
             data=json.dumps({
                 'method': 'KBaseSearchEngine.search_objects',
+                'version': '1.1',
+                'id': '12345',
                 'params': [{
                     'object_types': ['Genome'],
                     'match_filter': {
@@ -264,23 +291,28 @@ class TestLegacy(unittest.TestCase):
                         'source_tags_blacklist': 0,
                         'lookupInKeys': {
                             'source': {'string_value': 'refseq'},
-                        },
-                        'pagination': {'start': 0, 'count': 20},
-                        'post_processing': {
-                            'ids_only': 0, 'skip_info': 0, 'skip_keys': 0, 'skip_data': 0, 'include_highlight': 0
-                        },
-                        'access_filter': {
-                            'with_private': 0, 'with_public': 1
-                        },
-                        'sorting_rules': [{
-                            'is_object_property': 1, 'property': 'scientific_name_keyword', 'ascending': 1
-                        }]
-                    }
+                        }
+                    },
+                    'pagination': {
+                        'start': 0,
+                        'count': 20
+                    },
+                    'post_processing': {
+                        'ids_only': 0, 'skip_info': 0, 'skip_keys': 0, 'skip_data': 0, 'include_highlight': 0
+                    },
+                    'access_filter': {
+                        'with_private': 0, 'with_public': 1
+                    },
+                    'sorting_rules': [{
+                        'is_object_property': 1, 'property': 'scientific_name', 'ascending': 1
+                    }]
                 }]
-            })
+            }),
+            headers={'Authorization': 'valid_token'}
         )
         self.assertTrue(resp.ok, msg=f"resp: {resp.text}")
         resp_json = resp.json()
+
         self.assertEqual(resp_json['result'][0]['total'], 0)
 
 
@@ -296,6 +328,15 @@ def _init_elasticsearch():
             'timestamp': {'type': 'integer'},
             'access_group': {'type': 'integer'},
             'obj_type_name': {'type': 'keyword', 'copy_to': 'agg_fields'},
+            'scientific_name': {
+                'type': 'text',
+                'copy_to': 'agg_fields',
+                'fields': {
+                    'raw': {
+                        'type': 'keyword'
+                    }
+                }
+            }
         }
         resp = requests.put(
             _CONFIG['elasticsearch_url'] + '/' + index_name,
@@ -309,12 +350,47 @@ def _init_elasticsearch():
             raise RuntimeError('Error creating index on ES:', resp.text)
     test_docs = [
         # Public doc
-        {'obj_name': 'public-doc1', 'is_public': True, 'timestamp': 10, 'access_group': 1, 'obj_type_name': 'typea'},
-        {'obj_name': 'public-doc2', 'is_public': True, 'timestamp': 12, 'access_group': 2, 'obj_type_name': 'typeb'},
+        {'obj_name': 'public-doc1',
+         'is_public': True,
+         'timestamp': 10,
+         'creator': 'kbasesearchtest1',
+         'shared_users': [],
+         'creation_date': 'fakedate',
+         'obj_id': 1,
+         'version': 1,
+         'copied': None,
+         'tags': [],
+         'access_group': 1,
+         'obj_type_name': 'Typea'},
+        {'obj_name': 'public-doc2', 'is_public': True, 'timestamp': 12,
+         'creator': 'kbasesearchtest1',
+         'shared_users': [],
+         'creation_date': 'fakedate',
+         'obj_id': 1,
+         'version': 1,
+         'copied': None,
+         'tags': [],
+         'access_group': 2, 'obj_type_name': 'Typeb'},
         # Private but accessible doc
-        {'obj_name': 'private-doc1', 'is_public': False, 'access_group': 1, 'timestamp': 7, 'obj_type_name': 'typea'},
+        {'obj_name': 'private-doc1', 'is_public': False, 'timestamp': 7,
+         'creator': 'kbasesearchtest1',
+         'shared_users': [],
+         'creation_date': 'fakedate',
+         'obj_id': 1,
+         'version': 1,
+         'copied': None,
+         'tags': [],
+         'access_group': 1, 'obj_type_name': 'Typea'},
         # Private but inaccessible doc
-        {'obj_name': 'private2-doc1', 'is_public': False, 'access_group': 99, 'timestamp': 9, 'obj_type_name': 'typeb'}
+        {'obj_name': 'private2-doc1', 'is_public': False, 'timestamp': 9,
+         'creator': 'kbasesearchtest1',
+         'shared_users': [],
+         'creation_date': 'fakedate',
+         'obj_id': 1,
+         'version': 1,
+         'copied': None,
+         'tags': [],
+         'access_group': 99, 'obj_type_name': 'Typeb'}
     ]
     for doc in test_docs:
         # Note that the 'refresh=wait_for' option must be set in the URL so we can search on it immediately.
@@ -336,7 +412,14 @@ def _init_elasticsearch():
         'name': 'featurexyz',
         'is_public': True,
         'access_group': 1,
-        'timestamp': 15
+        'timestamp': 15,
+        'creator': 'kbasesearchtest1',
+        'shared_users': [],
+        'creation_date': 'fakedate',
+        'obj_id': 1,
+        'version': 1,
+        'copied': None,
+        'tags': []
     }
     url = '/'.join([
         _CONFIG['elasticsearch_url'],
