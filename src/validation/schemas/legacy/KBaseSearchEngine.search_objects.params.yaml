@@ -3,45 +3,45 @@ definitions: {}
 $schema: http://json-schema.org/draft-07/schema#
 title: Legacy Search Objects Method
 required:
-    - match_filter
+  - match_filter
 additionalProperties: false
 properties:
-    match_filter:
-        $ref: base.json#definitions/matchFilter
-    access_filter:
-        $ref: base.json#definitions/accessFilter
-    object_types:
-        type: array
-        items:
-            type: string
-    pagination:
-        start:
-            type: integer
-        size:
-            type: integer
-    post_processing:
-        type: object
-        properties:
-            ids_only:
-                $ref: base.json#definitions/sdk_boolean
-            skip_info:
-                $ref: base.json#definitions/sdk_boolean
-            skip_keys:
-                $ref: base.json#definitions/sdk_boolean
-            skip_data:
-                $ref: base.json#definitions/sdk_boolean
-            include_highlight:
-                $ref: base.json#definitions/sdk_boolean
-            add_narrative_info:
-                $ref: base.json#definitions/sdk_boolean
-    sorting_rules:
-        type: array
-        items:
-            type: object
-            properties:
-                is_object_property:
-                    $ref: base.json#definitions/sdk_boolean
-                property:
-                    type: string
-                ascending:
-                    $ref: base.json#definitions/sdk_boolean
+  match_filter:
+    $ref: base.json#definitions/matchFilter
+  access_filter:
+    $ref: base.json#definitions/accessFilter
+  object_types:
+    type: array
+    items:
+      type: string
+  pagination:
+    start:
+      type: integer
+    count:
+      type: integer
+  post_processing:
+    type: object
+    properties:
+      ids_only:
+        $ref: base.json#definitions/sdk_boolean
+      skip_info:
+        $ref: base.json#definitions/sdk_boolean
+      skip_keys:
+        $ref: base.json#definitions/sdk_boolean
+      skip_data:
+        $ref: base.json#definitions/sdk_boolean
+      include_highlight:
+        $ref: base.json#definitions/sdk_boolean
+      add_narrative_info:
+        $ref: base.json#definitions/sdk_boolean
+  sorting_rules:
+    type: array
+    items:
+      type: object
+      properties:
+        is_object_property:
+          $ref: base.json#definitions/sdk_boolean
+        property:
+          type: string
+        ascending:
+          $ref: base.json#definitions/sdk_boolean
