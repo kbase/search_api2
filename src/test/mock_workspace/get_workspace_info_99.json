@@ -1,0 +1,42 @@
+{
+    "methods": [
+        "POST"
+    ],
+    "path": "/",
+    "headers": {
+        "Authorization": "valid_token"
+    },
+    "body": {
+        "method": "Workspace.get_workspace_info",
+        "version": "1.1",
+        "params": [
+            {
+                "id": 99
+            }
+        ]
+    },
+    "response": {
+        "status": "200",
+        "body": {
+            "version": "1.1",
+            "id": "12345",
+            "result": [
+                [
+                    99,
+                    "workspace1",
+                    "kbasesearchtest1",
+                    "2018-04-20T16:26:41+0000",
+                    100,
+                    "r",
+                    "r",
+                    "unlocked",
+                    {
+                        "narrative": "1",
+                        "narrative_nice_name": "my awesome narrative",
+                        "is_temporary": "0"
+                    }
+                ]
+            ]
+        }
+    }
+}

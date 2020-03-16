@@ -233,7 +233,11 @@ class TestApi(unittest.TestCase):
                 'params': {
                     'indexes': ['index1', 'index2'],
                     'query': {'term': {'name': 'doc1'}},
-                    'highlight': {'name': {}}
+                    'highlight': {
+                        'fields': {
+                            'name': {}
+                        }
+                    }
                 }
             }),
             headers={'Authorization': 'valid_token'}
