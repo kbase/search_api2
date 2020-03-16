@@ -6,7 +6,7 @@ import json
 import requests
 import logging
 
-from src.clients.workspace_utils import ws_auth
+from src.clients.workspace import ws_auth
 from src.utils.config import init_config
 
 _CONFIG = init_config()
