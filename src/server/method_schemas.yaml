@@ -67,7 +67,20 @@ search_objects:
       highlight:
         # Reference: https://www.elastic.co/guide/en/elasticsearch/reference/7.5/search-request-body.html#request-body-search-highlighting
         type: object
-        description: Result highlight options
+        description: Highlight query specification
+        additionalProperties: false
+        properties:
+          fields:
+            type: object
+            patternProperties:
+              ".*": {} # empty spec is same as the old "any" type
+          require_field_match:
+            type: boolean
+          highlight_query:
+            type: object
+            patternProperties:
+              ".*": {} # empty spec is same as the old "any" type
+
       track_total_hits:
         type: boolean
         title: Track total hits
