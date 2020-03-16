@@ -1,0 +1,13 @@
+---
+$schema: http://json-schema.org/draft-07/schema#
+title: Legacy Search Types Method
+type: object
+required:
+  - type_to_count
+  - search_time
+additionalProperties: false
+properties:
+  type_to_count:
+    $ref: "base.json#definitions/typeCounts"
+  search_time:
+    type: integer

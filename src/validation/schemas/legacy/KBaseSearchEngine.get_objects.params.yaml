@@ -1,0 +1,14 @@
+---
+definitions: {}
+$schema: http://json-schema.org/draft-07/schema#
+title: Legacy Search Objects Method
+required:
+  - guids
+additionalProperties: false
+properties:
+  guids:
+    type: array
+    items:
+      type: string
+  post_processing:
+    $ref: base.json#definitions/postProcessing

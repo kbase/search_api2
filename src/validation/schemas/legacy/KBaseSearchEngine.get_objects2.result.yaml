@@ -1,0 +1,38 @@
+---
+definitions: {}
+$schema: http://json-schema.org/draft-07/schema#
+title: Legacy Search Objects Method
+required:
+  - objects
+  - search_time
+additionalProperties: false
+properties:
+  objects:
+    type: array
+    items:
+      $ref: base.json#definitions/searchResultHit
+  search_time:
+    type: integer
+  workspaces:
+    type: object
+    additionalProperties: false
+    patternProperties:
+      ^[1-9][0-9]*$:
+        type: object
+        required:
+          - ws_info
+          - info
+          - type
+        properties:
+          ws_info:
+            $ref: base.json#definitions/workspaceInfoDict
+          info:
+            $ref: base.json#definitions/workspaceInfoNice
+          type:
+            $ref: base.json#definitions/workspaceType
+          narrative:
+            $ref: base.json#definitions/narrativeWorkspaceInfo
+          refdata:
+            $ref: base.json#definitions/refdataWorkspaceInfo
+          other:
+            $ref: base.json#definitions/otherWorkspaceInfo

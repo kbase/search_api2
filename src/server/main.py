@@ -14,7 +14,7 @@ import json
 from src.exceptions import InvalidParameters, UnknownMethod, InvalidJSON
 from src.utils.config import init_config
 from src.search_objects import search_objects
-from src.handle_legacy import handle_legacy
+from src.legacy.handler import handle as handle_legacy
 from src.show_indexes import show_indexes
 
 app = sanic.Sanic()
@@ -68,8 +68,10 @@ async def root(request):
 @app.route('/legacy', methods=['POST', 'OPTIONS'])
 async def legacy(request):
     """Handle legacy-formatted requests that are intended for the previous Java api."""
-    result = handle_legacy(request.json, request.headers)
-    return sanic.response.json(result)
+    result = handle_legacy(request.body, request.headers)
+    return sanic.response.text(result, headers={
+        'content-type': 'application/json'
+    })
 
 
 def _show_config(params, headers):
