@@ -25,16 +25,22 @@ def search_objects(params, headers):
     """
     user_query = params.get('query')
     authorized_ws_ids = []  # type: list
+    # TODO: should abstract headers out as options, don't need an
+    # http dependency here.
+    # TODO: optimization - if private_only we don't need to fetch
+    # ws ids for public workspaces, just those owned by or shared
+    # with the user. I don't know that we can get those, though, without
+    # fetching them all from the workspace and filtering on this side.
     if not params.get('public_only') and headers.get('Authorization'):
         # Fetch the workspace IDs that the user can read
         # Used for simple access control
         authorized_ws_ids = ws_auth(headers['Authorization'])
-    # Get the index name(s) to include and exclude (used in the URL below)
-    index_name_str = _construct_index_name(params)
+
     # We insert the user's query as a "must" entry
     query = {'bool': {}}  # type: dict
     if user_query:
         query['bool']['must'] = user_query
+
     # Our access control query is then inserted under a "filter" depending on options:
     if params.get('public_only'):
         # Public workspaces only; most efficient
@@ -55,31 +61,43 @@ def search_objects(params, headers):
                 ]
             }
         }
-    # Make a query request to elasticsearch
-    url = _CONFIG['elasticsearch_url'] + '/' + index_name_str + '/_search'
+
     options = {
         'query': query,
         'size': 0 if params.get('count') else params.get('size', 10),
         'from': params.get('from', 0),
         'timeout': '3m'  # type: ignore
     }
+
     if not params.get('count') and params.get('size', 10) > 0:
         options['terminate_after'] = 10000  # type: ignore
+
     # User-supplied aggregations
     if params.get('aggs'):
         options['aggs'] = params['aggs']
+
     # User-supplied sorting rules
     if params.get('sort'):
         options['sort'] = params['sort']
+
     # User-supplied source filters
     if params.get('source'):
         options['_source'] = params.get('source')
+
     # Search results highlighting
     if params.get('highlight'):
-        options['highlight'] = {'fields': params['highlight']}
+        options['highlight'] = params['highlight']
+
     if params.get('track_total_hits'):
         options['track_total_hits'] = params.get('track_total_hits')
+
     headers = {'Content-Type': 'application/json'}
+
+    # Make a query request to elasticsearch
+    # Get the index name(s) to include and exclude (used in the URL below)
+    index_name_str = _construct_index_name(params)
+    url = _CONFIG['elasticsearch_url'] + '/' + index_name_str + '/_search'
+
     resp = requests.post(url, data=json.dumps(options), headers=headers)
     if not resp.ok:
         # Unexpected elasticsearch error
