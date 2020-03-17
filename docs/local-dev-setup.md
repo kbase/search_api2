@@ -5,6 +5,7 @@ This document describes a workflow for local development of the searchapi alongs
 ## Setup repos and dependencies
 
 ### Create working directory
+
 It is best if all of these repos are cloned in the same working directory. It is required for working on kbase-ui + a plugin.
 
 ### clone search api
@@ -127,7 +128,7 @@ manually index:
 docker exec indexrunner indexer_admin reindex --overwrite --ref 47458
 ```
 
-in order to index all of the workspaces for a user, or some subset, you'll need to write a script to automate this, or have a simple shell scipt with server lines like those above, but with the the workspace id replaced. You can speed this up by using an object ref like `4758/1` rather than a workspace ref.
+in order to index all of the workspaces for a user, or some subset, you'll need to write a script to automate this, or have a simple shell script with server lines like those above, but with the the workspace id replaced. You can speed this up by using an object ref like `4758/1` rather than a workspace ref.
 
 ## References
 
@@ -153,7 +154,7 @@ When using the admin tool with an existing index, `--overwrite` must be used; on
 
 I would think that the normal mode would be create or overwrite, with stricter behavior being an option.
 
-### Indexer error?
+### Indexer error
 
 What should an indexer do if data is non-compliant? E.g. a narrative without correct metadata? I guess throw error...
 
@@ -163,49 +164,52 @@ so i implemented this by the indexer returning an 'error' action with the error 
 
 requires --overwrite, rather than simple retry.
 
-### Narrative index changes:
-
+### Narrative index changes
 
 - add `owner` field
 - add `is_temporary`
 - add `is_narratorial` or `narrative_type`
 
 
-```
+```text
 /usr/bin/kafka-streams-application-reset --application-id 1 --input-topics=indexeradminevents,worksrpaceevents
 ```
 
-# NEXT
+## NEXT
 
 - need get_permissions_mass to determine if the shared users can be exposed?
 - figure out query for determining if a narrative is shared with but not owned by the given user
 
-# Current setup
+## Current setup
+
 - elasticsearch
-    - container via docker desktop
+  - container via docker desktop
 - kafka/zookeeper: via 
-    - `index_runner_deluxe/local-dev/kafka`
-    - `docker-compose up`
+  - `index_runner_deluxe/local-dev/kafka`
+  - `docker-compose up`
 - index runner via 
-    - `index_runner_deluxe/local-dev/run.sh` or `run_narrative.sh`
+  - `index_runner_deluxe/local-dev/run.sh` or `run_narrative.sh`
 - run indexer script from 
-    - `index_runner_deluxe/local-dev`
-    - `ruby index-user-workspaces.rb`
+  - `index_runner_deluxe/local-dev`
+  - `ruby index-user-workspaces.rb`
 - run api from
-    - `search_api_deluxe`
-    - `docker-compose -f ./docker-compose.ui-test.yaml up`
+  - `search_api_deluxe`
+  - `docker-compose -f ./docker-compose.integration-test.yaml up`
 - kbase-ui must be running for the proxy and /etc/hosts pointing to local ui
 
-# okay, indexing
+## okay, indexing
 
 set up indexing of all public narratives in ci
 
-ran into a sharing issue
+ran into a sharding issue
 
 this setting
 
-```
+```text
 PUT /*/_settings
+```
+
+```json
 {
 "index" : {
 "number_of_replicas":0,
@@ -217,3 +221,13 @@ PUT /*/_settings
 may fix it temporarily. the problem is too many shards per index (?), and the number of replicas defaults to 1 which doubles this. it is still an issue, but this puts it off a bit.
 
 need to get a grip on tuning ES for dev usage (no replication) as well as deployment (some replication). this is an ES7 new thing.
+
+This worked for a while, then needed another
+
+```text
+PUT http://localhost:9200/_cluster/settings
+```
+
+```json
+{"transient":{"cluster.max_shards_per_node":5000}}
+```
