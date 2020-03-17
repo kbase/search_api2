@@ -1,0 +1,28 @@
+version: "3"
+
+# This docker-compose is for developer convenience, not for running in production.
+networks:
+  kbase-dev:
+    external: true
+
+services:
+  # For running the python consumers
+  searchapi2:
+    build:
+      context: .
+      args:
+        DEVELOPMENT: 1
+    networks: [kbase-dev]
+    volumes:
+      - ${PWD}:/app
+    ports:
+      - 5000:5000
+    extra_hosts:
+      ci.kbase.us: 128.3.56.133
+    environment:
+      - DEVELOPMENT=1
+      - PYTHONUNBUFFERED=true
+      - WORKSPACE_URL=https://ci.kbase.us/services/ws
+      - USER_PROFILE_URL=https://ci.kbase.us/services/user_profile/rpc
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - INDEX_PREFIX=search2
