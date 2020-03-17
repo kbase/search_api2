@@ -118,7 +118,7 @@
                     "type": "#definitions/searchResultHit"
                 }
             },
-            "access_group_info": {
+            "access_groups_info": {
                 "type": "object",
                 "patternProperties": {
                     "^[1-9][0-9]*$": {
