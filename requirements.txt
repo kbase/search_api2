@@ -1,4 +1,5 @@
-sanic==19.12.2
+# hold back from 19.12.2 due to bug introduced which affects
+sanic==19.9.0
 requests==2.23.0
 jsonschema==3.2.0
 pyyaml==5.3
