@@ -38,10 +38,6 @@ The narrative summary (`access_group_narrative_info`) was incorrect (it returned
 
 The workspace info (`access_groups_info`) returned was incomplete. The entire workspace info tuple is now returned.
 
-### Travis
-
-Travis tests were not working when I initially pushed up changes. There was simply a missing dependency (yaml).
-
 ### Work on v2 of some methods
 
 The `search_objects` and `search_types` methods apis are a bit awkward. Part of the reason for that is now three sets of devs working on them, making inconsistent changes. Streamlined versions of those (`search_objects2` and `search_types2`) were developed for use with the search ui. They work, but have not been integrated into the ui search tool, so further changes may be necessary.
