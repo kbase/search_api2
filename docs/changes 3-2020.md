@@ -1,7 +1,11 @@
-search api changes
 ----------
 
+# Search API Changes
+
+## Changes
+
 ### Local developer notes
+
 Added local developer setup notes in `docs` to describe how I was able to best work on this repo
 
 ### Filtering by type
@@ -22,7 +26,6 @@ In addition, highlighting no longer overwrites field values in the search result
 - the highlight mechanism can truncate fields - we don't want to truncate the object info.
 - not all matched and included in the highlight are included in the object info displauy; we want to ensure that all reasons for matching an object are available in highlights
 
-	
 ### Rich(er) user info
 
 For narrative info (when requested) the owner is augmented with profile information. In this iteration, it is just the owner's real name. Support was added for the user profile (config, simple client.)
@@ -35,10 +38,14 @@ The narrative summary (`access_group_narrative_info`) was incorrect (it returned
 
 The workspace info (`access_groups_info`) returned was incomplete. The entire workspace info tuple is now returned.
 
-### Travis 
+### Travis
 
 Travis tests were not working when I initially pushed up changes. There was simply a missing dependency (yaml).
 
 ### Work on v2 of some methods
 
 The `search_objects` and `search_types` methods apis are a bit awkward. Part of the reason for that is now three sets of devs working on them, making inconsistent changes. Streamlined versions of those (`search_objects2` and `search_types2`) were developed for use with the search ui. They work, but have not been integrated into the ui search tool, so further changes may be necessary.
+
+## TODO
+
+- When closing the loop on the indexer changes, I will be updating the integration testing docs to reflect the full process of setting up the local indexes.
