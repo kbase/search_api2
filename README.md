@@ -81,7 +81,9 @@ More useful details of the error will be found in the `message` and `data` prope
 
 ### <url>/legacy
 
-A JSON RPC 1.1 API that mimics the legacy Java server, [found here](https://github.com/kbase/KBaseSearchEngin://github.com/kbase/KBaseSearchEngine). Refer to the KBaseSearchEngine.spec KIDL file for the API.
+A JSON RPC 1.1 or 2.0 API that mimics the legacy Java server, [found here](https://github.com/kbase/KBaseSearchEngin://github.com/kbase/KBaseSearchEngine). Refer to the KBaseSearchEngine.spec KIDL file for the API.
+
+> Note: the legacy api return structure has actually diverged significantly, so the spec file is no longer a great reference. It may help to look at `src/validation/schemas/legacy` jsonschema definitions for now. Each method has a pair of schemas - one for input params, one for output result. I hope this suffices until there is proper documentation.
 
 ## Development
 
