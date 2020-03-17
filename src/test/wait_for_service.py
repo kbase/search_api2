@@ -8,14 +8,15 @@ import time
 service_healthy = False
 timeout = 60
 start_time = int(time.time())
+url = 'http://localhost:5000/'
 
 while not service_healthy:
-    print("Waiting for API to be healthy..")
+    print(f"Waiting for Search API ({url}) to be healthy...")
     try:
-        requests.get('http://localhost:5000/').raise_for_status()
+        requests.get(url).raise_for_status()
         service_healthy = True
     except Exception:
-        print("Unable to connect to API, waiting..")
+        print(f"Unable to connect to Search API ({url}), waiting...")
         if (int(time.time()) - start_time) > timeout:
             raise RuntimeError('Service did not start in {timeout}s. Check the app logs.')
         time.sleep(5)
