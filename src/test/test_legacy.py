@@ -79,7 +79,7 @@ class TestLegacy(unittest.TestCase):
             raise RuntimeError(resp.text)
         self.assertTrue(resp.ok)
         self.assertEqual(result['total'], 4)
-        self.assertEqual(result['pagination'], {'start': 0, 'count': 10})
+        self.assertEqual(result['pagination'], {'start': 0, 'count': 20})
         self.assertEqual(result['sorting_rules'], [])
         self.assertTrue('search_time' in result)
         self.assertEqual(len(result['objects']), 4)
