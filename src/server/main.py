@@ -17,7 +17,7 @@ from src.search_objects import search_objects
 from src.legacy.handler import handle as handle_legacy
 from src.show_indexes import show_indexes
 
-app = sanic.Sanic()
+app = sanic.Sanic(name='searchapi2')
 _CONFIG = init_config()
 _SCHEMAS_PATH = 'src/server/method_schemas.yaml'
 with open(_SCHEMAS_PATH) as fd:
