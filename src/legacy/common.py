@@ -351,7 +351,7 @@ def fetch_narrative_info(results, auth):
 
     # For objects without a narrative, look up the workspace and determine what it's all about.
     for id in workspace_ids:
-        if id not in narr_infos:
+        if str(id) not in narr_infos:
             [workspace_id, workspace_name, owner, moddate,
              max_objid, user_permission, global_permission,
              lockstat, ws_metadata] = ws_infos[str(id)]

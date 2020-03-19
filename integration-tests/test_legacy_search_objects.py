@@ -20,7 +20,7 @@ def test_search_objects_private():
     # So many variations to test...
     params = {
         'match_filter': {
-            'full_text_in_all': 'coli',
+            'full_text_in_all': 'Aquilegia',
             'exclude_subobjects': 1,
             'source_tags': [
                 'refdata',
@@ -54,9 +54,9 @@ def test_search_objects_private():
     # NOTE: sensitive to test data for the user kbasesearchtest1
     assert 'objects' in result, '"objects" not present in result'
     objects = result['objects']
-    assert len(objects) == 13, f'result count should be 13, is {len(objects)}'
+    assert len(objects) == 1, f'result count should be 13, is {len(objects)}'
     assert 'total' in result, '"total" not present in result'
-    assert result['total'] == 13, f'result "total" should be 13, is {result["total"]}'
+    assert result['total'] == 1, f'result "total" should be 13, is {result["total"]}'
 
 
 # @pytest.mark.skip(reason="no way of currently testing this")
@@ -64,7 +64,7 @@ def test_search_objects_refdata():
     # So many variations to test...
     params = {
         'match_filter': {
-            'full_text_in_all': 'coli',
+            'full_text_in_all': 'Brachyspira',
             'exclude_subobjects': 1,
             'source_tags': [
                 'refdata'
@@ -99,16 +99,17 @@ def test_search_objects_refdata():
     objects = result['objects']
     assert len(objects) == 20, f'result count should be 20, is {len(objects)}'
     assert 'total' in result, '"total" not present in result'
-    assert result['total'] == 520, f'result "total" should be 520, is {result["total"]}'
+    assert result['total'] == 22, f'result "total" should be 22, is {result["total"]}'
 
 # @pytest.mark.skip(reason="no way of currently testing this")
 
 
 def test_search_objects_private_all_defaults():
     # So many variations to test...
+    # TODO: table testing as is done below
     params = {
         'match_filter': {
-            'full_text_in_all': 'coli',
+            'full_text_in_all': 'rhodobacter',
             'exclude_subobjects': 1,
             'source_tags': [
                 'refdata',
@@ -125,9 +126,9 @@ def test_search_objects_private_all_defaults():
     # NOTE: sensitive to test data for the user kbasesearchtest1
     assert 'objects' in result, '"objects" not present in result'
     objects = result['objects']
-    assert len(objects) == 13, f'result count should be 13, is {len(objects)}'
+    assert len(objects) == 1, f'result count should be 1, is {len(objects)}'
     assert 'total' in result, '"total" not present in result'
-    assert result['total'] == 13, f'result "total" should be 13, is {result["total"]}'
+    assert result['total'] == 1, f'result "total" should be 1, is {result["total"]}'
 
 
 def test_search_objects_lookupInKeys():
@@ -135,37 +136,37 @@ def test_search_objects_lookupInKeys():
     paramsBase = {
         'match_filter': {
             'lookupInKeys': {
-                'scientific_name': {'value': 'rhodobacter'}
+                'scientific_name': {'value': 'Brachyspira'}
             },
             'exclude_subobjects': 1,
             'source_tags': [
                 'refdata'
             ],
-            'source_tags_blacklist': 1
+            'source_tags_blacklist': 0
         }
     }
     data = [
         {
             'input': {
-                'scientific_name': {'value': 'rhodobacter'}
+                'scientific_name': {'value': 'Brachyspira'}
             },
             'expected': {
-                'count': 18,
-                'total': 18
+                'count': 20,
+                'total': 22
             }
         },
         {
             'input': {
-                'scientific_name': {'value': 'coli'}
+                'scientific_name': {'value': 'Treponema'}
             },
             'expected': {
-                'count': 11,
-                'total': 11
+                'count': 17,
+                'total': 17
             }
         },
         {
             'input': {
-                'mean_contig_length': {'int_value': 4639221}
+                'mean_contig_length': {'int_value': 1139223}
             },
             'expected': {
                 'count': 2,
@@ -174,11 +175,11 @@ def test_search_objects_lookupInKeys():
         },
         {
             'input': {
-                'gc_content': {'min_double': 0.507, 'max_double': 0.508}
+                'gc_content': {'min_double': 0.50, 'max_double': 0.53}
             },
             'expected': {
-                'count': 6,
-                'total': 6
+                'count': 20,
+                'total': 26
             }
         }
     ]

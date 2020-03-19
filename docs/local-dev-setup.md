@@ -26,11 +26,11 @@ We use a seaprate ES instance because we want to ensure it has a persistent set 
 
 > TODO: the config for this should do a manual volume mount to a local dir.
 
-see 
+see
 
-https://www.elastic.co/guide/en/elasticsearch/reference/7.5/docker.html 
+[https://www.elastic.co/guide/en/elasticsearch/reference/7.5/docker.html](https://www.elastic.co/guide/en/elasticsearch/reference/7.5/docker.html)
 
-or 
+or
 
 ```text
 docker pull elasticsearch:7.6.0

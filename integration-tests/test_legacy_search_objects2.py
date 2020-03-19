@@ -66,7 +66,7 @@ def test_search_objects_refdata():
     # So many variations to test...
     params = {
         'match_filter': {
-            'search_term': 'coli',
+            'search_term': 'Brachyspira',
             'exclude_subobjects': 1,
             'not_tags': [
                 'noindex'
@@ -101,4 +101,4 @@ def test_search_objects_refdata():
     objects = result['objects']
     assert len(objects) == 20, f'result count should be 20, is {len(objects)}'
     assert 'total' in result, '"total" not present in result'
-    assert result['total'] == 520, f'result "total" should be 520, is {result["total"]}'
+    assert result['total'] == 22, f'result "total" should be 22, is {result["total"]}'

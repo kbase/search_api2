@@ -45,3 +45,5 @@ The `search_objects` and `search_types` methods apis are a bit awkward. Part of 
 ## TODO
 
 - When closing the loop on the indexer changes, I will be updating the integration testing docs to reflect the full process of setting up the local indexes.
+- finish up search_objects2, search_types2
+- extract indexes and workspace objects & info from integration tests in order to quickly populate ES and mock workspace with "real" data.
