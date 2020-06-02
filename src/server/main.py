@@ -7,7 +7,6 @@ import yaml
 import logging
 import sys
 import traceback
-import json
 from jsonrpcbase import JSONRPCService
 
 from src.utils.config import init_config
@@ -95,7 +94,6 @@ async def any_exception(request, err):
     traceback.print_exc()
     return sanic.response.json({
         "jsonrpc": "2.0",
-        "id": 0,
         "error": {
             "code": -32000,
             "message": "Server error",
