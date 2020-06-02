@@ -71,7 +71,6 @@ def search_objects(params, auth):
     It also injects any extra info, such as narrative data, for each search result.
     """
     # KBase convention is to wrap params in an array
-    print('xyz params', params)
     params = params[0]
     search_params = _get_search_params(params)
     if params.get('include_highlight'):
