@@ -1,5 +1,5 @@
 """
-Implements https://github.com/kbase/KBaseSearchAPI/blob/master/KBaseSearchEngine.spec
+RPC methods for the legacy API handler.
 
 Quick type references:
 
@@ -34,13 +34,14 @@ ObjectData type:
           entirety. Longer fields are shown as snippets preceded or followed by
           "...".
 """
-from .search_objects import search_objects
-from .utils.config import init_config
 import re
+
+from src.methods.search_objects import search_objects as _search_objects
+from src.utils.config import init_config
 
 _CONFIG = init_config()
 
-_GENOME_FEATURES_IDX_NAME = _CONFIG['global']['latest_versions'][_CONFIG['global']['genome_features_current_index_name']]
+_GENOME_FEATURES_IDX_NAME = _CONFIG['global']['latest_versions'][_CONFIG['global']['genome_features_current_index_name']]  # noqa
 
 # Mappings from search2 document fields to search1 fields:
 _KEY_MAPPING = {
@@ -62,42 +63,24 @@ _SORT_PROP_MAPPING = {
 }
 
 
-def handle_legacy(req_body, headers):
+def search_objects(params, meta):
     """
-    Handle a JSON RPC request body, making it backwards compatible with the previous Java API.
-    """
-    method = req_body['method']
-    # We want to ignore any leading module name:
-    # "KBaseSearchEngine.search_objects" -> "search_objects"
-    # "search_objects" -> "search_objects"
-    method_short = method.split('.')[-1]
-    if method_short not in _HANDLERS:
-        raise RuntimeError(f'Unknown method: {method_short}. Available: {list(_HANDLERS.keys())}')
-    handler = _HANDLERS[method_short]
-    params = req_body['params'][0] if req_body.get('params') else None
-    results = handler(params, headers)
-    return {
-        'version': '1.1',
-        'id': req_body.get('id'),
-        'result': [results]  # For some reason, all results are wrapped in a list in the java API
-    }
-
-
-def _search_objects(params, headers):
-    """
-    Handler for the "search_objects" RPC method, called by `handle_legacy` above.
+    Handler for the "search_objects" RPC method, called by `handle_legacy`.
     This takes all the API parameters to the legacy api and translates them to
     a call to `search_objects`.
     It also injects any extra info, such as narrative data, for each search result.
     """
+    # KBase convention is to wrap params in an array
+    if isinstance(params, list) and len(params) == 1:
+        params = params[0]
     search_params = _get_search_params(params)
     if params.get('include_highlight'):
         search_params['highlight'] = {'*': {}}
-    search_results = search_objects(search_params, headers)
+    search_results = _search_objects(search_params, meta)
     post_processing = params.get('post_processing', {})
-    (narrative_infos, ws_infos) = _fetch_narrative_info(search_results, headers)
+    (narrative_infos, ws_infos) = _fetch_narrative_info(search_results, meta)
     objects = _get_object_data_from_search_results(search_results, post_processing)
-    return {
+    return [{
         'pagination': params.get('pagination', {}),
         'sorting_rules': params.get('sorting_rules', []),
         'total': search_results['count'],
@@ -105,10 +88,10 @@ def _search_objects(params, headers):
         'objects': objects,
         'access_group_narrative_info': narrative_infos,
         'access_groups_info': ws_infos
-    }
+    }]
 
 
-def _search_types(params, headers):
+def search_types(params, meta):
     """
     Search for the number of objects of each type, matching constraints.
     params:
@@ -126,6 +109,9 @@ def _search_types(params, headers):
     This method constructs the same search parameters as `search_objects`, but
     aggregates results based on `obj_type_name`.
     """
+    # KBase convention is to wrap params in an array
+    if isinstance(params, list) and len(params) == 1:
+        params = params[0]
     search_params = _get_search_params(params)
     # Create the aggregation clause using a 'terms aggregation'
     search_params['aggs'] = {
@@ -134,7 +120,7 @@ def _search_types(params, headers):
         }
     }
     search_params['size'] = 0
-    search_results = search_objects(search_params, headers)
+    search_results = _search_objects(search_params, meta)
     # Now we need to convert the ES result format into the API format
     search_time = search_results['search_time']
     buckets = search_results['aggregations']['type_count']['counts']
@@ -142,13 +128,13 @@ def _search_types(params, headers):
     for count_obj in buckets:
         counts_dict[count_obj['key']] = counts_dict.get(count_obj['key'], 0)
         counts_dict[count_obj['key']] += count_obj['count']
-    return {
+    return [{
         'type_to_count': counts_dict,
         'search_time': int(search_time)
-    }
+    }]
 
 
-def _get_objects(params, headers):
+def get_objects(params, meta):
     """
     Retrieve a list of objects based on their upas.
     params:
@@ -161,19 +147,22 @@ def _get_objects(params, headers):
             Information about the workspaces in which the objects in the
             results reside. This data only applies to workspace objects.
     """
+    # KBase convention is to wrap params in an array
+    if isinstance(params, list) and len(params) == 1:
+        params = params[0]
     post_processing = params.get('post_processing', {})
-    search_results = search_objects({'query': {'terms': {'_id': params['guids']}}}, headers)
+    search_results = _search_objects({'query': {'terms': {'_id': params['guids']}}}, meta)
     objects = _get_object_data_from_search_results(search_results, post_processing)
-    (narrative_infos, ws_infos) = _fetch_narrative_info(search_results, headers)
-    return {
+    (narrative_infos, ws_infos) = _fetch_narrative_info(search_results, meta)
+    return [{
         'search_time': search_results['search_time'],
         'objects': objects,
         'access_group_narrative_info': narrative_infos,
         'access_groups_info': ws_infos
-    }
+    }]
 
 
-def _server_status(params, headers):
+def server_status(params, meta):
     """
     Example status response from the Java API:
     [{
@@ -184,16 +173,16 @@ def _server_status(params, headers):
         "git_commit_hash":"1935768d49d0fe6032a1195de10156d9f319d8ce"}]
     }]
     """
-    return {
+    return [{
         'state': 'OK',
-        'version': '0.1.1',
+        'version': '',
         'message': '',
         'git_url': '',
         'git_commit_hash': ''
-    }
+    }]
 
 
-def _list_types(params, headers):
+def list_types(params, meta):
     """
     List registered searchable object types.
     params:
@@ -213,7 +202,7 @@ def _list_types(params, headers):
     For now, we're leaving this as a no-op, because we haven't seen this in use
     in KBase codebases anywhere.
     """
-    return {}
+    return [{}]
 
 
 def _get_search_params(params):
@@ -371,7 +360,7 @@ def _get_object_data_from_search_results(search_results, post_processing):
     return object_data
 
 
-def _fetch_narrative_info(results, headers):
+def _fetch_narrative_info(results, meta):
     """
     For each result object, we construct a single bulk query to ES that fetches
     the narrative data. We then construct that data into a "narrative_info"
@@ -407,7 +396,7 @@ def _fetch_narrative_info(results, headers):
         ]
         search_params['bool'] = {'should': matches}
     # Make the query for narratives on ES
-    search_results = search_objects(search_params, headers)
+    search_results = _search_objects(search_params, meta)
     # Get all the source document objects for each narrative result
     search_data_sources = [hit['doc'] for hit in search_results['hits']]
     for narr in search_data_sources:
@@ -438,13 +427,3 @@ def _get_guid_from_doc(doc):
     ver = str(doc.get('obj_type_version', 1))
     _id = _id + '/' + ver
     return _id
-
-
-# RPC method handler index
-_HANDLERS = {
-    'status': _server_status,
-    'search_objects': _search_objects,
-    'search_types': _search_types,
-    'list_types': _list_types,
-    'get_objects': _get_objects
-}

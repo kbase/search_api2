@@ -1,11 +1,11 @@
 import re
 import requests
-from .utils.config import init_config
+from src.utils.config import init_config
 
 _CONFIG = init_config()
 
 
-def show_indexes(params, headers):
+def show_indexes(params, meta):
     """
     List all index names for our prefix
     """
