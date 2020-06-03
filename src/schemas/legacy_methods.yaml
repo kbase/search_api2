@@ -1,0 +1,238 @@
+---
+get_objects:
+  params:
+    $schema: http://json-schema.org/draft-07/schema#
+    title: Legacy Search Objects Method
+    required: [guids]
+    additionalProperties: false
+    properties:
+      guids:
+        type: array
+        items: {type: string}
+      post_processing:
+        $ref: "#/definitions/post_processing"
+  result:
+    $schema: http://json-schema.org/draft-07/schema#
+    title: Legacy Search Objects Method
+    required: [objects, search_time]
+    additionalProperties: false
+    properties:
+      objects:
+        type: array
+        items: {$ref: "#definitions/search_result_hit" }
+      search_time:
+        type: integer
+      access_groups_info:
+        type: object
+        additionalProperties: false
+        patternProperties:
+          "^[1-9][0-9]*$": { $ref: "#definitions/workspace_info" }
+      access_group_narrative_info:
+        type: object
+        additionalProperties: false
+        patternProperties:
+          "^[1-9][0-9]*$": {$ref: "#definitions/narrative_info" }
+
+get_objects2:
+  # Legacy search objects method, version 2
+  params:
+    $schema: http://json-schema.org/draft-07/schema#
+    required: [refs]
+    additionalProperties: false
+    properties:
+      refs:
+        type: array
+        items: {$ref: "#definitions/objectRef" }
+      post_processing: {$ref: "#definitions/postProcessing"}
+  result:
+    $schema: http://json-schema.org/draft-07/schema#
+    required: [objects, search_time]
+    additionalProperties: false
+    properties:
+      objects:
+        type: array
+        items:
+          $ref: "#definitions/searchResultHit"
+      search_time: {type: integer}
+      workspaces:
+        type: object
+        additionalProperties: false
+        patternProperties:
+          ^[1-9][0-9]*$:
+            type: object
+            required: [ws_info, info, type]
+            properties:
+              ws_info: {$ref: "#definitions/workspaceInfoDict"}
+              info: {$ref: "#definitions/workspaceInfoNice"}
+              type: {$ref: "#definitions/workspaceType"}
+              narrative: {$ref: "#definitions/narrativeWorkspaceInfo"}
+              refdata: {$ref: "#definitions/refdataWorkspaceInfo"}
+              other: {$ref: "#definitions/otherWorkspaceInfo"}
+
+list_types:
+  # Not yet implemented
+  result:
+    $schema: http://json-schema.org/draft-07/schema#
+    type: object
+    additionalProperties: false
+    properties: {}
+
+search_objects:
+  # Legacy search objects method
+  params:
+    $schema: http://json-schema.org/draft-07/schema#
+    required: [match_filter]
+    additionalProperties: false
+    properties:
+      match_filter: {$ref: "#definitions/matchFilter"}
+      access_filter: {$ref: "#definitions/accessFilter"}
+      object_types:
+        type: array
+        items: {type: string}
+      pagination:
+        start: {type: integer}
+        count: {type: integer}
+      post_processing:
+        type: object
+        properties:
+          ids_only: {$ref: "#definitions/sdk_boolean"}
+          skip_info: {$ref: "#definitions/sdk_boolean"}
+          skip_keys: {$ref: "#definitions/sdk_boolean"}
+          skip_data: {$ref: "#definitions/sdk_boolean"}
+          include_highlight: {$ref: "#definitions/sdk_boolean"}
+          add_narrative_info: {$ref: "#definitions/sdk_boolean"}
+      sorting_rules:
+        type: array
+        items:
+          type: object
+          properties:
+            is_object_property: {$ref: "#definitions/sdk_boolean"}
+            property: {type: string}
+            ascending: {$ref: "#definitions/sdk_boolean"}
+  result:
+    $schema: http://json-schema.org/draft-07/schema#
+    required: [objects, total, search_time]
+    additionalProperties: false
+    properties:
+      objects:
+        type: array
+        items: {$ref: "#definitions/searchResultHit"}
+      total: {type: integer}
+      search_time: {type: integer}
+      pagination:
+        type: object
+        properties:
+          start: {type: integer}
+          count: {type: integer}
+      sorting_rules:
+        type: array
+        items: {$ref: "#definitions/sortingRule"}
+      access_groups_info:
+        type: object
+        additionalProperties: false
+        patternProperties:
+          ^[1-9][0-9]*$: {$ref: "#definitions/workspaceInfo"}
+      access_group_narrative_info:
+        type: object
+        additionalProperties: false
+        patternProperties:
+          "^[1-9][0-9]*$": {$ref: "#definitions/narrativeInfo"}
+
+search_objects2:
+  # Search objects method, version 2
+  params:
+    $schema: http://json-schema.org/draft-07/schema#
+    required: [match_filter, offset, limit]
+    additionalProperties: false
+    properties:
+      match_filter: {$ref: base.json#definitions/matchFilter2}
+      access_filter: {$ref: base.json#definitions/accessFilter}
+      object_types:
+        type: array
+        items: {type: string}
+      offset: {type: integer}
+      limit: {type: integer}
+      post_processing:
+        type: object
+        properties:
+          ids_only: {$ref: base.json#definitions/sdk_boolean}
+          skip_info: {$ref: base.json#definitions/sdk_boolean}
+          skip_keys: {$ref: base.json#definitions/sdk_boolean}
+          skip_data: {$ref: base.json#definitions/sdk_boolean}
+          include_highlight: {$ref: base.json#definitions/sdk_boolean}
+          add_narrative_info: {$ref: base.json#definitions/sdk_boolean}
+      sorting_rules:
+        type: array
+        items:
+          type: object
+          properties:
+            is_object_property: {$ref: base.json#definitions/sdk_boolean}
+            property: {type: string}
+            ascending: {$ref: base.json#definitions/sdk_boolean}
+  result:
+    $schema: http://json-schema.org/draft-07/schema#
+    required: [objects, total, search_time]
+    additionalProperties: false
+    properties:
+      objects:
+        type: array
+        items: {$ref: base.json#definitions/searchResultHit}
+      total: {type: integer}
+      search_time: {type: integer}
+      workspaces:
+        type: object
+        additionalProperties: false
+        patternProperties:
+          ^[1-9][0-9]*$:
+            type: object
+            required: [ws_info, info, type]
+            properties:
+              ws_info: {$ref: base.json#definitions/workspaceInfoDict}
+              info: {$ref: base.json#definitions/workspaceInfoNice}
+              type: {$ref: base.json#definitions/workspaceType}
+              narrative: {$ref: base.json#definitions/narrativeWorkspaceInfo}
+              refdata: {$ref: base.json#definitions/refdataWorkspaceInfo}
+              other: {$ref: base.json#definitions/otherWorkspaceInfo}
+
+search_types:
+  params:
+    $schema: http://json-schema.org/draft-07/schema#
+    type: object
+    required: [match_filter]
+    additionalProperties: false
+    properties:
+      object_types:
+        type: array
+        items: {type: string}
+      match_filter: {$ref: base.json#definitions/matchFilter}
+      access_filter: {$ref: base.json#definitions/accessFilter}
+  result:
+    $schema: http://json-schema.org/draft-07/schema#
+    title: Legacy Search Types Method
+    type: object
+    required: [type_to_count, search_time]
+    additionalProperties: false
+    properties:
+      type_to_count: {$ref: "base.json#definitions/typeCounts"}
+      search_time: {type: integer}
+
+search_types2:
+  params:
+    $schema: http://json-schema.org/draft-07/schema#
+    type: object
+    required: [match_filter]
+    additionalProperties: false
+    properties:
+      object_types:
+        type: array
+        items: {type: string}
+      match_filter: {$ref: base.json#definitions/matchFilter2}
+      access_filter: {$ref: base.json#definitions/accessFilter}
+  result:
+    $schema: http://json-schema.org/draft-07/schema#
+    type: object
+    required: [types, search_time]
+    additionalProperties: false
+    properties:
+      types: {$ref: "base.json#definitions/typeCounts"}
+      search_time: {type: integer}
