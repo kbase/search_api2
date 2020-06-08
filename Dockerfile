@@ -18,7 +18,7 @@ RUN apk --update add --virtual build-dependencies curl tar gzip && \
     apk del build-dependencies
 
 # Install dependencies
-RUN apk --update add --virtual build-dependencies python-dev build-base && \
+RUN apk --update add --virtual build-dependencies python3-dev build-base && \
     pip install --upgrade pip && \
     pip install --no-cache-dir -r /tmp/requirements.txt && \
     apk del build-dependencies
