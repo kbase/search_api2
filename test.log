@@ -1,0 +1,35 @@
+docker-compose run test sh scripts/run_tests.sh
+
+/usr/local/lib/python3.7/site-packages/pycodestyle.py:113: FutureWarning: Possible nested set at position 1
+  EXTRANEOUS_WHITESPACE_REGEX = re.compile(r'[[({] | []}),;:]')
+[main]	INFO	profile include tests: None
+[main]	INFO	profile exclude tests: None
+[main]	INFO	cli include tests: None
+[main]	INFO	cli exclude tests: None
+[main]	INFO	running on Python 3.7.7
+[95mRun started:2020-06-03 22:53:18.369587[0m
+[95m
+Test results:[0m
+	No issues identified.
+[95m
+Code scanned:[0m
+	Total lines of code: 709
+	Total lines skipped (#nosec): 2
+[95m
+Run metrics:[0m
+	Total issues (by severity):
+		Undefined: 0.0
+		Low: 0.0
+		Medium: 0.0
+		High: 0.0
+	Total issues (by confidence):
+		Undefined: 0.0
+		Low: 0.0
+		Medium: 0.0
+		High: 0.0
+[95mFiles skipped (0):[0m
+Traceback (most recent call last):
+  File "test/wait_for_service.py", line 4, in <module>
+    import requests
+ModuleNotFoundError: No module named 'requests'
+Makefile:4: recipe for target 'test' failed

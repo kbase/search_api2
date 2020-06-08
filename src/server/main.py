@@ -3,7 +3,6 @@ import os
 import sanic
 import requests
 import time
-import yaml
 import logging
 import sys
 import traceback
@@ -20,37 +19,17 @@ _CONFIG = init_config()
 
 logger = logging.getLogger('searchapi2')
 
-with open('src/schemas/methods.yaml') as fd:
-    _METHOD_SCHEMAS = yaml.safe_load(fd)
-with open('src/schemas/legacy_methods.yaml') as fd:
-    _LEGACY_SCHEMAS = yaml.safe_load(fd)
+service = JSONRPCService(schema_path='src/schemas/methods.yaml', development=_CONFIG['dev'])
+service.add(show_config)
+service.add(search_objects)
+service.add(show_indexes)
 
-service = JSONRPCService()
-service.add(show_config, schema=_METHOD_SCHEMAS['show_config']['params'])
-service.add(search_objects, schema=_METHOD_SCHEMAS['search_objects']['params'])
-service.add(show_indexes, schema=_METHOD_SCHEMAS['show_indexes']['params'])
-
-legacy_service = JSONRPCService()
+legacy_service = JSONRPCService(schema_path='src/schemas/legacy_methods.yaml', development=_CONFIG['dev'])
 legacy_service.add(legacy_methods.server_status, name='KBaseSearchEngine.status')
-legacy_service.add(
-    legacy_methods.search_objects,
-    name='KBaseSearchEngine.search_objects',
-    schema=_LEGACY_SCHEMAS['search_objects']['params'],
-)
-legacy_service.add(
-    legacy_methods.search_types,
-    name='KBaseSearchEngine.search_types',
-    schema=_LEGACY_SCHEMAS['search_types']['params'],
-)
-legacy_service.add(
-    legacy_methods.list_types,
-    name='KBaseSearchEngine.list_types',
-)
-legacy_service.add(
-    legacy_methods.get_objects,
-    name='KBaseSearchEngine.get_objects',
-    schema=_LEGACY_SCHEMAS['get_objects']['params'],
-)
+legacy_service.add(legacy_methods.search_objects, name='KBaseSearchEngine.search_objects')
+legacy_service.add(legacy_methods.search_types, name='KBaseSearchEngine.search_types')
+legacy_service.add(legacy_methods.list_types)
+legacy_service.add(legacy_methods.get_objects, name='KBaseSearchEngine.get_objects')
 # legacy_service.add(methods.search_objects2, 'KBaseSearchEngine.search_objects2')
 # legacy_service.add(methods.search_types2, 'KBaseSearchEngine.search_types2')
 # legacy_service.add(methods.get_objects2, 'KBaseSearchEngine.get_objects2')

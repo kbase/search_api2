@@ -5,7 +5,7 @@ ARG BUILD_DATE
 ARG VCS_REF
 ARG BRANCH=develop
 
-COPY requirements.txt dev-requirements.txt /tmp/
+COPY requirements.txt /tmp/
 WORKDIR /app
 
 # Install dockerize
@@ -21,7 +21,6 @@ RUN apk --update add --virtual build-dependencies curl tar gzip && \
 RUN apk --update add --virtual build-dependencies python-dev build-base && \
     pip install --upgrade pip && \
     pip install --no-cache-dir -r /tmp/requirements.txt && \
-    if [ "$DEVELOPMENT" ]; then pip install --no-cache-dir -r /tmp/dev-requirements.txt; fi && \
     apk del build-dependencies
 
 COPY . /app

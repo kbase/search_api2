@@ -23,6 +23,15 @@ services:
       - ELASTICSEARCH_URL=http://elasticsearch:9200
       - WORKSPACE_URL=http://workspace:5000
 
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    depends_on:
+      - web
+    volumes:
+      - ${PWD}:/app
+
   elasticsearch:
     image: elasticsearch:7.5.0
     environment:
@@ -38,4 +47,4 @@ services:
   workspace:
     image: mockservices/mock_json_service
     volumes:
-      - ${PWD}/src/test/mock_workspace:/config
+      - ${PWD}/test/mock_workspace:/config

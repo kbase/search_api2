@@ -1,149 +1,153 @@
 ---
+$schema: http://json-schema.org/draft-07/schema#
+title: Legacy search methods
 # JSON Schema definitions for every RPC method in this service
+definitions:
 
-# Display public configuration details for the services
-show_config:
-  params: {}
-  result: {}
+  methods:
+    # Display public configuration details for the services
+    show_config:
+      params: {}
+      result: {}
 
-# Get a list of index and alias names in elasticsearch
-show_indexes:
-  params: {}
-  result:
-    type: array
-    items:
-      type: object
-      required: [name, count]
-      additionalProperties: false
-      properties:
-        name:
-          title: Index name
-          type: string
-        count:
-          title: Document count
-          type: integer
-
-# Generic search of all objects under an index or alias
-search_objects:
-  params:
-    type: object
-    required: []
-    additionalProperties: false
-    properties:
-      query:
-        # Reference: https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-body.html
-        type: object
-        description: Query options
-      source:
-        type: array
-        description: Which fields to return in the results
-      indexes:
-        type: array
-        items:
-          type: string
-        description: An array of index/alias names you want to search
-      only_public:
-        type: boolean
-        description: Only return public documents. No auth needed.
-      only_private:
-        type: boolean
-        description: Only return private documents and no public. Auth required.
-      size:
-        type: integer
-        title: Page Size
-        description: Number of results to return
-        default: 10
-      from:
-        type: integer
-        title: Offset
-        description: How many records to skip in the results for pagination.
-        default: 0
-      count:
-        type: integer
-        description: Just count the results without returning the documents.
-      aggs:
-        type: object
-        title: Aggregations
-      highlight:
-        # Reference: https://www.elastic.co/guide/en/elasticsearch/reference/7.5/search-request-body.html#request-body-search-highlighting
-        type: object
-        description: Result highlight options
-      track_total_hits:
-        type: boolean
-        title: Track total hits
-        description: Track the true total of hits. Gets past 10000 document limit if True
-      sort:
-        # Reference: https://www.elastic.co/guide/en/elasticsearch/reference/7.5/search-request-body.html#request-body-search-sort
-        type: array
-        description: Sorting options for result. An array of property names.
-        items:
-          anyOf:
-            - type: string
-            - type: object
-              patternProperties:
-                ".*":
-                  type: object
-                  additionalProperties: false
-                  properties:
-                    order:
-                      type: string
-                      enum: [desc, asc]
-  # search_objects result schema
-  result:
-    type: object
-    required: [count, hits, search_time, aggregations]
-    additionalProperties: false
-    properties:
-      count:
-        description: Total count of results
-        type: integer
-      search_time:
-        type: integer
-        description: Time in milliseconds that the request took for processing on Elasticsearch
-      aggregations:
-        type: object
-        patternProperties:
-          # The key will be the aggregator name
-          ".*":
-            type: object
-            additionalProperties: false
-            properties:
-              count_err_upper_bound:
-                type: integer
-                description: Upper bound on the count inaccuracy for each aggregation
-              count_other_docs:
-                type: integer
-                description: Count of docs that were not aggregated
-              counts:
-                type: array
-                items:
-                  type: object
-                  additionalProperties: false
-                  properties:
-                    count: {type: integer}
-                    key:
-                      type: string
-                      description: Aggregation group identifier (eg. field name)
-      hits:
+    # Get a list of index and alias names in elasticsearch
+    show_indexes:
+      params: {}
+      result:
         type: array
         items:
           type: object
-          required: [id, index, doc]
+          required: [name, count]
           additionalProperties: false
           properties:
-            id:
-              description: "Elasticsearch document id (stored as '_id')"
-              type: string
-            index:
+            name:
               title: Index name
               type: string
-            doc:
-              description: Content of the document -- the actual fields and values.
+            count:
+              title: Document count
+              type: integer
+
+    # Generic search of all objects under an index or alias
+    search_objects:
+      params:
+        type: object
+        required: []
+        additionalProperties: false
+        properties:
+          query:
+            # Reference: https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-body.html
+            type: object
+            description: Query options
+          source:
+            type: array
+            description: Which fields to return in the results
+          indexes:
+            type: array
+            items:
+              type: string
+            description: An array of index/alias names you want to search
+          only_public:
+            type: boolean
+            description: Only return public documents. No auth needed.
+          only_private:
+            type: boolean
+            description: Only return private documents and no public. Auth required.
+          size:
+            type: integer
+            title: Page Size
+            description: Number of results to return
+            default: 10
+          from:
+            type: integer
+            title: Offset
+            description: How many records to skip in the results for pagination.
+            default: 0
+          count:
+            type: integer
+            description: Just count the results without returning the documents.
+          aggs:
+            type: object
+            title: Aggregations
+          highlight:
+            # Reference: https://www.elastic.co/guide/en/elasticsearch/reference/7.5/search-request-body.html#request-body-search-highlighting
+            type: object
+            description: Result highlight options
+          track_total_hits:
+            type: boolean
+            title: Track total hits
+            description: Track the true total of hits. Gets past 10000 document limit if True
+          sort:
+            # Reference: https://www.elastic.co/guide/en/elasticsearch/reference/7.5/search-request-body.html#request-body-search-sort
+            type: array
+            description: Sorting options for result. An array of property names.
+            items:
+              anyOf:
+                - type: string
+                - type: object
+                  patternProperties:
+                    ".*":
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        order:
+                          type: string
+                          enum: [desc, asc]
+      # search_objects result schema
+      result:
+        type: object
+        required: [count, hits, search_time, aggregations]
+        additionalProperties: false
+        properties:
+          count:
+            description: Total count of results
+            type: integer
+          search_time:
+            type: integer
+            description: Time in milliseconds that the request took for processing on Elasticsearch
+          aggregations:
+            type: object
+            patternProperties:
+              # The key will be the aggregator name
+              ".*":
+                type: object
+                additionalProperties: false
+                properties:
+                  count_err_upper_bound:
+                    type: integer
+                    description: Upper bound on the count inaccuracy for each aggregation
+                  count_other_docs:
+                    type: integer
+                    description: Count of docs that were not aggregated
+                  counts:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        count: {type: integer}
+                        key:
+                          type: string
+                          description: Aggregation group identifier (eg. field name)
+          hits:
+            type: array
+            items:
               type: object
-            highlight:
-              description: Field values with search match highlighting using <em> tags.
-              type: object
-              patternProperties:
-                ".*":
-                  type: array
-                  items: {type: string}
+              required: [id, index, doc]
+              additionalProperties: false
+              properties:
+                id:
+                  description: "Elasticsearch document id (stored as '_id')"
+                  type: string
+                index:
+                  title: Index name
+                  type: string
+                doc:
+                  description: Content of the document -- the actual fields and values.
+                  type: object
+                highlight:
+                  description: Field values with search match highlighting using <em> tags.
+                  type: object
+                  patternProperties:
+                    ".*":
+                      type: array
+                      items: {type: string}
