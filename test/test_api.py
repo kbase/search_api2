@@ -1,7 +1,6 @@
 import unittest
 import requests
 import json
-import yaml
 
 from src.utils.config import init_config
 
@@ -11,9 +10,6 @@ _INDEX_NAMES = [
     config['index_prefix'] + '.index1',
     config['index_prefix'] + '.index2',
 ]
-_SCHEMAS_PATH = 'src/schemas/methods.yaml'
-with open(_SCHEMAS_PATH) as fd:
-    _SCHEMAS = yaml.safe_load(fd)
 
 
 def _init_elasticsearch():
@@ -79,7 +75,6 @@ def _tear_down_elasticsearch():
             print('Error tearing down ES index:', resp.text)
 
 
-@unittest.skip('x')
 class TestApi(unittest.TestCase):
 
     @classmethod
