@@ -102,7 +102,6 @@ class TestLegacy(unittest.TestCase):
             raise RuntimeError(resp.text)
         self.assertEqual(len(results['objects']), 4)
 
-    @unittest.skip('x')
     def test_match_value_structure(self):
         """
         Test the per-keyword filtering and the MatchValue type in the original API.
@@ -115,7 +114,7 @@ class TestLegacy(unittest.TestCase):
                 'method': 'KBaseSearchEngine.search_objects',
                 'params': [{
                     'match_filter': {
-                        'lookupInKeys': {'access_group': {'value': 1}}
+                        'lookupInKeys': {'access_group': {'value': '1'}}
                     },
                     'access_filter': {
                         'with_private': 0,
