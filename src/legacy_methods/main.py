@@ -331,7 +331,7 @@ def _get_object_data_from_search_results(search_results, post_processing):
     # Keys found in every ws object
     for result in search_results['hits']:
         source = result['doc']
-        obj = {}  # type: ignore
+        obj: dict = {}
         for (search2_key, search1_key) in _KEY_MAPPING.items():
             obj[search1_key] = source.get(search2_key)
         # The nested 'data' is all object-specific, so disclude all global keys
@@ -353,7 +353,6 @@ def _get_object_data_from_search_results(search_results, post_processing):
         obj['guid'] = _get_guid_from_doc(result)
         obj['kbase_id'] = obj['guid'].strip('WS:')
         # Set to a string
-        obj['object_name'] = obj.get('object_name', '')
         idx_pieces = result['index'].split('_')
         idx_name = idx_pieces[0]
         idx_ver = int(idx_pieces[1] or 0) if len(idx_pieces) == 2 else 0
@@ -375,6 +374,9 @@ def _get_object_data_from_search_results(search_results, post_processing):
                     obj[key] = hl[key]
         else:
             obj['highlight'] = {}
+        # Always set object_name as a string type
+        obj['object_name'] = obj.get('object_name') or ''
+        obj['type'] = obj.get('type') or ''
         object_data.append(obj)
     return object_data
 

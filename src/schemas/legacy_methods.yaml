@@ -252,12 +252,6 @@ definitions:
                   refdata: {$ref: "#/definitions/refdataWorkspaceInfo"}
                   other: {$ref: "#/definitions/otherWorkspaceInfo"}
 
-                  # [{'pagination': {}, 'sorting_rules': [], 'total': 1, 'search_time': 2, 'objects': [{'object_name': None,
-                  #  'access_group': 1, 'obj_id': None, 'version': None, 'timestamp': 15, 'type': None, 'creator': None, 'data': {'name': 'featurexyz'
-                  # , 'is_public': True}, 'key_props': {'name': 'featurexyz', 'is_public': True}, 'guid': 'WS:featurexyz/1', 'kbase_id': 'featurexyz/1
-                  # ', 'index_name': 'genome', 'type_ver': 0, 'highlight': {}}], 'access_group_narrative_info': {1: (None, None, 0, '', '')}, 'access_
-                  # groups_info': {1: (1, '', '')}}]
-
     "KBaseSearchEngine.search_types2":
       params:
         $schema: http://json-schema.org/draft-07/schema#

@@ -17,7 +17,7 @@ def init_config():
     if not config_url.startswith('http'):
         raise RuntimeError(f"Invalid config url: {config_url}")
     with urllib.request.urlopen(config_url) as res:  # nosec
-        global_config = yaml.safe_load(res)  # type: ignore
+        global_config = yaml.safe_load(res)
     return {
         'dev': bool(os.environ.get('DEVELOPMENT')),
         'global': global_config,

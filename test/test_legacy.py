@@ -131,7 +131,6 @@ class TestLegacy(unittest.TestCase):
             raise RuntimeError(resp.text)
         self.assertEqual(len(result['objects']), 2, msg=f"contents of result = {result}")
 
-    @unittest.skip('x')
     def test_match_value_range(self):
         """
         Test the per-keyword filtering and the MatchValue type in the original API.
@@ -188,7 +187,6 @@ class TestLegacy(unittest.TestCase):
             raise RuntimeError(resp.text)
         self.assertEqual(len(result['objects']), 6)
 
-    @unittest.skip('x')
     def test_search_subobjects(self):
         """
         Test that the `exclude_subobjects` parameter excludes the genome
