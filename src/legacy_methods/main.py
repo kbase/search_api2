@@ -80,7 +80,7 @@ def search_objects(params, meta):
     post_processing = params.get('post_processing', {})
     (narrative_infos, ws_infos) = _fetch_narrative_info(search_results, meta)
     objects = _get_object_data_from_search_results(search_results, post_processing)
-    ret = [{
+    return [{
         'pagination': params.get('pagination', {}),
         'sorting_rules': params.get('sorting_rules', []),
         'total': search_results['count'],
@@ -89,7 +89,6 @@ def search_objects(params, meta):
         # 'access_group_narrative_info': narrative_infos,
         # 'access_groups_info': ws_infos
     }]
-    return ret
 
 
 def search_types(params, meta):
