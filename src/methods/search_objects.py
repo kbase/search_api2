@@ -63,7 +63,7 @@ def search_objects(params, meta):
         'from': params.get('from', 0),
         'timeout': '3m'  # type: ignore
     }
-    if not params.get('count') and params.get('size', 10) > 0:
+    if not params.get('count') and params.get('size', 10) > 0 and not params.get('track_total_hits'):
         options['terminate_after'] = 10000  # type: ignore
     # User-supplied aggregations
     if params.get('aggs'):
