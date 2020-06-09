@@ -1,29 +1,45 @@
 """The main entrypoint for running the Flask server."""
 import os
 import sanic
-import traceback
 import requests
 import time
 import yaml
-import jsonschema
-import jsonschema.exceptions
 import logging
 import sys
-import json
+import traceback
+from jsonrpcbase import JSONRPCService
 
-from src.exceptions import InvalidParameters, UnknownMethod, InvalidJSON
 from src.utils.config import init_config
-from src.search_objects import search_objects
-from src.handle_legacy import handle_legacy
-from src.show_indexes import show_indexes
+from src.methods.search_objects import search_objects
+from src.methods.show_indexes import show_indexes
+from src.methods.show_config import show_config
+import src.legacy_methods.main as legacy_methods
 
-app = sanic.Sanic()
+# Initialize the server, config, logger, and RPC APIs
 _CONFIG = init_config()
+
+logger = logging.getLogger('searchapi2')
+
 _SCHEMAS_PATH = 'src/server/method_schemas.yaml'
 with open(_SCHEMAS_PATH) as fd:
     _SCHEMAS = yaml.safe_load(fd)
 
-logger = logging.getLogger('searchapi2')
+service = JSONRPCService()
+service.add(show_config, schema=_SCHEMAS['show_config'])
+service.add(search_objects, schema=_SCHEMAS['search_objects'])
+service.add(show_indexes, schema=_SCHEMAS['show_indexes'])
+
+legacy_service = JSONRPCService()
+legacy_service.add(legacy_methods.server_status, name='KBaseSearchEngine.status')
+legacy_service.add(legacy_methods.search_objects, name='KBaseSearchEngine.search_objects')
+legacy_service.add(legacy_methods.search_types, name='KBaseSearchEngine.search_types')
+legacy_service.add(legacy_methods.list_types, name='KBaseSearchEngine.list_types')
+legacy_service.add(legacy_methods.get_objects, name='KBaseSearchEngine.get_objects')
+# legacy_service.add(methods.search_objects2, 'KBaseSearchEngine.search_objects2')
+# legacy_service.add(methods.search_types2, 'KBaseSearchEngine.search_types2')
+# legacy_service.add(methods.get_objects2, 'KBaseSearchEngine.get_objects2')
+
+app = sanic.Sanic(name='searchapi2')
 
 
 @app.middleware('request')
@@ -36,61 +52,24 @@ async def cors_options(request):
 @app.route('/')
 @app.route('/status', methods=['GET', 'OPTIONS'])
 async def health_check(request):
-    """Really basic health check; could be expanded if needed."""
-    return sanic.response.json({'status': 'ok'})
+    """No-op."""
+    return sanic.response.raw(b'')
 
 
-@app.route('/rpc', methods=['POST', 'OPTIONS'])
+@app.route('/rpc', methods=['POST', 'GET', 'OPTIONS'])
 async def root(request):
     """Handle JSON RPC methods."""
-    try:
-        json_body = json.loads(request.body)
-    except json.JSONDecodeError as err:
-        raise InvalidJSON(f"JSON parsing error: {err}")
-    req_id = json_body.get('id')
-    method = json_body.get('method', 'show_config')
-    params = json_body.get('params', {})
-    if method not in _SCHEMAS:
-        UnknownMethod(method, req_id)
-    param_schema = _SCHEMAS[method]['params']
-    try:
-        jsonschema.validate(params, param_schema)
-    except jsonschema.exceptions.ValidationError as err:
-        raise InvalidParameters(err, req_id)
-    result = _RPC_HANDLERS[method](params, request.headers)  # type: ignore
-    return sanic.response.json({
-        'jsonrpc': "2.0",
-        'result': result,
-        'id': req_id
-    })
+    auth = request.headers.get('Authorization')
+    result = service.call(request.body, {'auth': auth})
+    return sanic.response.text(result, content_type='application/json')
 
 
 @app.route('/legacy', methods=['POST', 'OPTIONS'])
 async def legacy(request):
     """Handle legacy-formatted requests that are intended for the previous Java api."""
-    result = handle_legacy(request.json, request.headers)
-    return sanic.response.json(result)
-
-
-def _show_config(params, headers):
-    """
-    Display publicly readable configuration settings for this server.
-    Be sure to add new entries here explicitly so that nothing is shown unintentionally.
-    """
-    return {
-        'elasticsearch_url': _CONFIG['elasticsearch_url'],
-        'workspace_url': _CONFIG['workspace_url'],
-        'index_prefix': _CONFIG['index_prefix'],
-        'global': _CONFIG['global']
-    }
-
-
-# Function handlers for each rpc method.
-_RPC_HANDLERS = {
-    'show_config': _show_config,
-    'search_objects': search_objects,
-    'show_indexes': show_indexes
-}
+    auth = request.headers.get('Authorization')
+    result = legacy_service.call(request.body, {'auth': auth})
+    return sanic.response.text(result, content_type='application/json')
 
 
 @app.middleware('response')
@@ -106,71 +85,23 @@ async def page_not_found(request, err):
     return sanic.response.json("Path not found", status=404)
 
 
-# TODO json parsing error
-@app.exception(InvalidJSON)
-async def invalid_json_syntax(request, err):
-    resp = {
-        'jsonrpc': '2.0',
-        'id': None,
-        'error': {
-            'code': -32700,
-            'message': str(err)
-        }
-    }
-    return sanic.response.json(resp, status=400)
-
-
-@app.exception(InvalidParameters)
-async def params_invalid(request, err):
-    resp = {
-        'jsonrpc': '2.0',
-        'id': err.request_id,
-        'error': {
-            'code': -32602,
-            'message': err.jsonschema_err.message,
-            'data': {
-                'failed_validator': err.jsonschema_err.validator,
-                'value': err.jsonschema_err.instance,
-                'path': list(err.jsonschema_err.absolute_path)
-            }
-        }
-    }
-    return sanic.response.json(resp, status=400)
-
-
-@app.exception(UnknownMethod)
-async def unknown_method(request, err):
-    resp = {
-        'jsonrpc': '2.0',
-        'id': err.request_id,
-        'error': {
-            'code': -32601,
-            'message': f'Unknown method: {err.method}. Available methods: {_RPC_HANDLERS.keys()}'
-        }
-    }
-    return sanic.response.json(resp, status=400)
-
-
-# Any other exception -> 500
 @app.exception(Exception)
-async def server_error(request, err):
-    logger.error('=' * 80)
-    logger.error('500 Server Error')
-    logger.error('-' * 80)
-    logger.error(traceback.format_exc())
-    logger.error('=' * 80)
-    resp = {
-        'jsonrpc': '2.0',
-        'id': request.json.get('id'),
-        'error': {
-            'code': -32000,
-            'message': str(err),
-            'data': {
-                'class': err.__class__.__name__
+async def any_exception(request, err):
+    """
+    Handle any unexpected server error.
+    Ideally, this should never be reached. JSONRPCBase will handle method error responses.
+    """
+    traceback.print_exc()
+    return sanic.response.json({
+        "jsonrpc": "2.0",
+        "error": {
+            "code": -32000,
+            "message": "Server error",
+            "data": {
+                "error": str(err),
             }
         }
-    }
-    return sanic.response.json(resp, status=500)
+    }, status=500)
 
 
 def init_logger():
@@ -194,8 +125,10 @@ def init_logger():
 
 
 if __name__ == '__main__':
+    # Quiet the urllib3 logger
     logging.getLogger("urllib3").setLevel(logging.WARNING)
     init_logger()
+    # Wait for dependencies to start
     logger.info('Checking connection to elasticsearch..')
     elasticsearch_available = False
     while not elasticsearch_available:
@@ -207,9 +140,10 @@ if __name__ == '__main__':
         except Exception:
             logger.info('Unable to connect to Elasticsearch. Waiting..')
             time.sleep(5)
+    # Start the server
     app.run(
         host='0.0.0.0',  # nosec
         port=5000,
         workers=os.environ.get('WORKERS', 8),
-        # debug=('DEVELOPMENT' in os.environ)  # XXX couldnt get autoreload to work
+        debug=('DEVELOPMENT' in os.environ)
     )

@@ -6,7 +6,7 @@ import json
 import requests
 import logging
 
-from src.workspace_auth import ws_auth
+from src.utils.workspace_auth import ws_auth
 from src.utils.config import init_config
 
 _CONFIG = init_config()
@@ -14,7 +14,7 @@ _CONFIG = init_config()
 logger = logging.getLogger('searchapi2')
 
 
-def search_objects(params, headers):
+def search_objects(params, meta):
     """
     Make a query on elasticsearch using the given index and options.
 
@@ -25,10 +25,10 @@ def search_objects(params, headers):
     """
     user_query = params.get('query')
     authorized_ws_ids = []  # type: list
-    if not params.get('public_only') and headers.get('Authorization'):
+    if not params.get('public_only') and meta['auth']:
         # Fetch the workspace IDs that the user can read
         # Used for simple access control
-        authorized_ws_ids = ws_auth(headers['Authorization'])
+        authorized_ws_ids = ws_auth(meta['auth'])
     # Get the index name(s) to include and exclude (used in the URL below)
     index_name_str = _construct_index_name(params)
     # We insert the user's query as a "must" entry

@@ -40,7 +40,9 @@ class TestLegacy(unittest.TestCase):
         resp = requests.post(
             _API_URL + '/legacy',
             data=json.dumps({
-                'method': 'SearchAPIThing.search_objects',
+                'jsonrpc': '2.0',
+                'id': 0,
+                'method': 'KBaseSearchEngine.search_objects',
                 'params': [{
                     "match_filter": {
                         "full_text_in_all": "public",
@@ -86,7 +88,9 @@ class TestLegacy(unittest.TestCase):
         resp = requests.post(
             _API_URL + '/legacy',
             data=json.dumps({
-                'method': 'KBaseSearchAPI.get_objects',
+                'jsonrpc': '2.0',
+                'id': 0,
+                'method': 'KBaseSearchEngine.get_objects',
                 'params': [{
                     'guids': ['public-doc1', 'public-doc2']
                 }]
@@ -105,7 +109,9 @@ class TestLegacy(unittest.TestCase):
         resp = requests.post(
             _API_URL + '/legacy',
             data=json.dumps({
-                'method': 'KBaseSearchAPI.search_objects',
+                'jsonrpc': '2.0',
+                'id': 0,
+                'method': 'KBaseSearchEngine.search_objects',
                 'params': [{
                     'match_filter': {
                         'lookupInKeys': {'access_group': {'value': 1}}
@@ -132,7 +138,9 @@ class TestLegacy(unittest.TestCase):
         resp = requests.post(
             _API_URL + '/legacy',
             data=json.dumps({
-                'method': 'KBaseSearchAPI.search_objects',
+                'jsonrpc': '2.0',
+                'id': 0,
+                'method': 'KBaseSearchEngine.search_objects',
                 'params': [{
                     'match_filter': {
                         'lookupInKeys': {
@@ -156,7 +164,9 @@ class TestLegacy(unittest.TestCase):
         resp = requests.post(
             _API_URL + '/legacy',
             data=json.dumps({
-                'method': 'KBaseSearchAPI.search_objects',
+                'jsonrpc': '2.0',
+                'id': 0,
+                'method': 'KBaseSearchEngine.search_objects',
                 'params': [{
                     'match_filter': {
                         'lookupInKeys': {
@@ -185,7 +195,9 @@ class TestLegacy(unittest.TestCase):
         resp = requests.post(
             _API_URL + '/legacy',
             data=json.dumps({
-                'method': 'KBaseSearchAPI.search_objects',
+                'jsonrpc': '2.0',
+                'id': 0,
+                'method': 'KBaseSearchEngine.search_objects',
                 'params': [{
                     'object_types': ['GenomeFeature'],
                     'match_filter': {
@@ -208,7 +220,9 @@ class TestLegacy(unittest.TestCase):
         resp = requests.post(
             _API_URL + '/legacy',
             data=json.dumps({
-                'method': 'KBaseSearchAPI.search_objects',
+                'jsonrpc': '2.0',
+                'id': 0,
+                'method': 'KBaseSearchEngine.search_objects',
                 'params': [{
                     'match_filter': {
                         'lookupInKeys': {'name': {'value': 'featurexyz'}},
@@ -236,7 +250,9 @@ class TestLegacy(unittest.TestCase):
         resp = requests.post(
             _API_URL + '/legacy',
             data=json.dumps({
-                'method': 'KBaseSearchAPI.search_types',
+                'jsonrpc': '2.0',
+                'id': 0,
+                'method': 'KBaseSearchEngine.search_types',
                 'params': [{'match_filter': {}}]
             })
         )
@@ -254,6 +270,8 @@ class TestLegacy(unittest.TestCase):
         resp = requests.post(
             _API_URL + '/legacy',
             data=json.dumps({
+                'jsonrpc': '2.0',
+                'id': 0,
                 'method': 'KBaseSearchEngine.search_objects',
                 'params': [{
                     'object_types': ['Genome'],
