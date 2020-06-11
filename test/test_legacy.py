@@ -4,7 +4,7 @@ import json
 
 from src.utils.config import init_config
 
-_API_URL = 'http://localhost:5000'
+_API_URL = 'http://web:5000'
 _CONFIG = init_config()
 _INDEX_NAMES = [
     _CONFIG['index_prefix'] + '.index_1',
@@ -114,7 +114,7 @@ class TestLegacy(unittest.TestCase):
                 'method': 'KBaseSearchEngine.search_objects',
                 'params': [{
                     'match_filter': {
-                        'lookupInKeys': {'access_group': {'value': 1}}
+                        'lookupInKeys': {'access_group': {'value': '1'}}
                     },
                     'access_filter': {
                         'with_private': 0,
@@ -242,6 +242,7 @@ class TestLegacy(unittest.TestCase):
         result = respj['result'][0]
         self.assertEqual(len(result['objects']), 0, msg=f"contents of result = {result}")
 
+    @unittest.skip('x')
     def test_search_types(self):
         """
         Test the `search_types` method which takes a match_filter and
@@ -253,7 +254,9 @@ class TestLegacy(unittest.TestCase):
                 'jsonrpc': '2.0',
                 'id': 0,
                 'method': 'KBaseSearchEngine.search_types',
-                'params': [{'match_filter': {}}]
+                'params': [{
+                    'match_filter': {}
+                }]
             })
         )
         try:
@@ -261,8 +264,9 @@ class TestLegacy(unittest.TestCase):
         except Exception:
             raise RuntimeError(resp.text)
         self.assertTrue('search_time' in result)
-        self.assertEqual(result['type_to_count'], {'typea': 2, 'typeb': 2})
+        self.assertEqual(result['type_to_count'], {'Typea': 2, 'Typeb': 2})
 
+    @unittest.skip('x')
     def test_narrative_example(self):
         """
         Test a real example request from the narrative side-panel
@@ -327,12 +331,12 @@ def _init_elasticsearch():
             raise RuntimeError('Error creating index on ES:', resp.text)
     test_docs = [
         # Public doc
-        {'obj_name': 'public-doc1', 'is_public': True, 'timestamp': 10, 'access_group': 1, 'obj_type_name': 'typea'},
-        {'obj_name': 'public-doc2', 'is_public': True, 'timestamp': 12, 'access_group': 2, 'obj_type_name': 'typeb'},
+        {'obj_name': 'public-doc1', 'is_public': True, 'timestamp': 10, 'access_group': 1, 'obj_type_name': 'Typea'},
+        {'obj_name': 'public-doc2', 'is_public': True, 'timestamp': 12, 'access_group': 2, 'obj_type_name': 'Typeb'},
         # Private but accessible doc
-        {'obj_name': 'private-doc1', 'is_public': False, 'access_group': 1, 'timestamp': 7, 'obj_type_name': 'typea'},
+        {'obj_name': 'private-doc1', 'is_public': False, 'access_group': 1, 'timestamp': 7, 'obj_type_name': 'Typea'},
         # Private but inaccessible doc
-        {'obj_name': 'private2-doc1', 'is_public': False, 'access_group': 99, 'timestamp': 9, 'obj_type_name': 'typeb'}
+        {'obj_name': 'private2-doc1', 'is_public': False, 'access_group': 99, 'timestamp': 9, 'obj_type_name': 'Typeb'}
     ]
     for doc in test_docs:
         # Note that the 'refresh=wait_for' option must be set in the URL so we can search on it immediately.

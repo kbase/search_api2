@@ -1,0 +1,10 @@
+# Dockerfile for running tests
+FROM python:3.7-alpine
+ 
+WORKDIR /app
+COPY dev-requirements.txt /tmp/
+RUN apk --update add --virtual build-dependencies python3-dev build-base && \
+    pip install --upgrade pip && \
+    pip install --no-cache-dir -r /tmp/dev-requirements.txt && \
+    apk del build-dependencies
+COPY . /app

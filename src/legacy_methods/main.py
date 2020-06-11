@@ -86,8 +86,8 @@ def search_objects(params, meta):
         'total': search_results['count'],
         'search_time': search_results['search_time'],
         'objects': objects,
-        'access_group_narrative_info': narrative_infos,
-        'access_groups_info': ws_infos
+        # 'access_group_narrative_info': narrative_infos,
+        # 'access_groups_info': ws_infos
     }]
 
 
@@ -153,13 +153,17 @@ def get_objects(params, meta):
     post_processing = params.get('post_processing', {})
     search_results = _search_objects({'query': {'terms': {'_id': params['guids']}}}, meta)
     objects = _get_object_data_from_search_results(search_results, post_processing)
-    (narrative_infos, ws_infos) = _fetch_narrative_info(search_results, meta)
-    return [{
+    # TODO
+    # (narrative_infos, ws_infos) = _fetch_narrative_info(search_results, meta)
+    ret = [{
         'search_time': search_results['search_time'],
         'objects': objects,
-        'access_group_narrative_info': narrative_infos,
-        'access_groups_info': ws_infos
+        # 'access_group_narrative_info': narrative_infos,
+        # 'access_groups_info': ws_infos
+        'access_group_narrative_info': {},
+        'access_groups_info': {},
     }]
+    return ret
 
 
 def server_status(params, meta):
@@ -326,15 +330,28 @@ def _get_object_data_from_search_results(search_results, post_processing):
     # Keys found in every ws object
     for result in search_results['hits']:
         source = result['doc']
-        obj = {}  # type: ignore
+        obj: dict = {}
         for (search2_key, search1_key) in _KEY_MAPPING.items():
             obj[search1_key] = source.get(search2_key)
         # The nested 'data' is all object-specific, so disclude all global keys
         obj['data'] = {key: source[key] for key in source if key not in _KEY_MAPPING}
+        # Set defaults for required fields in objects/data
+        # FIXME we need to actually fill these fields with real data every time
+        obj['data']['creator'] = obj['data'].get('creator', '')
+        obj['data']['shared_users'] = obj['data'].get('shared_users', [])
+        obj['data']['timestamp'] = obj['data'].get('timestamp', 0)
+        obj['data']['creation_date'] = obj['data'].get('creation_date', '')
+        obj['data']['is_public'] = obj['data'].get('is_public', False)
+        obj['data']['access_group'] = obj['data'].get('access_group', 0)
+        obj['data']['obj_id'] = obj['data'].get('obj_id', 0)
+        obj['data']['version'] = obj['data'].get('obj_id', 0)
+        obj['data']['copied'] = obj['data'].get('copied')
+        obj['data']['tags'] = obj['data'].get('tags', [])
         # Set some more top-level data manually that we use in the UI
         obj['key_props'] = obj['data']
         obj['guid'] = _get_guid_from_doc(result)
         obj['kbase_id'] = obj['guid'].strip('WS:')
+        # Set to a string
         idx_pieces = result['index'].split('_')
         idx_name = idx_pieces[0]
         idx_ver = int(idx_pieces[1] or 0) if len(idx_pieces) == 2 else 0
@@ -356,6 +373,9 @@ def _get_object_data_from_search_results(search_results, post_processing):
                     obj[key] = hl[key]
         else:
             obj['highlight'] = {}
+        # Always set object_name as a string type
+        obj['object_name'] = obj.get('object_name') or ''
+        obj['type'] = obj.get('type') or ''
         object_data.append(obj)
     return object_data
 
@@ -374,20 +394,14 @@ def _fetch_narrative_info(results, meta):
     # TODO get "display name" (eg. auth service call)
     #  for now we just use username
     sources = [hit['doc'] for hit in results['hits']]
-    # TODO workspace timestamp
-    narr_infos = {s['access_group']: (None, None, 0, s.get('creator', ''), s.get('creator', '')) for s in sources}
-    ws_infos = {
-        s['access_group']: (s['access_group'], '', s.get('creator', ''))
-        for s in sources
-    }
     workspace_ids = [s['access_group'] for s in sources]
     if not workspace_ids:
         return ({}, {})
     narrative_index_name = _CONFIG['global']['ws_type_to_indexes']['KBaseNarrative.Narrative']
     # ES query params
-    search_params = {
+    search_params: dict = {
         'indexes': [narrative_index_name]
-    }  # type: dict
+    }
     if workspace_ids:
         # Filter by workspace ID
         matches = [
@@ -399,15 +413,20 @@ def _fetch_narrative_info(results, meta):
     search_results = _search_objects(search_params, meta)
     # Get all the source document objects for each narrative result
     search_data_sources = [hit['doc'] for hit in search_results['hits']]
+    narr_infos: dict = {}
+    ws_infos: dict = {}
     for narr in search_data_sources:
-        narr_tuple = (
-            narr.get('narrative_title'),
-            narr.get('obj_id'),
-            narr.get('timestamp'),
-            narr.get('creator'),
-            narr.get('creator')  # XXX using username for display name
-        )
-        narr_infos[int(narr['access_group'])] = narr_tuple
+        info = {
+            'type': '',  # TODO
+            'title': narr.get('narrative_title'),
+            'permission': '',  # TODO
+            'is_public': False,  # TODO
+            'owner': {
+                'username': narr.get('creator'),
+                'realname': '',  # TODO
+            }
+        }
+        narr_infos[str(narr['access_group'])] = info
     return (narr_infos, ws_infos)
 
 
