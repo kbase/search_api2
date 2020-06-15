@@ -355,14 +355,15 @@ definitions:
       sortingRules:
         type: array
         items: {"$ref": "#/definitions/sortingRule"}
-      sortingRule:
-        type: object
-        additionalProperties: false
-        properties:
-          is_object_property: {$ref: "#/definitions/sdk_boolean"}
-          property:
-            type: string
-          ascending: {$ref: "#/definitions/sdk_boolean"}
+
+  sortingRule:
+    type: object
+    additionalProperties: false
+    properties:
+      is_object_property: {$ref: "#/definitions/sdk_boolean"}
+      property:
+        type: string
+      ascending: {$ref: "#/definitions/sdk_boolean"}
 
   narrativeInfo:
     type: object
@@ -553,7 +554,7 @@ definitions:
       source_tags:
         type: array
         items: {type: string}
-        source_tags_blacklist: {type: integer}
+      source_tags_blacklist: {type: integer}
 
   # {lookupInKeys: {field_name: MATCH}}
   # MATCH is

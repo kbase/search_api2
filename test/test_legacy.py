@@ -242,7 +242,6 @@ class TestLegacy(unittest.TestCase):
         result = respj['result'][0]
         self.assertEqual(len(result['objects']), 0, msg=f"contents of result = {result}")
 
-    @unittest.skip('x')
     def test_search_types(self):
         """
         Test the `search_types` method which takes a match_filter and
@@ -266,7 +265,6 @@ class TestLegacy(unittest.TestCase):
         self.assertTrue('search_time' in result)
         self.assertEqual(result['type_to_count'], {'Typea': 2, 'Typeb': 2})
 
-    @unittest.skip('x')
     def test_narrative_example(self):
         """
         Test a real example request from the narrative side-panel
@@ -287,21 +285,22 @@ class TestLegacy(unittest.TestCase):
                         'lookupInKeys': {
                             'source': {'string_value': 'refseq'},
                         },
-                        'pagination': {'start': 0, 'count': 20},
-                        'post_processing': {
-                            'ids_only': 0, 'skip_info': 0, 'skip_keys': 0, 'skip_data': 0, 'include_highlight': 0
-                        },
-                        'access_filter': {
-                            'with_private': 0, 'with_public': 1
-                        },
-                        'sorting_rules': [{
-                            'is_object_property': 1, 'property': 'scientific_name_keyword', 'ascending': 1
-                        }]
-                    }
+                    },
+                    'pagination': {'start': 0, 'count': 20},
+                    'post_processing': {
+                        'ids_only': 0, 'skip_info': 0, 'skip_keys': 0, 'skip_data': 0, 'include_highlight': 0
+                    },
+                    'access_filter': {
+                        'with_private': 0, 'with_public': 1
+                    },
+                    'sorting_rules': [{
+                        'is_object_property': 1, 'property': 'obj_name', 'ascending': 1
+                    }]
                 }]
             })
         )
         self.assertTrue(resp.ok, msg=f"resp: {resp.text}")
+        print('resp', resp.text)
         resp_json = resp.json()
         self.assertEqual(resp_json['result'][0]['total'], 0)
 
