@@ -81,7 +81,7 @@ def search_objects(params, meta):
         search_params['highlight'] = {'*': {}}
     search_results = _search_objects(search_params, meta)
     post_processing = params.get('post_processing', {})
-    (narrative_infos, ws_infos) = _fetch_narrative_info(search_results, meta)
+    (narrative_infos, ws_infos) = _fetch_narrative_info(search_results, meta['auth'])
     objects = _get_object_data_from_search_results(search_results, post_processing)
     return [{
         'pagination': params.get('pagination', {}),
