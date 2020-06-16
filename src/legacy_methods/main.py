@@ -38,6 +38,9 @@ import re
 
 from src.methods.search_objects import search_objects as _search_objects
 from src.utils.config import init_config
+from src.utils.formatting import iso8601_to_epoch
+from src.utils.workspace import get_workspace_info
+from src.utils.user_profiles import get_user_profiles
 
 _CONFIG = init_config()
 
@@ -154,7 +157,7 @@ def get_objects(params, meta):
     search_results = _search_objects({'query': {'terms': {'_id': params['guids']}}}, meta)
     objects = _get_object_data_from_search_results(search_results, post_processing)
     # TODO
-    # (narrative_infos, ws_infos) = _fetch_narrative_info(search_results, meta)
+    (ws_infos, narrative_infos) = _fetch_narrative_info(search_results, meta['auth'])
     ret = [{
         'search_time': search_results['search_time'],
         'objects': objects,
@@ -380,7 +383,7 @@ def _get_object_data_from_search_results(search_results, post_processing):
     return object_data
 
 
-def _fetch_narrative_info(results, meta):
+def _fetch_narrative_info(results, auth):
     """
     For each result object, we construct a single bulk query to ES that fetches
     the narrative data. We then construct that data into a "narrative_info"
@@ -391,43 +394,74 @@ def _fetch_narrative_info(results, meta):
     This also returns a dictionary of workspace infos for each object:
     (id, name, owner, save_date, max_objid, user_perm, global_perm, lockstat, metadata)
     """
-    # TODO get "display name" (eg. auth service call)
-    #  for now we just use username
-    sources = [hit['doc'] for hit in results['hits']]
-    workspace_ids = [s['access_group'] for s in sources]
-    if not workspace_ids:
+    hit_docs = [hit['doc'] for hit in results['hits']]
+    workspace_ids = []
+    ws_infos = {}
+    owners = set()
+    for hit_doc in hit_docs:
+        workspace_id = hit_doc['access_group']
+        workspace_ids.append(workspace_id)
+        workspace_info = get_workspace_info(workspace_id, auth)
+        owners.add(workspace_info[2])
+        ws_infos[str(workspace_id)] = workspace_info
+    if len(workspace_ids) == 0:
         return ({}, {})
+    user_profiles = get_user_profiles(owners, auth)
+    user_profile_map = {profile['user']['username']: profile for profile in user_profiles}
     narrative_index_name = _CONFIG['global']['ws_type_to_indexes']['KBaseNarrative.Narrative']
     # ES query params
     search_params: dict = {
-        'indexes': [narrative_index_name]
+        'indexes': [narrative_index_name],
+        'size': len(workspace_ids)
     }
-    if workspace_ids:
-        # Filter by workspace ID
-        matches = [
-            {'match': {'access_group': wsid}}
-            for wsid in workspace_ids
-        ]
-        search_params['bool'] = {'should': matches}
+    # Filter by workspace ID
+    matches = [
+        {'match': {'access_group': wsid}}
+        for wsid in workspace_ids
+    ]
+    search_params['query'] = {
+        'bool': {'should': matches}
+    }
     # Make the query for narratives on ES
-    search_results = _search_objects(search_params, meta)
+    search_results = _search_objects(search_params, auth)
     # Get all the source document objects for each narrative result
-    search_data_sources = [hit['doc'] for hit in search_results['hits']]
-    narr_infos: dict = {}
-    ws_infos: dict = {}
-    for narr in search_data_sources:
-        info = {
-            'type': '',  # TODO
+    narrative_hits = [hit['doc'] for hit in search_results['hits']]
+    narr_infos = {}
+    for narr in narrative_hits:
+        # Note the improved return structure.
+        id = narr['access_group']
+        [workspace_id, workspace_name, owner, moddate,
+         max_objid, user_permission, global_permission,
+         lockstat, ws_metadata] = ws_infos[str(id)]
+        narr_infos[str(id)] = {
+            'type': 'narrative',
             'title': narr.get('narrative_title'),
-            'permission': '',  # TODO
-            'is_public': False,  # TODO
+            'modified_at': narr.get('modified_at'),
+            'permission': user_permission,
+            'is_public': global_permission == 'r',
             'owner': {
-                'username': narr.get('creator'),
-                'realname': '',  # TODO
+                'username': owner,
+                'realname': user_profile_map[owner]['user']['realname']
             }
         }
-        narr_infos[str(narr['access_group'])] = info
-    return (narr_infos, ws_infos)
+    # For objects without a narrative, look up the workspace
+    for id in workspace_ids:
+        if str(id) not in narr_infos:
+            [workspace_id, workspace_name, owner, moddate,
+             max_objid, user_permission, global_permission,
+             lockstat, ws_metadata] = ws_infos[str(id)]
+            narr_infos[str(id)] = {
+                'type': 'workspace',
+                'title': workspace_name,
+                'modified_at': iso8601_to_epoch(moddate),
+                'permission': user_permission,
+                'is_public': global_permission == 'r',
+                'owner': {
+                    'username': owner,
+                    'realname': user_profile_map[owner]['user']['realname']
+                }
+            }
+    return (ws_infos, narr_infos)
 
 
 def _get_guid_from_doc(doc):
