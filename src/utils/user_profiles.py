@@ -6,7 +6,7 @@ from src.utils.config import init_config
 _CONFIG = init_config()
 
 
-def get_user_profiles(usernames, auth_token):
+def get_user_profiles(usernames: list, auth_token):
     """
     Get a list of workspace IDs that the given username is allowed to access in
     the workspace.
@@ -27,6 +27,7 @@ def get_user_profiles(usernames, auth_token):
         data=json.dumps(payload),
         headers=headers,
     )
+    print('xx resp', resp.text)
     if not resp.ok:
         raise RuntimeError(url, resp.text)
     return resp.json()['result'][0]

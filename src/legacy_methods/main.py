@@ -81,7 +81,7 @@ def search_objects(params, meta):
         search_params['highlight'] = {'*': {}}
     search_results = _search_objects(search_params, meta)
     post_processing = params.get('post_processing', {})
-    (narrative_infos, ws_infos) = _fetch_narrative_info(search_results, meta['auth'])
+    (narrative_infos, ws_infos) = _fetch_narrative_info(search_results, meta)
     objects = _get_object_data_from_search_results(search_results, post_processing)
     return [{
         'pagination': params.get('pagination', {}),
@@ -89,8 +89,8 @@ def search_objects(params, meta):
         'total': search_results['count'],
         'search_time': search_results['search_time'],
         'objects': objects,
-        # 'access_group_narrative_info': narrative_infos,
-        # 'access_groups_info': ws_infos
+        'access_group_narrative_info': narrative_infos,
+        'access_groups_info': ws_infos
     }]
 
 
@@ -156,15 +156,12 @@ def get_objects(params, meta):
     post_processing = params.get('post_processing', {})
     search_results = _search_objects({'query': {'terms': {'_id': params['guids']}}}, meta)
     objects = _get_object_data_from_search_results(search_results, post_processing)
-    # TODO
-    (ws_infos, narrative_infos) = _fetch_narrative_info(search_results, meta['auth'])
+    (ws_infos, narrative_infos) = _fetch_narrative_info(search_results, meta)
     ret = [{
         'search_time': search_results['search_time'],
         'objects': objects,
-        # 'access_group_narrative_info': narrative_infos,
-        # 'access_groups_info': ws_infos
-        'access_group_narrative_info': {},
-        'access_groups_info': {},
+        'access_group_narrative_info': narrative_infos,
+        'access_groups_info': ws_infos
     }]
     return ret
 
@@ -383,7 +380,7 @@ def _get_object_data_from_search_results(search_results, post_processing):
     return object_data
 
 
-def _fetch_narrative_info(results, auth):
+def _fetch_narrative_info(results, meta):
     """
     For each result object, we construct a single bulk query to ES that fetches
     the narrative data. We then construct that data into a "narrative_info"
@@ -401,12 +398,13 @@ def _fetch_narrative_info(results, auth):
     for hit_doc in hit_docs:
         workspace_id = hit_doc['access_group']
         workspace_ids.append(workspace_id)
-        workspace_info = get_workspace_info(workspace_id, auth)
-        owners.add(workspace_info[2])
-        ws_infos[str(workspace_id)] = workspace_info
+        workspace_info = get_workspace_info(workspace_id, meta['auth'])
+        if len(workspace_info) > 2:
+            owners.add(workspace_info[2])
+            ws_infos[str(workspace_id)] = workspace_info
     if len(workspace_ids) == 0:
         return ({}, {})
-    user_profiles = get_user_profiles(owners, auth)
+    user_profiles = get_user_profiles(list(owners), meta['auth'])
     user_profile_map = {profile['user']['username']: profile for profile in user_profiles}
     narrative_index_name = _CONFIG['global']['ws_type_to_indexes']['KBaseNarrative.Narrative']
     # ES query params
@@ -423,7 +421,7 @@ def _fetch_narrative_info(results, auth):
         'bool': {'should': matches}
     }
     # Make the query for narratives on ES
-    search_results = _search_objects(search_params, auth)
+    search_results = _search_objects(search_params, meta)
     # Get all the source document objects for each narrative result
     narrative_hits = [hit['doc'] for hit in search_results['hits']]
     narr_infos = {}

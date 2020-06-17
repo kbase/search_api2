@@ -57,7 +57,10 @@ def get_workspace_info(workspace_id, auth_token):
     )
     if not resp.ok:
         raise RuntimeError(ws_url, resp.text)
-    return resp.json()['result'][0]
+    result = resp.json()['result']
+    if not len(result) > 0:
+        raise RuntimeError(ws_url, resp.text)
+    return result[0]
 
 
 def object_info_to_dict(obj_info):
