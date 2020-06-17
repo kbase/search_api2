@@ -1,6 +1,6 @@
 {
   "methods": ["POST"],
-  "path": "/",
+  "path": "/ws",
   "headers": {"Authorization": "invalid_token"},
   "body": {
     "method": "Workspace.list_workspace_ids",

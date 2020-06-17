@@ -265,6 +265,7 @@ class TestLegacy(unittest.TestCase):
         self.assertTrue('search_time' in result)
         self.assertEqual(result['type_to_count'], {'Typea': 2, 'Typeb': 2})
 
+    @unittest.skip('x')
     def test_narrative_example(self):
         """
         Test a real example request from the narrative side-panel

@@ -366,15 +366,13 @@ definitions:
       ascending: {$ref: "#/definitions/sdk_boolean"}
 
   narrativeInfo:
-    type: object
-    additionalProperties: false
-    properties:
-      type: {type: string}
-      title: {type: string}
-      modified_at: {type: integer}
-      permission: {type: string}
-      is_public: {type: boolean}
-      owner: {$ref: "#/definitions/userBrief"}
+    type: array
+    items:
+      - {type: string, title: "Narrative Name"}
+      - {type: integer, title: "Narrative ID"}
+      - {type: integer, title: "Time Last Saved (Epoch)"}
+      - {type: string, title: "Owner User Name"}
+      - {type: string, title: "Owner Display Name"}
 
   userBrief:
     type: object

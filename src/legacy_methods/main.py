@@ -39,8 +39,8 @@ import re
 from src.methods.search_objects import search_objects as _search_objects
 from src.utils.config import init_config
 from src.utils.formatting import iso8601_to_epoch
-from src.utils.workspace import get_workspace_info
 from src.utils.user_profiles import get_user_profiles
+from src.utils.workspace import get_workspace_info
 
 _CONFIG = init_config()
 
@@ -81,7 +81,7 @@ def search_objects(params, meta):
         search_params['highlight'] = {'*': {}}
     search_results = _search_objects(search_params, meta)
     post_processing = params.get('post_processing', {})
-    (narrative_infos, ws_infos) = _fetch_narrative_info(search_results, meta)
+    (ws_infos, narrative_infos) = _fetch_narrative_info(search_results, meta)
     objects = _get_object_data_from_search_results(search_results, post_processing)
     return [{
         'pagination': params.get('pagination', {}),
@@ -427,38 +427,19 @@ def _fetch_narrative_info(results, meta):
     narr_infos = {}
     for narr in narrative_hits:
         # Note the improved return structure.
-        id = narr['access_group']
+        _id = narr['access_group']
+        if _id not in ws_infos:
+            continue
         [workspace_id, workspace_name, owner, moddate,
          max_objid, user_permission, global_permission,
-         lockstat, ws_metadata] = ws_infos[str(id)]
-        narr_infos[str(id)] = {
-            'type': 'narrative',
-            'title': narr.get('narrative_title'),
-            'modified_at': narr.get('modified_at'),
-            'permission': user_permission,
-            'is_public': global_permission == 'r',
-            'owner': {
-                'username': owner,
-                'realname': user_profile_map[owner]['user']['realname']
-            }
-        }
-    # For objects without a narrative, look up the workspace
-    for id in workspace_ids:
-        if str(id) not in narr_infos:
-            [workspace_id, workspace_name, owner, moddate,
-             max_objid, user_permission, global_permission,
-             lockstat, ws_metadata] = ws_infos[str(id)]
-            narr_infos[str(id)] = {
-                'type': 'workspace',
-                'title': workspace_name,
-                'modified_at': iso8601_to_epoch(moddate),
-                'permission': user_permission,
-                'is_public': global_permission == 'r',
-                'owner': {
-                    'username': owner,
-                    'realname': user_profile_map[owner]['user']['realname']
-                }
-            }
+         lockstat, ws_metadata] = ws_infos[str(_id)]
+        narr_infos[str(_id)] = [
+            '',  # TODO name
+            0,  # TODO narrative object ID TODO
+            iso8601_to_epoch(moddate),  # Save date as an epoch
+            owner,
+            user_profile_map[owner]['user']['realname'],
+        ]
     return (ws_infos, narr_infos)
 
 

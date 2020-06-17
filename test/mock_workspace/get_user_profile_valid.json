@@ -1,0 +1,140 @@
+{
+  "methods": ["POST"],
+  "path": "/user_profile/rpc",
+  "headers": {"Authorization": "valid_token"},
+  "body": {
+    "method": "UserProfile.get_user_profile",
+    "version": "1.1",
+    "params": [["username"]]
+  },
+  "response": {
+    "status": "200",
+    "body": {
+        "version": "1.1",
+        "result": [
+            [
+                {
+                    "user": {
+                        "username": "username",
+                        "realname": "User Example"
+                    },
+                    "profile": {
+                        "metadata": {
+                            "createdBy": "userprofile_ui_service",
+                            "created": "2018-06-06T17:28:20.964Z"
+                        },
+                        "preferences": {},
+                        "userdata": {
+                            "organization": "Org",
+                            "department": "Dept",
+                            "city": "Berkeley",
+                            "state": "California",
+                            "postalCode": "94703",
+                            "country": "United States",
+                            "researchStatement": "Research Statement",
+                            "researchInterests": [
+                                "Comparative Genomics",
+                                "Expression",
+                                "Genome Annotation",
+                                "Genome Assembly",
+                                "Metabolic Modeling",
+                                "Microbial Communities",
+                                "Other",
+                                "Read Processing",
+                                "Sequence Analysis",
+                                "Utilities"
+                            ],
+                            "affiliations": [
+                                {
+                                    "title": "CEO",
+                                    "organization": "Hellenic College-Holy Cross Greek Orthodox School of Theology",
+                                    "started": 1280,
+                                    "ended": 1294
+                                }
+                            ],
+                            "fundingSource": "USDA - Forest Service (FS)",
+                            "gravatarDefault": "2",
+                            "avatarOption": "0",
+                            "jobTitle": "CEO"
+                        },
+                        "synced": {
+                            "gravatarHash": "f5566303ee95cf08cdfc0cc21dc74707"
+                        },
+                        "plugins": {
+                            "data-search": {
+                                "settings": {
+                                    "history": {
+                                        "search": {
+                                            "history": [
+                                                "coli",
+                                                "radiodurans",
+                                                "shigella",
+                                                "GCF_000214415.1",
+                                                "GCF_000016525.1",
+                                                "GCF_004368345.1_assembly",
+                                                "genome",
+                                                "44640/12/1",
+                                                "GCF_001560115.1",
+                                                "15792/176281/2"
+                                            ],
+                                            "time": {
+                                                "$numberLong": "1592245076571"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "public-search": {
+                                "settings": {
+                                    "history": {
+                                        "history": [
+                                            "coli",
+                                            "bacteria",
+                                            "rhodobacter",
+                                            "variovorax",
+                                            "shewanella",
+                                            "test"
+                                        ],
+                                        "time": {
+                                            "$numberLong": "1565839769030"
+                                        }
+                                    }
+                                }
+                            },
+                            "jgi-search": {
+                                "settings": {
+                                    "history": {
+                                        "search": {
+                                            "history": [
+                                                "coli",
+                                                "rhodobacter",
+                                                "rhodo",
+                                                "halo"
+                                            ],
+                                            "time": {
+                                                "$numberLong": "1555015444210"
+                                            }
+                                        },
+                                        "jobsbrowser": {
+                                            "history": [],
+                                            "time": {
+                                                "$numberLong": "1575135294111"
+                                            }
+                                        }
+                                    },
+                                    "jgiDataTerms": {
+                                        "agreed": true,
+                                        "time": {
+                                            "$numberLong": "1555015360963"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        ]
+    }
+  }
+}

@@ -12,7 +12,7 @@ services:
         DEVELOPMENT: 1
     depends_on:
       - elasticsearch
-      - workspace
+      - mock_kbase_services
     volumes:
       - ${PWD}:/app
     ports:
@@ -21,7 +21,8 @@ services:
       - DEVELOPMENT=1
       - PYTHONUNBUFFERED=true
       - ELASTICSEARCH_URL=http://elasticsearch:9200
-      - WORKSPACE_URL=http://workspace:5000
+      - WORKSPACE_URL=http://mock_kbase_services:5000/ws
+      - USER_PROFILE_URL=http://mock_kbase_services:5000/user_profile/rpc
 
   test:
     build:
@@ -43,8 +44,8 @@ services:
       - "127.0.0.1:9200:9200"
       - "127.0.0.1:9300:9300"
 
-  # Mock workspace server (see src/test/mock_workspace/endpoints.json)
-  workspace:
+  # Mock KBase servers (see src/test/mock_workspace/endpoints.json)
+  mock_kbase_services:
     image: mockservices/mock_json_service
     volumes:
       - ${PWD}/test/mock_workspace:/config

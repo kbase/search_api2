@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 
 
 def iso8601_to_epoch(time_string):

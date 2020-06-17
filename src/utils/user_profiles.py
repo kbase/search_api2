@@ -27,7 +27,6 @@ def get_user_profiles(usernames: list, auth_token):
         data=json.dumps(payload),
         headers=headers,
     )
-    print('xx resp', resp.text)
     if not resp.ok:
         raise RuntimeError(url, resp.text)
     return resp.json()['result'][0]
