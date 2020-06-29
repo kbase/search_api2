@@ -4,7 +4,7 @@ import os
 import functools
 
 
-@functools.lru_cache(maxsize=1)
+@functools.lru_cache(maxsize=2)
 def init_config():
     """
     Initialize configuration data for the whole app
@@ -32,8 +32,4 @@ def init_config():
         'index_prefix': index_prefix,
         'workspace_url': ws_url,
         'user_profile_url': user_profile_url,
-        'workers': int(os.environ.get('WORKERS', 8)),
     }
-
-
-config = init_config()

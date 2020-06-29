@@ -2,10 +2,9 @@
 
 set -e
 
-export PYTHONPATH=/app
+export PYTHONPATH=.
 
-flake8 src test
-mypy --ignore-missing-imports src
-bandit -r src
-python test/wait_for_service.py
-python -m unittest discover test/
+poetry run flake8
+poetry run mypy --ignore-missing-imports src/**/*.py
+poetry run bandit -r src
+poetry run pytest -vv test/server

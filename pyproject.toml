@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "kbase_search2"
+version = "0.0.1"
+description = "Search API"
+authors = ["Your Name <you@example.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "3.7"
+sanic = "20.6.3"
+requests = "2.24.0"
+jsonschema = "3.2.0"
+pyyaml = "5.3.1"
+kbase-jsonrpcbase = "^0.3.0-alpha.4"
+
+[tool.poetry.dev-dependencies]
+mypy = "^0.782"
+bandit = "^1.6.2"
+mccabe = "^0.6.1"
+flake8 = "^3.8.3"
+coverage = "^5.1"
+pytest = "^5.4.3"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

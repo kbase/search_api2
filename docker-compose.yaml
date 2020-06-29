@@ -8,11 +8,8 @@ services:
   web:
     build:
       context: .
-      args:
-        DEVELOPMENT: 1
     depends_on:
       - elasticsearch
-      - mock_kbase_services
     volumes:
       - ${PWD}:/app
     ports:
@@ -21,17 +18,7 @@ services:
       - DEVELOPMENT=1
       - PYTHONUNBUFFERED=true
       - ELASTICSEARCH_URL=http://elasticsearch:9200
-      - WORKSPACE_URL=http://mock_kbase_services:5000/ws
-      - USER_PROFILE_URL=http://mock_kbase_services:5000/user_profile/rpc
-
-  test:
-    build:
-      context: .
-      dockerfile: Dockerfile.test
-    depends_on:
-      - web
-    volumes:
-      - ${PWD}:/app
+      - WORKERS=2
 
   elasticsearch:
     image: elasticsearch:7.5.0
@@ -43,9 +30,3 @@ services:
     ports:
       - "127.0.0.1:9200:9200"
       - "127.0.0.1:9300:9300"
-
-  # Mock KBase servers (see src/test/mock_workspace/endpoints.json)
-  mock_kbase_services:
-    image: mockservices/mock_json_service
-    volumes:
-      - ${PWD}/test/mock_workspace:/config

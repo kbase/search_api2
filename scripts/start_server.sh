@@ -2,4 +2,4 @@
 set -e
 
 export PYTHONPATH=/app
-python /app/src/server/main.py
+python -m src.server

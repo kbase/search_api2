@@ -85,16 +85,22 @@ A JSON RPC 1.1 API that mimics the legacy Java server, [found here](https://gith
 
 ## Development
 
-Start the server:
+Set up the python environment:
 
-```sh
-docker-compose up
-```
+1. Install Python 3.7 (we suggest using [pyenv](https://github.com/pyenv/pyenv))
+1. Install poetry with `pip install poetry`
 
-Run the tests:
+
+Run all tests and linters with:
 
 ```sh
 make test
+```
+
+Run individual tests with:
+
+```sh
+poetry run pytest test/xyz
 ```
 
 ### Deploying to Dockerhub
