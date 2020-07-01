@@ -4,6 +4,15 @@ This is a small HTTP interface around KBase's elasticsearch indexes.
 
 ## API
 
+This service has two JSON-RPC 2.0 endpoints:
+
+* `/legacy` - mirrors the old Java JSON-RPC 1.1 methods
+* `/rpc` - newer API using the Elasticsearch Query DSL
+
+The JSON-Schemas for the legacy methods can be found in `legacy-schema.yaml`
+
+The JSON-Schemas for the newer methods (/rpc) can be found in `rpc-schema.yaml`
+
 ### Documents and indexes
 
 The [search configuration file](https://github.com/kbase/index_runner_spec/blob/master/config.yaml) details all of the indexes and document types found in the KBase Elasticsearch database.
@@ -17,18 +26,13 @@ The [search configuration file](https://github.com/kbase/index_runner_spec/blob/
 
 ### <url>/rpc
 
-Uses JSON RPC 2.0 format, so all requests should:
+Uses [JSON RPC 2.0 format](https://www.jsonrpc.org/specification).
 
-* be a POST request
-* have a JSON object in the request body
-* have a "method" property (string)
-* have a "params" property (object)
+One exception is handling auth, which should be a KBase token passed in the `Authorization` header.
 
 #### `search_objects`
 
 Generic search endpoint. Refer to the [Elasticsearch 7 Request Body Search](https://www.elastic.co/guide/en/elasticsearch/reference/7.x/search-request-body.html) documentation, as well as the pages on [aggregations](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations.html), [sorting](https://www.elastic.co/guide/en/elasticsearch/reference/7.5/search-request-body.html#request-body-search-sort), and [highlighting](https://www.elastic.co/guide/en/elasticsearch/reference/7.5/search-request-body.html#request-body-search-highlighting).
-
-See [method_schemas.yaml](./src/server/method_schemas.yaml) for JSON Schemas of the request parameters and results.
 
 _Example request_
 
@@ -66,22 +70,9 @@ requests.post(
 
 Show the names of all indexes, and show what aliases stand for what indexes.
 
-See [method_schemas.yaml](./src/server/method_schemas.yaml) for JSON Schemas of the request parameters and results.
-
-#### Error codes
-
-In a JSON RPC error response, you will find the following error codes:
-
-* `-32000` - Internal server error
-* `-32601` - Invalid method
-* `-32602` - Invalid request params
-* `-32700` - JSON parsing error
-
-More useful details of the error will be found in the `message` and `data` properties in the response.
-
 ### <url>/legacy
 
-A JSON RPC 1.1 API that mimics the legacy Java server, [found here](https://github.com/kbase/KBaseSearchEngin://github.com/kbase/KBaseSearchEngine). Refer to the KBaseSearchEngine.spec KIDL file for the API.
+A JSON-RPC 2.0 API that mimics the legacy Java server, [found here](https://github.com/kbase/KBaseSearchEngin://github.com/kbase/KBaseSearchEngine). Refer to the `legacy-schema.yaml` file for a reference on the method parameter types.
 
 ## Development
 
@@ -89,7 +80,6 @@ Set up the python environment:
 
 1. Install Python 3.7 (we suggest using [pyenv](https://github.com/pyenv/pyenv))
 1. Install poetry with `pip install poetry`
-
 
 Run all tests and linters with:
 
@@ -102,7 +92,3 @@ Run individual tests with:
 ```sh
 poetry run pytest test/xyz
 ```
-
-### Deploying to Dockerhub
-
-Increment the docker image tag semver found in `scripts/local-deploy.sh` and run `sh scripts/local-deploy.sh`

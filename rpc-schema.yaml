@@ -1,6 +1,6 @@
 ---
 $schema: http://json-schema.org/draft-07/schema#
-title: Legacy search methods
+title: Search2 Method Schemas
 # JSON Schema definitions for every RPC method in this service
 definitions:
 

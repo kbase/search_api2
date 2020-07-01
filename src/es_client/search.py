@@ -4,17 +4,12 @@ Search objects on elasticsearch
 import re
 import json
 import requests
-import logging
 
-from src.utils.workspace_auth import ws_auth
-from src.utils.config import init_config
-
-_CONFIG = init_config()
-
-logger = logging.getLogger('searchapi2')
+from src.utils.workspace import ws_auth
+from src.utils.config import config
 
 
-def search_objects(params, meta):
+def search(params, meta):
     """
     Make a query on elasticsearch using the given index and options.
 
@@ -56,7 +51,7 @@ def search_objects(params, meta):
             }
         }
     # Make a query request to elasticsearch
-    url = _CONFIG['elasticsearch_url'] + '/' + index_name_str + '/_search'
+    url = config['elasticsearch_url'] + '/' + index_name_str + '/_search'
     options = {
         'query': query,
         'size': 0 if params.get('count') else params.get('size', 10),
@@ -79,6 +74,8 @@ def search_objects(params, meta):
         options['highlight'] = {'fields': params['highlight']}
     if params.get('track_total_hits'):
         options['track_total_hits'] = params.get('track_total_hits')
+    # Disallow expensive queries, such as joins, to prevent any denial of service
+    options['search'] = {'allow_expensive_queries': False}
     headers = {'Content-Type': 'application/json'}
     resp = requests.post(url, data=json.dumps(options), headers=headers)
     if not resp.ok:
@@ -94,7 +91,7 @@ def _handle_response(resp_json):
     Translation layer between the Elasticsearch response and our API's response.
     When the Elasticsearch API changes, we need to update this function.
     """
-    prefix = _CONFIG['index_prefix']
+    prefix = config['index_prefix']
     hits = []
     for hit in resp_json['hits']['hits']:
         # Display the index name without prefix
@@ -138,7 +135,7 @@ def _construct_index_name(params):
     See the docs about how this works:
         https://www.elastic.co/guide/en/elasticsearch/reference/current/multi-index.html
     """
-    prefix = _CONFIG['index_prefix']
+    prefix = config['index_prefix']
     # index_name_str = prefix + "."
     index_name_str = prefix + ".default_search"
     if params.get('indexes'):

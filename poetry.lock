@@ -153,7 +153,7 @@ description = "Chromium HSTS Preload list as a Python package and updated daily"
 name = "hstspreload"
 optional = false
 python-versions = ">=3.6"
-version = "2020.6.23"
+version = "2020.6.30"
 
 [[package]]
 category = "main"
@@ -245,7 +245,7 @@ description = "Simple JSON-RPC service without transport layer"
 name = "kbase-jsonrpcbase"
 optional = false
 python-versions = ">=3.6,<4.0"
-version = "0.3.0a4"
+version = "0.3.0a5"
 
 [package.dependencies]
 jsonschema = ">=3.2.0,<4.0.0"
@@ -576,8 +576,8 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "4e3318db10bd27d704a72b30d6a5896124f41df8b8472a7c8bdc62270b6b36bb"
-python-versions = "3.7"
+content-hash = "d73fbcbc3eab39e27c57ea47002ad6ad014826e61628a82646a075bd14dbd5d6"
+python-versions = "^3.7"
 
 [metadata.files]
 aiofiles = [
@@ -666,8 +666,8 @@ hpack = [
     {file = "hpack-3.0.0.tar.gz", hash = "sha256:8eec9c1f4bfae3408a3f30500261f7e6a65912dc138526ea054f9ad98892e9d2"},
 ]
 hstspreload = [
-    {file = "hstspreload-2020.6.23-py3-none-any.whl", hash = "sha256:8eb6a839c39d0995bfac3213dc08de780bb3d4d4386d9958ea29d86f20fd3659"},
-    {file = "hstspreload-2020.6.23.tar.gz", hash = "sha256:4c55cb73ebe3549277a4e5e5a95867350cd3888ebe09d41f61a42718e4a3909e"},
+    {file = "hstspreload-2020.6.30-py3-none-any.whl", hash = "sha256:35db8d932228c2782bf0e3fdb143a54263238593f6df431458c89b006898e5f2"},
+    {file = "hstspreload-2020.6.30.tar.gz", hash = "sha256:81225e82207ec316a774e5d130454327752853dfaf347b2bf4d21e524cc49efa"},
 ]
 httptools = [
     {file = "httptools-0.1.1-cp35-cp35m-macosx_10_13_x86_64.whl", hash = "sha256:a2719e1d7a84bb131c4f1e0cb79705034b48de6ae486eb5297a139d6a3296dce"},
@@ -704,8 +704,8 @@ jsonschema = [
     {file = "jsonschema-3.2.0.tar.gz", hash = "sha256:c8a85b28d377cc7737e46e2d9f2b4f44ee3c0e1deac6bf46ddefc7187d30797a"},
 ]
 kbase-jsonrpcbase = [
-    {file = "kbase_jsonrpcbase-0.3.0a4-py3-none-any.whl", hash = "sha256:192b355f5a665524ebba55bd23e4c78d2adc9e8045eeb89f0cefd956c30900eb"},
-    {file = "kbase_jsonrpcbase-0.3.0a4.tar.gz", hash = "sha256:60d2abd25ea129d301b6ae59904e385ae0c7f3eebcee444ac0c7f1ab73435ca0"},
+    {file = "kbase_jsonrpcbase-0.3.0a5-py3-none-any.whl", hash = "sha256:1306bebf9af7f7911a5b5478eef60d40d7b9098d5467adaa06b17fe2780513e5"},
+    {file = "kbase_jsonrpcbase-0.3.0a5.tar.gz", hash = "sha256:6723eccb8a7722a29e6ef99a13b33f33e9735438ee5e4a4d612d448c2820874d"},
 ]
 mccabe = [
     {file = "mccabe-0.6.1-py2.py3-none-any.whl", hash = "sha256:ab8a6258860da4b6677da4bd2fe5dc2c659cff31b3ee4f7f5d64e79735b80d42"},
