@@ -56,7 +56,9 @@ def search(params, meta):
         'query': query,
         'size': 0 if params.get('count') else params.get('size', 10),
         'from': params.get('from', 0),
-        'timeout': '3m'
+        'timeout': '3m',
+        # Disallow expensive queries, such as joins, to prevent any denial of service
+        # 'search': {'allow_expensive_queries': False},
     }
     if not params.get('count') and params.get('size', 10) > 0 and not params.get('track_total_hits'):
         options['terminate_after'] = 10000
@@ -74,8 +76,6 @@ def search(params, meta):
         options['highlight'] = {'fields': params['highlight']}
     if params.get('track_total_hits'):
         options['track_total_hits'] = params.get('track_total_hits')
-    # Disallow expensive queries, such as joins, to prevent any denial of service
-    options['search'] = {'allow_expensive_queries': False}
     headers = {'Content-Type': 'application/json'}
     resp = requests.post(url, data=json.dumps(options), headers=headers)
     if not resp.ok:

@@ -27,7 +27,7 @@ def search_objects(params, results, meta):
     post_processing = params.get('post_processing', {})
     (ws_infos, narrative_infos) = _fetch_narrative_info(results, meta)
     objects = _get_object_data_from_search_results(results, post_processing)
-    return [{
+    return {
         'pagination': params.get('pagination', {}),
         'sorting_rules': params.get('sorting_rules', []),
         'total': results['count'],
@@ -35,7 +35,7 @@ def search_objects(params, results, meta):
         'objects': objects,
         'access_group_narrative_info': narrative_infos,
         'access_groups_info': ws_infos
-    }]
+    }
 
 
 def search_types(params, results, meta):
@@ -50,10 +50,10 @@ def search_types(params, results, meta):
     for count_obj in buckets:
         counts_dict[count_obj['key']] = counts_dict.get(count_obj['key'], 0)
         counts_dict[count_obj['key']] += count_obj['count']
-    return [{
+    return {
         'type_to_count': counts_dict,
         'search_time': int(search_time)
-    }]
+    }
 
 
 def get_objects(params, results, meta):
@@ -64,12 +64,12 @@ def get_objects(params, results, meta):
     post_processing = params.get('post_processing', {})
     objects = _get_object_data_from_search_results(results, post_processing)
     (ws_infos, narrative_infos) = _fetch_narrative_info(results, meta)
-    ret = [{
+    ret = {
         'search_time': results['search_time'],
         'objects': objects,
         'access_group_narrative_info': narrative_infos,
         'access_groups_info': ws_infos
-    }]
+    }
     return ret
 
 

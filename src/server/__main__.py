@@ -3,6 +3,7 @@ import sanic
 import traceback
 
 from src.search1_rpc import service as legacy_service
+from src.search2_rpc import service as rpc_service
 from src.utils.config import config
 from src.utils.logger import logger
 from src.utils.wait_for_service import wait_for_service
@@ -17,7 +18,7 @@ async def cors_options(request):
         return sanic.response.raw(b'', status=204)
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'OPTIONS'])
 @app.route('/status', methods=['GET', 'OPTIONS'])
 async def health_check(request):
     """No-op."""
@@ -27,10 +28,9 @@ async def health_check(request):
 @app.route('/rpc', methods=['POST', 'GET', 'OPTIONS'])
 async def root(request):
     """Handle JSON RPC methods."""
-    return sanic.response.text('{}', content_type='application/json')
-    # auth = request.headers.get('Authorization')
-    # result = service.call(request.body, {'auth': auth})
-    # return sanic.response.text(result, content_type='application/json')
+    auth = request.headers.get('Authorization')
+    result = rpc_service.call(request.body, {'auth': auth})
+    return sanic.response.text(result, content_type='application/json')
 
 
 @app.route('/legacy', methods=['POST', 'GET', 'OPTIONS'])

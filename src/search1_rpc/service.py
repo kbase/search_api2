@@ -27,18 +27,22 @@ service = jsonrpcbase.JSONRPCService(
 
 
 def get_objects(params, meta):
+    if isinstance(params, list) and len(params) == 1:
+        params = params[0]
     start = time.time()
     query = convert_params.get_objects(params)
-    result = convert_result.get_objects(search(query))
+    result = convert_result.get_objects(params, search(query, meta), meta)
     logger.debug(f'Finished get_objects in {time.time() - start}s')
     # KBase convention is to return result in a singleton list
     return [result]
 
 
 def search_objects(params, meta):
+    if isinstance(params, list) and len(params) == 1:
+        params = params[0]
     start = time.time()
     query = convert_params.search_objects(params)
-    result = convert_result.search_objects(search(query))
+    result = convert_result.search_objects(params, search(query, meta), meta)
     logger.debug(f'Finished search_objects in {time.time() - start}s')
     # KBase convention is to return result in a singleton list
     return [result]
@@ -47,7 +51,7 @@ def search_objects(params, meta):
 def search_types(params, meta):
     start = time.time()
     query = convert_params.search_types(params)
-    result = convert_result.search_types(search(query))
+    result = convert_result.search_types(params, search(query, meta), meta)
     logger.debug(f'Finished search_types in {time.time() - start}s')
     # KBase convention is to return result in a singleton list
     return [result]
