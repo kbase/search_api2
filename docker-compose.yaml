@@ -10,6 +10,7 @@ services:
       context: .
     depends_on:
       - elasticsearch
+      - mock_kbase_services
     volumes:
       - ${PWD}:/app
     ports:
@@ -18,10 +19,11 @@ services:
       - DEVELOPMENT=1
       - PYTHONUNBUFFERED=true
       - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - WORKSPACE_URL=http://mock_kbase_services:5000/ws
       - WORKERS=2
 
   elasticsearch:
-    image: elasticsearch:7.5.0
+    image: elasticsearch:7.8.0
     environment:
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - bootstrap.memory_lock=true

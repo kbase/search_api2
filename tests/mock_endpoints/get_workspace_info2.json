@@ -1,6 +1,6 @@
 {
   "methods": ["POST"],
-  "path": "/ws",
+  "path": "",
   "headers": {"Authorization": "valid_token"},
   "body": {
     "method": "Workspace.get_workspace_info",

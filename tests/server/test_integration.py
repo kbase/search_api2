@@ -9,7 +9,7 @@ BASE_URL = "http://localhost:5000"
 
 # Start the services
 # This implicitly tests the "/" path
-subprocess.Popen("docker-compose up -d", shell=True)
+subprocess.run("docker-compose up -d", shell=True)
 wait_for_service(BASE_URL, "search2")
 helpers.init_elasticsearch()
 

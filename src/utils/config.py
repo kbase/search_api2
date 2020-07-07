@@ -1,17 +1,16 @@
 import yaml
 import urllib.request
 import os
-import functools
 
 
-@functools.lru_cache(maxsize=1)
 def init_config():
     """
     Initialize configuration data for the whole app
     """
     ws_url = os.environ.get('WORKSPACE_URL', 'https://ci.kbase.us/services/ws').strip('/')
-    es_url = os.environ.get('ELASTICSEARCH_URL', 'http://elasticsearch:9200').strip('/')
+    es_url = os.environ.get('ELASTICSEARCH_URL', 'http://localhost:9200').strip('/')
     index_prefix = os.environ.get('INDEX_PREFIX', 'test')
+    prefix_delimiter = os.environ.get('INDEX_PREFIX_DELIMITER', '_')
     config_url = os.environ.get(
         'GLOBAL_CONFIG_URL',
         'https://github.com/kbase/index_runner_spec/releases/latest/download/config.yaml'
@@ -30,6 +29,7 @@ def init_config():
         'global': global_config,
         'elasticsearch_url': es_url,
         'index_prefix': index_prefix,
+        'prefix_delimiter': prefix_delimiter,
         'workspace_url': ws_url,
         'user_profile_url': user_profile_url,
         'workers': int(os.environ.get('WORKERS', 8)),

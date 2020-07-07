@@ -7,19 +7,21 @@ import requests
 
 from src.utils.workspace import ws_auth
 from src.utils.config import config
+from src.utils.get_path import get_path
+from src.exceptions import UnknownIndex
 
 
 def search(params, meta):
     """
     Make a query on elasticsearch using the given index and options.
 
-    See method_schemas.json for a definition of the params
+    See rpc-schema.yaml for a definition of the params
 
-    ES 5.5 search query documentation:
-    https://www.elastic.co/guide/en/elasticsearch/reference/5.5/search-request-body.html
+    ES 7 search query documentation:
+    https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html
     """
     user_query = params.get('query')
-    authorized_ws_ids = []  # type: list
+    authorized_ws_ids = []
     if not params.get('public_only') and meta['auth']:
         # Fetch the workspace IDs that the user can read
         # Used for simple access control
@@ -77,13 +79,28 @@ def search(params, meta):
     if params.get('track_total_hits'):
         options['track_total_hits'] = params.get('track_total_hits')
     headers = {'Content-Type': 'application/json'}
-    resp = requests.post(url, data=json.dumps(options), headers=headers)
+    # Allows index exclusion; otherwise there is an error
+    params = {'allow_no_indices': 'true'}
+    resp = requests.post(url, data=json.dumps(options), params=params, headers=headers)
     if not resp.ok:
-        # Unexpected elasticsearch error
-        raise RuntimeError(resp.text)
+        _handle_es_err(resp)
     resp_json = resp.json()
     result = _handle_response(resp_json)
     return result
+
+
+def _handle_es_err(resp):
+    """Handle a non-2xx response from Elasticsearch."""
+    try:
+        resp_json = resp.json()
+    except Exception:
+        raise RuntimeError(resp.text)
+    err_type = get_path(resp_json, ['error', 'root_cause', 0, 'type'])
+    err_reason = get_path(resp_json, ['error', 'root_cause', 0, 'reason'])
+    if err_type is None:
+        raise RuntimeError(resp.text)
+    if err_type == 'index_not_found_exception':
+        raise UnknownIndex(err_reason)
 
 
 def _handle_response(resp_json):
@@ -136,18 +153,21 @@ def _construct_index_name(params):
         https://www.elastic.co/guide/en/elasticsearch/reference/current/multi-index.html
     """
     prefix = config['index_prefix']
-    # index_name_str = prefix + "."
-    index_name_str = prefix + ".default_search"
+    delim = config['prefix_delimiter']
+    index_name_str = prefix + delim + "default_search"
     if params.get('indexes'):
         index_names = [
-            prefix + '.' + name.lower()
+            prefix + delim + name.lower()
             for name in params['indexes']
         ]
         # Replace the index_name_str with all explicitly included index names
         index_name_str = ','.join(index_names)
+    # FIXME could not get `-indexname` in the url to work at all
     # Append any index name exclusions, if necessary
-    if params.get('exclude_indexes'):
-        exclusions = params['exclude_indexes']
-        exclusions_str = ','.join('-' + prefix + '.' + name for name in exclusions)
-        index_name_str += ',' + exclusions_str
+    # if params.get('exclude_indexes'):
+    #     exclusions = params['exclude_indexes']
+    #     # FIXME I could not get exclusions (prefixed with minus sign) to work
+    #     # without an asterisk
+    #     exclusions_str = ','.join('-' + prefix + '*' + name for name in exclusions)
+    #     index_name_str += ',' + exclusions_str
     return index_name_str

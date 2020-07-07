@@ -1,9 +1,7 @@
 import json
 import requests
 
-from src.utils.config import init_config
-
-_CONFIG = init_config()
+from src.utils.config import config
 
 
 def get_user_profiles(usernames: list, auth_token):
@@ -13,7 +11,7 @@ def get_user_profiles(usernames: list, auth_token):
     """
     if not auth_token:
         return []  # anonymous users
-    url = _CONFIG['user_profile_url']
+    url = config['user_profile_url']
     # TODO session cache this
     # Make a request to the workspace using the user's auth token to find their readable workspace IDs
     payload = {

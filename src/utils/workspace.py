@@ -4,9 +4,8 @@ Workspace user authentication: find workspaces the user can search
 import json
 import requests
 
-from src.utils.config import init_config
-
-_CONFIG = init_config()
+from src.utils.config import config
+from src.exceptions import UnauthorizedAccess
 
 
 def ws_auth(auth_token):
@@ -16,7 +15,7 @@ def ws_auth(auth_token):
     """
     if not auth_token:
         return []  # anonymous users
-    ws_url = _CONFIG['workspace_url']
+    ws_url = config['workspace_url']
     # TODO session cache this
     # Make a request to the workspace using the user's auth token to find their readable workspace IDs
     payload = {
@@ -31,7 +30,8 @@ def ws_auth(auth_token):
         headers=headers,
     )
     if not resp.ok:
-        raise RuntimeError(ws_url, resp.text)
+        # TODO raise server error on non-auth error
+        raise UnauthorizedAccess(ws_url, resp.text)
     return resp.json()['result'][0]['workspaces']
 
 
@@ -41,7 +41,7 @@ def get_workspace_info(workspace_id, auth_token):
     """
     if not auth_token:
         return []  # anonymous users
-    ws_url = _CONFIG['workspace_url']
+    ws_url = config['workspace_url']
     # TODO session cache this
     # Make a request to the workspace using the user's auth token to find their readable workspace IDs
     payload = {

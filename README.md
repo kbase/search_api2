@@ -92,3 +92,7 @@ Run individual tests with:
 ```sh
 poetry run pytest test/xyz
 ```
+
+Note that if you change index names or docs within the database init script
+(`init_elasticsearch.py`), then you will likely need to remove and recreate the
+volume for the Elasticsearch service to see the changes. You can do this with `docker-compose down -v`.
