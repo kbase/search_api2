@@ -115,27 +115,6 @@ def get_objects(params):
     return query
 
 
-# TODO move into rpc service
-def server_status(params, meta):
-    """
-    Example status response from the Java API:
-    [{
-        "state": "OK",
-        "message":"",
-        "version":"0.2.2-dev1",
-        "git_url":"https://github.com/kbase/KBaseSearchEngine.git",
-        "git_commit_hash":"1935768d49d0fe6032a1195de10156d9f319d8ce"}]
-    }]
-    """
-    return [{
-        'state': 'OK',
-        'version': '',
-        'message': '',
-        'git_url': '',
-        'git_commit_hash': ''
-    }]
-
-
 def _get_search_params(params):
     """
     Construct object search parameters from a set of legacy request parameters.
@@ -151,14 +130,16 @@ def _get_search_params(params):
     if match_filter.get('object_name'):
         query['bool']['must'] = query['bool'].get('must', [])
         query['bool']['must'].append({'match': {'obj_name': str(match_filter['object_name'])}})
-    if match_filter.get('timestamp'):
+    if match_filter.get('timestamp') is not None:
         ts = match_filter['timestamp']
-        min_ts = ts.get('min_date') or ts.get('min_int') or ts.get('min_double')
-        max_ts = ts.get('max_date') or ts.get('max_int') or ts.get('max_double')
-        if min_ts and max_ts:
+        min_ts = ts.get('min_date')
+        max_ts = ts.get('max_date')
+        print('min_ts and max_ts', min_ts, max_ts)
+        if min_ts is not None and max_ts is not None and min_ts < max_ts:
             query['bool']['must'] = query['bool'].get('must', [])
             query['bool']['must'].append({'range': {'timestamp': {'gte': min_ts, 'lte': max_ts}}})
         else:
+            # TODO proper error
             raise RuntimeError("Invalid timestamp range in match_filter/timestamp.")
     # Handle a search on tags, which corresponds to the generic `tags` field in all indexes.
     if match_filter.get('source_tags'):
@@ -188,13 +169,17 @@ def _get_search_params(params):
     sorting_rules = params.get('sorting_rules', [])
     sort = []  # type: list
     for sort_rule in sorting_rules:
-        if sort_rule.get('is_object_property'):
-            prop = sort_rule['property']
-        elif _SORT_PROP_MAPPING.get(sort_rule['property']):
-            prop = _SORT_PROP_MAPPING[sort_rule['property']]
-        if prop:
-            order = 'asc' if sort_rule.get('ascending') else 'desc'
-            sort.append({prop: {'order': order}})
+        prop = sort_rule.get('property')
+        is_obj_prop = sort_rule.get('is_object_property', True)
+        ascending = sort_rule.get('ascending', True)
+        if not is_obj_prop:
+            if prop in _SORT_PROP_MAPPING:
+                prop = _SORT_PROP_MAPPING[sort_rule['property']]
+            else:
+                # TODO proper error
+                raise RuntimeError(f"Invalid non-object sorting property '{prop}'")
+        order = 'asc' if ascending else 'desc'
+        sort.append({prop: {'order': order}})
     pagination = params.get('pagination', {})
     access_filter = params.get('access_filter', {})
     with_private = bool(access_filter.get('with_private'))

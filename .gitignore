@@ -11,3 +11,5 @@
 coverage_report/
 .coverage
 /htmlcov/
+
+/coverage.xml

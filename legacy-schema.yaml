@@ -232,10 +232,10 @@ definitions:
   sortingRule:
     type: object
     additionalProperties: false
+    required: [property]
     properties:
       is_object_property: {$ref: "#/definitions/sdk_boolean"}
-      property:
-        type: string
+      property: {type: string}
       ascending: {$ref: "#/definitions/sdk_boolean"}
 
   narrativeInfo:
@@ -401,31 +401,35 @@ definitions:
       with_private: {$ref: "#/definitions/sdk_boolean"}
       with_public: {$ref: "#/definitions/sdk_boolean"}
 
-  matchFilter2:
-    type: object
-    properties:
-      search_term: {type: string}
-      search_keys: {$ref: "#/definitions/keyMatch"}
-      exclude_subobjects: {$ref: "#/definitions/sdk_boolean"}
-      tags:
-        type: array
-        items: {type: string}
-      not_tags:
-        type: array
-        items: {type: string}
-
   matchFilter:
     type: object
     required: []
     additionalProperties: false
     properties:
       full_text_in_all: {type: string}
+      timestamp: {$ref: "#/definitions/matchValue"}
       lookupInKeys: {$ref: "#/definitions/keyMatch"}
       exclude_subobjects: {$ref: "#/definitions/sdk_boolean"}
       source_tags:
         type: array
         items: {type: string}
       source_tags_blacklist: {type: integer}
+
+  # Reference:
+  # https://github.com/kbase/KBaseSearchEngine/blob/master/KBaseSearchEngine.spec#L30
+  matchValue:
+    type: object
+    properties:
+      value: {type: string}
+      int_value: {type: integer}
+      double_Value: {type: number}
+      bool_value: {type: integer, mininum: 0, maximum: 1}
+      min_int: {type: integer}
+      max_int: {type: integer}
+      min_date: {type: integer}
+      max_date: {type: integer}
+      min_double: {type: number}
+      max_double: {type: number}
 
   # {lookupInKeys: {field_name: MATCH}}
   # MATCH is
