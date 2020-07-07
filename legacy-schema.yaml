@@ -407,38 +407,13 @@ definitions:
     additionalProperties: false
     properties:
       full_text_in_all: {type: string}
-      timestamp: {$ref: "#/definitions/matchValue"}
-      lookupInKeys: {$ref: "#/definitions/keyMatch"}
+      timestamp: {$ref: "#/definitions/keyMatchItem"}
+      lookup_in_keys: {$ref: "#/definitions/keyMatch"}
       exclude_subobjects: {$ref: "#/definitions/sdk_boolean"}
       source_tags:
         type: array
         items: {type: string}
       source_tags_blacklist: {type: integer}
-
-  # Reference:
-  # https://github.com/kbase/KBaseSearchEngine/blob/master/KBaseSearchEngine.spec#L30
-  matchValue:
-    type: object
-    properties:
-      value: {type: string}
-      int_value: {type: integer}
-      double_Value: {type: number}
-      bool_value: {type: integer, mininum: 0, maximum: 1}
-      min_int: {type: integer}
-      max_int: {type: integer}
-      min_date: {type: integer}
-      max_date: {type: integer}
-      min_double: {type: number}
-      max_double: {type: number}
-
-  # {lookupInKeys: {field_name: MATCH}}
-  # MATCH is
-  # { value: string}
-  # { int_value: integer }
-  # { double_value: float}
-  # { bool_value: boolean }
-  # { min_int: int, max_int: int}
-  # and min/max_date, min/max_double
 
   keyMatch:
     type: object
@@ -446,6 +421,8 @@ definitions:
     patternProperties:
       '^\w+$': {$ref: "#/definitions/keyMatchItem"}
 
+  # Reference:
+  # https://github.com/kbase/KBaseSearchEngine/blob/master/KBaseSearchEngine.spec#L30
   keyMatchItem:
     oneOf:
       - type: object

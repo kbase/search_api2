@@ -34,6 +34,7 @@ ObjectData type:
           "...".
 """
 from src.utils.config import config
+from src.utils.obj_utils import get_any
 
 # Unversioned feature index name/alias, (eg "genome_features")
 _FEATURES_UNVERSIONED = config['global']['genome_features_current_index_name']
@@ -200,30 +201,34 @@ def _get_search_params(params):
 
 def _handle_lookup_in_keys(match_filter, query):
     """
-    Handle the match_filter/lookupInKeys option from the legacy API.
+    Handle the match_filter/lookup_in_keys option from the legacy API.
     This allows the user to pass a number of field names and term or range values for filtering.
     """
-    if not match_filter.get('lookupInKeys'):
+    if not match_filter.get('lookup_in_keys'):
         return query
     # This will be a dict where each key is a field name and each val is a MatchValue type
-    lookup_in_keys = match_filter['lookupInKeys']
+    lookup_in_keys = match_filter['lookup_in_keys']
     for (key, match_value) in lookup_in_keys.items():
         # match_value will be a dict with one of these keys set:
         # value (string), int_value, double_value, bool_value, min_int,
         # max_int, min_date, max_date, min_double, max_double.
         # `term_value` will be any term (full equality) match.
-        term_value = (match_value.get('value') or
-                      match_value.get('int_value') or
-                      match_value.get('double_value') or
-                      match_value.get('bool_value'))
+        keys = ['value', 'int_value', 'double_value', 'bool_value']
+        term_value = get_any(match_value, keys)
         # `range_min` and `range_max` will be any values for doing a range query
-        range_min = match_value.get('min_int') or match_value.get('min_date') or match_value.get('min_double')
-        range_max = match_value.get('max_int') or match_value.get('max_date') or match_value.get('max_double')
+        range_min_keys = ['min_int', 'min_date', 'min_double']
+        range_min = get_any(match_value, range_min_keys)
+        range_max_keys = ['max_int', 'max_date', 'max_double']
+        range_max = get_any(match_value, range_max_keys)
         query_clause = {}  # type: dict
         if term_value:
             query_clause = {'match': {key: term_value}}
-        elif range_min and range_max:
-            query_clause = {'range': {key: {'gte': range_min, 'lte': range_max}}}
+        elif range_min is not None or range_max is not None:
+            query_clause = {'range': {key: {}}}
+            if range_min is not None:
+                query_clause['range'][key]['gte'] = range_min
+            if range_max is not None:
+                query_clause['range'][key]['lte'] = range_max
         if query_clause:
             query['bool']['must'] = query['bool'].get('must', [])
             query['bool']['must'].append(query_clause)

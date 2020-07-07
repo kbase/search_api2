@@ -106,7 +106,7 @@ def test_search_objects_source_tags_blacklist():
 
 def test_search_objects_objtypes():
     params = [{
-        'object_types': ['x', 'y']
+        'object_types': ['x', 'y', 'GenomeFeature']
     }]
     expected = {
         'query': {
@@ -117,6 +117,7 @@ def test_search_objects_objtypes():
                 ]
             }
         },
+        'indexes': ['genome_features_2'],
         'size': 20, 'from': 0,
         'sort': [], 'public_only': False, 'private_only': False
     }
@@ -150,3 +151,53 @@ def test_search_objects_sorting_invalid_prop():
             ]
         }]
         convert_params.search_objects(params)
+
+
+def test_search_objects_lookup_in_keys():
+    params = [{
+        'match_filter': {
+            'lookup_in_keys': {
+                'x': {'value': 'x'},
+                'y': {'min_int': 1, 'max_int': 2},
+            }
+        },
+    }]
+    expected = {
+        'query': {
+            'bool': {
+                'must': [
+                    {'match': {'x': 'x'}},
+                    {'range': {'y': {'gte': 1, 'lte': 2}}}
+                ]
+            }
+        },
+        'size': 20, 'from': 0,
+        'sort': [], 'public_only': False, 'private_only': False
+    }
+    query = convert_params.search_objects(params)
+    assert query == expected
+
+
+def test_search_types_valid():
+    params = [{
+        'match_filter': {}
+    }]
+    expected = {
+        'query': {'bool': {}},
+        'size': 0, 'from': 0,
+        'aggs': {'type_count': {'terms': {'field': 'obj_type_name'}}},
+        'sort': [], 'public_only': False, 'private_only': False
+    }
+    query = convert_params.search_types(params)
+    assert query == expected
+
+
+def test_get_objects_valid():
+    params = [{
+        'guids': ['x', 'y']
+    }]
+    expected = {
+        'query': {'terms': {'_id': ['x', 'y']}}
+    }
+    query = convert_params.get_objects(params)
+    assert query == expected

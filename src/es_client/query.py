@@ -7,7 +7,7 @@ import requests
 
 from src.utils.workspace import ws_auth
 from src.utils.config import config
-from src.utils.get_path import get_path
+from src.utils.obj_utils import get_path
 from src.exceptions import UnknownIndex
 
 
