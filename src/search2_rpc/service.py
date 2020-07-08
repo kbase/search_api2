@@ -25,6 +25,7 @@ def show_indexes(params, meta):
         headers={'Content-Type': 'application/json'},
     )
     if not resp.ok:
+        # TODO better error class
         raise RuntimeError(f'Elasticsearch error:\n{resp.text}')
     resp_json = resp.json()
     result = []

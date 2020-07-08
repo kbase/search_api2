@@ -10,6 +10,6 @@ path=${1:-"tests"}
 poetry run flake8
 poetry run mypy --ignore-missing-imports src/**/*.py
 poetry run bandit -r src
-poetry run pytest -vv --cov=./src --cov-report=xml $path
+poetry run pytest -vv -s --cov=./src --cov-report=xml $path
 poetry run coverage html
 poetry run coverage report

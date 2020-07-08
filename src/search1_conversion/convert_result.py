@@ -19,7 +19,7 @@ _KEY_MAPPING = {
 }
 
 
-def search_objects(params, results, meta):
+def search_objects(params: dict, results: dict, meta: dict):
     """
     Convert Elasticsearch results into the RPC results conforming to the
     "search_objects" method
@@ -89,6 +89,8 @@ def _fetch_narrative_info(results, meta):
     ws_infos = {}
     owners = set()
     for hit_doc in hit_docs:
+        if 'access_group' not in hit_doc:
+            continue
         workspace_id = hit_doc['access_group']
         workspace_ids.append(workspace_id)
         workspace_info = get_workspace_info(workspace_id, meta['auth'])
@@ -100,6 +102,7 @@ def _fetch_narrative_info(results, meta):
     user_profiles = get_user_profiles(list(owners), meta['auth'])
     user_profile_map = {profile['user']['username']: profile for profile in user_profiles}
     narrative_index_name = config['global']['ws_type_to_indexes']['KBaseNarrative.Narrative']
+    # TODO move this code into es_client.fetch_narratives
     # ES query params
     search_params: dict = {
         'indexes': [narrative_index_name],
@@ -126,13 +129,14 @@ def _fetch_narrative_info(results, meta):
         [workspace_id, workspace_name, owner, moddate,
          max_objid, user_permission, global_permission,
          lockstat, ws_metadata] = ws_infos[str(_id)]
-        narr_infos[str(_id)] = [
-            '',  # TODO name
-            0,  # TODO narrative object ID TODO
-            iso8601_to_epoch(moddate),  # Save date as an epoch
-            owner,
-            user_profile_map[owner]['user']['realname'],
-        ]
+        if owner in user_profile_map:
+            narr_infos[str(_id)] = [
+                '',  # TODO name
+                0,  # TODO narrative object ID TODO
+                iso8601_to_epoch(moddate),  # Save date as an epoch
+                owner,
+                user_profile_map[owner]['user']['realname'],
+            ]
     return (ws_infos, narr_infos)
 
 
@@ -142,7 +146,7 @@ def _get_object_data_from_search_results(search_results, post_processing):
     Uses the post_processing options (see the type def for PostProcessing at top).
     We translate fields from our current ES indexes to naming conventions used by the legacy API/UI.
     """
-    # TODO post_processing/skip_info,skip_keys,skip_data -- look are results in current api
+    # TODO post_processing/skip_info,skip_keys,skip_data -- look at results in current api
     # TODO post_processing/ids_only -- look at results in current api
     object_data = []  # type: list
     # Keys found in every ws object
