@@ -26,5 +26,6 @@ def get_user_profiles(usernames: list, auth_token):
         headers=headers,
     )
     if not resp.ok:
+        # TODO better error class
         raise RuntimeError(url, resp.text)
     return resp.json()['result'][0]

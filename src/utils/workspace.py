@@ -40,6 +40,7 @@ def get_workspace_info(workspace_id, auth_token):
     Given a list of workspace ids, return the associated workspace info for each one
     """
     if not auth_token:
+        # TODO are we sure we want this? Doesn't make a lot of sense
         return []  # anonymous users
     ws_url = config['workspace_url']
     # TODO session cache this
@@ -56,8 +57,10 @@ def get_workspace_info(workspace_id, auth_token):
         headers=headers,
     )
     if not resp.ok:
+        # TODO better error class
         raise RuntimeError(ws_url, resp.text)
     result = resp.json()['result']
     if not len(result) > 0:
+        # TODO better error class
         raise RuntimeError(ws_url, resp.text)
     return result[0]
