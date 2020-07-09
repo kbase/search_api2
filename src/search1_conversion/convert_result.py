@@ -155,46 +155,27 @@ def _get_object_data_from_search_results(search_results, post_processing):
         obj: dict = {}
         for (search2_key, search1_key) in _KEY_MAPPING.items():
             obj[search1_key] = source.get(search2_key)
-        # The nested 'data' is all object-specific, so disclude all global keys
+        # The nested 'data' is all object-specific, so exclude all global keys
         obj['data'] = {key: source[key] for key in source if key not in _KEY_MAPPING}
-        # Set defaults for required fields in objects/data
-        # FIXME we need to actually fill these fields with real data every time
-        obj['data']['creator'] = obj['data'].get('creator', '')
-        obj['data']['shared_users'] = obj['data'].get('shared_users', [])
-        obj['data']['timestamp'] = obj['data'].get('timestamp', 0)
-        obj['data']['creation_date'] = obj['data'].get('creation_date', '')
-        obj['data']['is_public'] = obj['data'].get('is_public', False)
-        obj['data']['access_group'] = obj['data'].get('access_group', 0)
-        obj['data']['obj_id'] = obj['data'].get('obj_id', 0)
-        obj['data']['version'] = obj['data'].get('obj_id', 0)
-        obj['data']['copied'] = obj['data'].get('copied')
-        obj['data']['tags'] = obj['data'].get('tags', [])
-        # Set some more top-level data manually that we use in the UI
-        obj['key_props'] = obj['data']
         obj['guid'] = _get_guid_from_doc(result)
         obj['kbase_id'] = obj['guid'].strip('WS:')
-        # Set to a string
-        idx_pieces = result['index'].split('_')
+        idx_pieces = result['index'].split(config['prefix_delimiter'])
         idx_name = idx_pieces[0]
         idx_ver = int(idx_pieces[1] or 0) if len(idx_pieces) == 2 else 0
+        # Set to a string
         obj['index_name'] = idx_name
-        # obj['index_ver'] = idx_ver
         obj['type_ver'] = idx_ver
-        # For the UI, make the type field "GenomeFeature" instead of Genome for features.
+        # For the UI, make the type field "GenomeFeature" instead of "Genome".
         if 'genome_feature_type' in source:
             obj['type'] = 'GenomeFeature'
-        # Handle the highlighted field data, converting field names, if necessary
-        if result.get('highlight'):
-            hl = result['highlight']
-            obj['highlight'] = {}
-            for key in result['highlight']:
-                if key in _KEY_MAPPING:
-                    search2_key = _KEY_MAPPING[key]
-                    obj[search2_key] = hl[key]
-                else:
-                    obj[key] = hl[key]
-        else:
-            obj['highlight'] = {}
+        # Set defaults for required fields in objects/data
+        # Set some more top-level data manually that we use in the UI
+        obj['key_props'] = obj['data']
+        highlight = result.get('highlight', {})
+        transformed_highlight = {}
+        for key, value in highlight.items():
+            transformed_highlight[_KEY_MAPPING.get(key, key)] = value
+        obj['highlight'] = transformed_highlight
         # Always set object_name as a string type
         obj['object_name'] = obj.get('object_name') or ''
         obj['type'] = obj.get('type') or ''
@@ -204,8 +185,10 @@ def _get_object_data_from_search_results(search_results, post_processing):
 
 def _get_guid_from_doc(doc):
     """
-    Construct a legacy-style "guid" in the form "WS:1/2/3"
+    Convert from our guid format 'WS::1:2:3' into the legacy format 'WS:1/2/3'
     """
+    # TODO this only works on the WS namespace should take into account the
+    #      namespace name
     # Remove the first namespace
     _id = doc['id'].replace('WS::', '')
     # Remove any secondary namespace

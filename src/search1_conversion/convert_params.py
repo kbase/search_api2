@@ -43,6 +43,8 @@ _GENOME_FEATURES_IDX_NAME = config['global']['latest_versions'][_FEATURES_UNVERS
 
 # Mapping of special sorting properties names from the Java API to search2 key names
 _SORT_PROP_MAPPING = {
+    'scientific_name': 'scientific_name.raw',
+    'genome_scientific_name': 'genome_scientific_name.raw',
     'access_group_id': 'access_group',
     'type': 'obj_type_name',
     'timestamp': 'timestamp'
@@ -53,9 +55,6 @@ def search_objects(params):
     """
     Convert parameters from the "search_objects" RPC method into an Elasticsearch query.
     """
-    # KBase convention is to wrap params in an array
-    if isinstance(params, list) and len(params) == 1:
-        params = params[0]
     query = _get_search_params(params)
     # TODO check highlighting against the PR
     if params.get('include_highlight'):
@@ -99,9 +98,6 @@ def search_types(params):
     This method constructs the same search parameters as `search_objects`, but
     aggregates results based on `obj_type_name`.
     """
-    # KBase convention is to wrap params in an array
-    if isinstance(params, list) and len(params) == 1:
-        params = params[0]
     query = _get_search_params(params)
     # Create the aggregation clause using a 'terms aggregation'
     query['aggs'] = {
@@ -127,9 +123,6 @@ def get_objects(params):
             Information about the workspaces in which the objects in the
             results reside. This data only applies to workspace objects.
     """
-    # KBase convention is to wrap params in an array
-    if isinstance(params, list) and len(params) == 1:
-        params = params[0]
     query = {'query': {'terms': {'_id': params['guids']}}}
     return query
 
@@ -238,7 +231,7 @@ def _handle_lookup_in_keys(match_filter, query):
         range_min = get_any(match_value, range_min_keys)
         range_max_keys = ['max_int', 'max_date', 'max_double']
         range_max = get_any(match_value, range_max_keys)
-        query_clause = {}  # type: dict
+        query_clause: dict = {}
         if term_value:
             query_clause = {'match': {key: term_value}}
         elif range_min is not None or range_max is not None:

@@ -27,6 +27,7 @@ service = jsonrpcbase.JSONRPCService(
 
 
 def get_objects(params, meta):
+    # KBase convention is to wrap params in an array
     if isinstance(params, list) and len(params) == 1:
         params = params[0]
     start = time.time()
@@ -38,6 +39,7 @@ def get_objects(params, meta):
 
 
 def search_objects(params, meta):
+    # KBase convention is to wrap params in an array
     if isinstance(params, list) and len(params) == 1:
         params = params[0]
     start = time.time()
@@ -49,6 +51,9 @@ def search_objects(params, meta):
 
 
 def search_types(params, meta):
+    # KBase convention is to wrap params in an array
+    if isinstance(params, list) and len(params) == 1:
+        params = params[0]
     start = time.time()
     query = convert_params.search_types(params)
     result = convert_result.search_types(params, search(query, meta), meta)
