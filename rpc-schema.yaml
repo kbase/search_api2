@@ -69,9 +69,18 @@ definitions:
             type: object
             title: Aggregations
           highlight:
-            # Reference: https://www.elastic.co/guide/en/elasticsearch/reference/7.5/search-request-body.html#request-body-search-highlighting
+            # Reference:
+            # https://www.elastic.co/guide/en/elasticsearch/reference/7.5/search-request-body.html#request-body-search-highlighting
             type: object
+            additionalProperties: false
             description: Result highlight options
+            properties:
+              fields:
+                type: object
+              require_field_match:
+                type: boolean
+              highlight_query:
+                type: object
           track_total_hits:
             type: boolean
             title: Track total hits
