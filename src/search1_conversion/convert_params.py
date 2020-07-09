@@ -59,7 +59,25 @@ def search_objects(params):
     query = _get_search_params(params)
     # TODO check highlighting against the PR
     if params.get('include_highlight'):
-        query['highlight'] = {'*': {}}
+        # We need a special highlight query so that the main query does not generate
+        # highlights for bits of the query which are not user-generated.
+        highlight_query = {'bool': {}}
+        match_filter = params['match_filter']
+        if match_filter.get('full_text_in_all'):
+            # Match full text for any field in the objects
+            highlight_query['bool']['must'] = [{
+                'match': {
+                    'agg_fields': match_filter['full_text_in_all']
+                }
+            }]
+        # Note that search_objects, being used by both the legacy and current
+        # api, supports highlighting in the generic ES sense, so we pass a
+        # valid ES7 highlight param.
+        query['highlight'] = {
+            'fields': {'*': {}},
+            'require_field_match': False,
+            'highlight_query': highlight_query
+        }
     return query
 
 

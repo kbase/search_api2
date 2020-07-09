@@ -23,7 +23,11 @@ def test_search_objects_highlight():
     }]
     expected = {
         'query': {'bool': {}},
-        'highlight': {'*': {}},
+        'highlight': {
+            'fields': {'*': {}},
+            'highlight_query': {'bool': {}},
+            'require_field_match': False,
+        },
         'size': 20, 'from': 0,
         'sort': [], 'public_only': False, 'private_only': False
     }
