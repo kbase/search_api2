@@ -99,6 +99,7 @@ def _fetch_narrative_info(results, meta):
             ws_infos[str(workspace_id)] = workspace_info
     if len(workspace_ids) == 0:
         return ({}, {})
+    # Get profile for all owners
     user_profiles = get_user_profiles(list(owners), meta['auth'])
     user_profile_map = {profile['user']['username']: profile for profile in user_profiles}
     narrative_index_name = config['global']['ws_type_to_indexes']['KBaseNarrative.Narrative']
@@ -130,9 +131,10 @@ def _fetch_narrative_info(results, meta):
          max_objid, user_permission, global_permission,
          lockstat, ws_metadata] = ws_infos[str(_id)]
         if owner in user_profile_map:
+            # See type in legacy-schema.yaml/narrativeInfo
             narr_infos[str(_id)] = [
-                '',  # TODO name
-                0,  # TODO narrative object ID TODO
+                narr.get('narrative_title', ''),
+                narr.get('obj_id'),
                 iso8601_to_epoch(moddate),  # Save date as an epoch
                 owner,
                 user_profile_map[owner]['user']['realname'],

@@ -32,7 +32,14 @@ test_docs = [
 ]
 
 narrative_docs = [
-    {'name': 'narrative-doc1', 'is_public': True, 'access_group': '1', 'timestamp': 1},
+        {
+            'name': 'narrative1',
+            'narrative_title': 'narrative1',
+            'is_public': True,
+            'obj_id': 123,
+            'access_group': '1',
+            'timestamp': 1,
+        },
 ]
 
 

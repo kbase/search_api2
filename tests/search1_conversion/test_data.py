@@ -101,7 +101,7 @@ expected_search_results = {
         }
     ],
     "access_group_narrative_info": {
-        "1": ["", 0, 1591415395, "username", "User Example"]
+        '1': ['narrative1', 123, 1591415395, 'username', 'User Example']
     },
     "access_groups_info": {
         "1": mock_ws_info,
@@ -146,7 +146,7 @@ expected_get_objects = {
         }
     ],
     "access_group_narrative_info": {
-        "1": ["", 0, 1591415395, "username", "User Example"]
+        '1': ['narrative1', 123, 1591415395, 'username', 'User Example']
     },
     "access_groups_info": {
         "1": mock_ws_info,
