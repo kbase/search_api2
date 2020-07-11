@@ -7,6 +7,8 @@ from src.utils.wait_for_service import wait_for_service
 from tests.integration.test_data import (
     search_request1,
     search_response1,
+    search_request2,
+    search_response2,
 )
 
 
@@ -36,7 +38,7 @@ subprocess.Popen(cmd, shell=True)
 wait_for_service(APP_URL, "search2")
 
 
-# TODO sorting_rules return structure
+# TODO old api seems to have default sort on timestamp -- do we want this?
 
 
 def test_search_example1():
@@ -55,3 +57,19 @@ def test_search_example1():
     assert res['total'] > 0
     assert res['sorting_rules'] == expected_res['sorting_rules']
     assert res['objects'] == expected_res['objects']
+
+
+def test_search_example2():
+    url = APP_URL + '/legacy'
+    resp = requests.post(
+        url=url,
+        data=json.dumps(search_request2),
+    )
+    data = resp.json()
+    assert data['jsonrpc'] == search_response2['jsonrpc']
+    assert data['id'] == search_response2['id']
+    assert len(data['result']) == 1
+    res = data['result'][0]
+    # expected_res = search_response2['result'][0]
+    assert res['search_time'] > 0
+    assert res['type_to_count']  # TODO match more closely when things are more indexed
