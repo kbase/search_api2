@@ -5,7 +5,7 @@ from src.search1_conversion import convert_result
 from src.utils.wait_for_service import wait_for_service
 from tests.helpers import init_elasticsearch
 
-from tests.search1_conversion.test_data import (
+from tests.unit.search1_conversion.test_data import (
     mock_ws_info,
     mock_user_profiles,
     test_search_results,

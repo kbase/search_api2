@@ -19,7 +19,7 @@ init_elasticsearch()
 
 def test_get_objects_valid():
     params = {
-        "method": "get_objects",
+        "method": "KBaseSearchEngine.get_objects",
         "jsonrpc": "2.0",
         "id": 0,
         "params": [{'guids': ['public-doc1']}],
@@ -31,7 +31,7 @@ def test_get_objects_valid():
 
 def test_search_objects_valid():
     params = {
-        "method": "search_objects",
+        "method": "KBaseSearchEngine.search_objects",
         "jsonrpc": "2.0",
         "id": 0,
         "params": [{'match_filter': {}}]
@@ -43,10 +43,10 @@ def test_search_objects_valid():
 
 def test_search_types_valid():
     params = {
-        "method": "search_types",
+        "method": "KBaseSearchEngine.search_types",
         "jsonrpc": "2.0",
-        "id": 0,
-        "params": [{'object_types': ['x']}]
+        "id": "0",
+        "params": [{'object_types': ['x'], 'match_filter': {}}]
     }
     result = service.call(json.dumps(params), {'auth': None})
     res = json.loads(result)

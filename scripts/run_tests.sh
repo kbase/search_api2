@@ -5,7 +5,7 @@ set -e
 export PYTHONPATH=.
 export WORKSPACE_URL="http://localhost:5555/ws"
 
-path=${1:-"tests"}
+path=${1:-"tests/unit"}
 
 poetry run flake8
 poetry run mypy --ignore-missing-imports src/**/*.py

@@ -1,4 +1,5 @@
 """The main entrypoint for running the Flask server."""
+import json
 import sanic
 import traceback
 
@@ -29,7 +30,8 @@ async def health_check(request):
 async def root(request):
     """Handle JSON RPC methods."""
     auth = request.headers.get('Authorization')
-    result = rpc_service.call(request.body, {'auth': auth})
+    body = _convert_rpc_formats(request.body)
+    result = rpc_service.call(body, {'auth': auth})
     return sanic.response.text(result, content_type='application/json')
 
 
@@ -37,7 +39,8 @@ async def root(request):
 async def legacy(request):
     """Handle legacy-formatted requests that are intended for the previous Java api."""
     auth = request.headers.get('Authorization')
-    result = legacy_service.call(request.body, {'auth': auth})
+    body = _convert_rpc_formats(request.body)
+    result = legacy_service.call(body, {'auth': auth})
     return sanic.response.text(result, content_type='application/json')
 
 
@@ -71,6 +74,30 @@ async def any_exception(request, err):
             }
         }
     }, status=500)
+
+
+def _convert_rpc_formats(body: str):
+    """
+    For compatibility reasons, we want to be very liberal in the RPC request
+    format we allow. For JSON-RPC version 1.1 requests, we convert the format
+    to JSON-RPC 2.0 for our JSONRPCService. If both of "version", "jsonrpc" are
+    left out, then we fill it in for them. We also fill in the "id" field, so
+    that notification style requests are always avoided.
+    Of course, these conversion are violations of the JSON-RPC 2.0 spec. But we
+    are prioritizing backwards compatibility here.
+    """
+    try:
+        data = json.loads(body)
+    except Exception:
+        # Let the JSONRPCService handle the error
+        return body
+    if 'version' in data:
+        del data['version']
+    if 'version' not in data and 'jsonrpc' not in data:
+        data['jsonrpc'] = '2.0'
+    if 'id' not in data:
+        data['id'] = '0'
+    return json.dumps(data)
 
 
 # Wait for dependencies to start

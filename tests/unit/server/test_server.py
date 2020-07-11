@@ -37,7 +37,7 @@ def test_legacy_valid():
         data=json.dumps({
             "jsonrpc": "2.0",
             "id": 0,
-            "method": "get_objects",
+            "method": "KBaseSearchEngine.get_objects",
             "params": [{
                 "guids": ['xyz']
             }]
@@ -79,4 +79,41 @@ def test_404():
     assert resp.text == ''
 
 
-# TODO test ok request on two rpc endpoints
+def test_legacy_rpc_conversion():
+    """
+    Test that a JSON-RPC 1.1 request is still handled ok
+    """
+    resp = requests.post(
+        BASE_URL + '/legacy',
+        data=json.dumps({
+            "version": "1.1",
+            "id": 0,
+            "method": "KBaseSearchEngine.get_objects",
+            "params": [{
+                "guids": ['xyz']
+            }]
+        })
+    )
+    result = resp.json()
+    assert result['id'] == 0
+    assert result['jsonrpc'] == '2.0'
+    assert len(result['result']) == 1
+
+
+def test_sloppy_rpc_conversion():
+    """
+    Test that a Sloppy-RPC request is still handled ok
+    """
+    resp = requests.post(
+        BASE_URL + '/legacy',
+        data=json.dumps({
+            "method": "KBaseSearchEngine.get_objects",
+            "params": [{
+                "guids": ['xyz']
+            }]
+        })
+    )
+    result = resp.json()
+    assert result['id'] == '0'
+    assert result['jsonrpc'] == '2.0'
+    assert len(result['result']) == 1

@@ -62,6 +62,6 @@ def search_types(params, meta):
     return [result]
 
 
-service.add(get_objects)
-service.add(search_objects)
-service.add(search_types)
+service.add(get_objects, name="KBaseSearchEngine.get_objects")
+service.add(search_objects, name="KBaseSearchEngine.search_objects")
+service.add(search_types, name="KBaseSearchEngine.search_types")
