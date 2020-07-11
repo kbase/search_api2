@@ -123,7 +123,6 @@ def _fetch_narrative_info(results, meta):
     narrative_hits = [hit['doc'] for hit in search_results['hits']]
     narr_infos = {}
     for narr in narrative_hits:
-        # Note the improved return structure.
         _id = narr['access_group']
         if _id not in ws_infos:
             continue
