@@ -1,4 +1,5 @@
-# Search API
+
+Search API
 
 This is a small HTTP interface around KBase's elasticsearch indexes.
 
@@ -106,7 +107,7 @@ These do not run in our CI workflow, but are only run manually/locally.
 You need to ssh tunnel to get CI Elasticsearch available locally:
 
 ```sh
-ssh -L 9500:10.58.0.121:9500 username@login1.berkeley.kbase.us
+ssh -L 9500:<elasticsearch_ip>:9500 username@login1.berkeley.kbase.us
 ```
 
 Then you can run the integration test script:

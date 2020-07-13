@@ -9,6 +9,8 @@ from tests.integration.test_data import (
     search_response1,
     search_request2,
     search_response2,
+    search_request3,
+    search_response3,
 )
 
 
@@ -73,3 +75,25 @@ def test_search_example2():
     # expected_res = search_response2['result'][0]
     assert res['search_time'] > 0
     assert res['type_to_count']  # TODO match more closely when things are more indexed
+
+
+def test_search_example3():
+    url = APP_URL + '/legacy'
+    resp = requests.post(
+        url=url,
+        data=json.dumps(search_request3),
+    )
+    data = resp.json()
+    data['jsonrpc'] == search_response3['jsonrpc']
+    assert data['id'] == search_response3['id']
+    assert len(data['result']) == 1
+    res = data['result'][0]
+    expected_res = search_response3['result'][0]
+    assert set(res.keys()) == set(expected_res.keys())
+    assert res['pagination'] == expected_res['pagination']
+    assert res['sorting_rules'] == expected_res['sorting_rules']
+    assert res['total'] > 0
+    assert res['search_time'] > 0
+    assert len(res['objects']) > 0
+    # TODO assert on access_group_narrative_info
+    # assert ['access_group_narrative_info']

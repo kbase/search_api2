@@ -25,17 +25,16 @@ def search_objects(params: dict, results: dict, meta: dict):
     "search_objects" method
     """
     post_processing = params.get('post_processing', {})
-    (ws_infos, narrative_infos) = _fetch_narrative_info(results, meta)
     objects = _get_object_data_from_search_results(results, post_processing)
-    return {
+    ret = {
         'pagination': params.get('pagination', {}),
         'sorting_rules': params.get('sorting_rules', []),
         'total': results['count'],
         'search_time': results['search_time'],
         'objects': objects,
-        'access_group_narrative_info': narrative_infos,
-        'access_groups_info': ws_infos
     }
+    _add_access_group_info(ret, results, meta, post_processing)
+    return ret
 
 
 def search_types(params, results, meta):
@@ -63,14 +62,34 @@ def get_objects(params, results, meta):
     """
     post_processing = params.get('post_processing', {})
     objects = _get_object_data_from_search_results(results, post_processing)
-    (ws_infos, narrative_infos) = _fetch_narrative_info(results, meta)
     ret = {
         'search_time': results['search_time'],
         'objects': objects,
-        'access_group_narrative_info': narrative_infos,
-        'access_groups_info': ws_infos
     }
+    _add_access_group_info(ret, results, meta, post_processing)
     return ret
+
+
+def _add_access_group_info(ret: dict, search_results: dict, meta: dict, post_processing: dict):
+    """
+    Populate the fields for `access_group_narrative_info` and/or
+    `access_groups_info` depending on keys from the `post_processing` field.
+    This mutates the method result object (`ret`)
+
+    Args:
+        ret: final method result object (mutated)
+        search_results: return value from es_client.query.search
+        meta: RPC meta object (contains auth token)
+        post_processing: some query options pulled from the RPC method params
+    """
+    fetch_narratives = post_processing.get('add_narrative_info') == 1
+    fetch_ws_infos = post_processing.get('add_access_group_info') == 1
+    if fetch_narratives or fetch_ws_infos:
+        (ws_infos, narrative_infos) = _fetch_narrative_info(search_results, meta)
+        if fetch_narratives:
+            ret['access_group_narrative_info'] = narrative_infos
+        if fetch_ws_infos:
+            ret['access_groups_info'] = ws_infos
 
 
 def _fetch_narrative_info(results, meta):
