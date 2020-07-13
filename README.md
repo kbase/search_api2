@@ -101,7 +101,7 @@ volume for the Elasticsearch service to see the changes. You can do this with `d
 
 Under `tests/integration`, there is a module of integration tests that run against CI (KBase staging server).
 
-These do not run in our CI workflow, but are only run manually/locall.y
+These do not run in our CI workflow, but are only run manually/locally.
 
 You need to ssh tunnel to get CI Elasticsearch available locally:
 
