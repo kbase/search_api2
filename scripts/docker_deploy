@@ -1,0 +1,21 @@
+#!/bin/bash
+# Build and deploy the docker image to Dockerhub
+
+# Exit on error
+set -e
+
+# Show the commands we execute
+set -o xtrace
+
+ver=$(cat VERSION)
+export IMAGE_NAME="kbase/search_api:$ver"
+echo "Build hook running"
+export BRANCH=${TRAVIS_BRANCH:-`git symbolic-ref --short HEAD`}
+export DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
+export COMMIT=${TRAVIS_COMMIT:-`git rev-parse --short HEAD`}
+docker build --build-arg BUILD_DATE=$DATE \
+             --build-arg VCS_REF=$COMMIT \
+             --build-arg BRANCH=$BRANCH \
+             -t ${IMAGE_NAME} .
+
+docker push $IMAGE_NAME

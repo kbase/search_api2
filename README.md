@@ -96,3 +96,21 @@ poetry run pytest test/xyz
 Note that if you change index names or docs within the database init script
 (`init_elasticsearch.py`), then you will likely need to remove and recreate the
 volume for the Elasticsearch service to see the changes. You can do this with `docker-compose down -v`.
+
+### Running the integration tests
+
+Under `tests/integration`, there is a module of integration tests that run against CI (KBase staging server).
+
+These do not run in our CI workflow, but are only run manually/locall.y
+
+You need to ssh tunnel to get CI Elasticsearch available locally:
+
+```sh
+ssh -L 9500:10.58.0.121:9500 username@login1.berkeley.kbase.us
+```
+
+Then you can run the integration test script:
+
+```sh
+sh scripts/run_integration_tests.sh
+```

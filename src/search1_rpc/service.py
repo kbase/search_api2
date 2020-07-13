@@ -20,7 +20,11 @@ from src.utils.config import config
 from src.utils.logger import logger
 
 service = jsonrpcbase.JSONRPCService(
-    info='legacy-service-info.yaml',
+    info={
+        'title': 'Search API (legacy endpoints)',
+        'description': 'Search endpoints for the legacy API',
+        'version': config['app_version'],
+    },
     schema='legacy-schema.yaml',
     development=config['dev'],
 )

@@ -24,6 +24,8 @@ def init_config():
         raise RuntimeError(f"Invalid config url: {config_url}")
     with urllib.request.urlopen(config_url) as res:  # nosec
         global_config = yaml.safe_load(res)
+    with open('VERSION') as fd:
+        app_version = fd.read().replace('\n', '')
     return {
         'dev': bool(os.environ.get('DEVELOPMENT')),
         'global': global_config,
@@ -33,6 +35,7 @@ def init_config():
         'workspace_url': ws_url,
         'user_profile_url': user_profile_url,
         'workers': int(os.environ.get('WORKERS', 8)),
+        'app_version': app_version,
     }
 
 

@@ -11,7 +11,11 @@ from src.utils.config import config
 from src.utils.logger import logger
 
 service = jsonrpcbase.JSONRPCService(
-    info='rpc-service-info.yaml',
+    info={
+        'title': 'Search API',
+        'description': 'Search API layer in front of Elasticsearch for KBase',
+        'version': config['app_version'],
+    },
     schema='rpc-schema.yaml',
     development=config['dev'],
 )
