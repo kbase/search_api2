@@ -5,7 +5,7 @@ from src.search1_conversion import convert_result
 from src.utils.wait_for_service import wait_for_service
 from tests.helpers import init_elasticsearch
 
-from tests.unit.search1_conversion.test_data import (
+from tests.unit.search1_conversion.data import (
     mock_ws_info,
     mock_user_profiles,
     test_search_results,
@@ -25,6 +25,8 @@ init_elasticsearch()
 def test_search_objects_valid():
     params = {
         'post_processing': {
+            'add_narrative_info': 1,
+            'add_access_group_info': 1,
         }
     }
     with patch('src.search1_conversion.convert_result.get_workspace_info') as ws_patched:
@@ -40,6 +42,8 @@ def test_search_objects_valid():
 def test_get_objects_valid():
     params = {
         'post_processing': {
+            'add_narrative_info': 1,
+            'add_access_group_info': 1,
         }
     }
     with patch('src.search1_conversion.convert_result.get_workspace_info') as ws_patched:

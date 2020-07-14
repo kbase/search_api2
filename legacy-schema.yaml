@@ -27,7 +27,7 @@ definitions:
         maxItems: 1
         items:
           type: object
-          required: [objects, search_time, access_groups_info, access_group_narrative_info]
+          required: [objects, search_time]
           additionalProperties: false
           properties:
             objects:

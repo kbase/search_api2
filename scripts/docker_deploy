@@ -1,9 +1,14 @@
 #!/bin/bash
+# Build and deploy the docker image to Dockerhub
 
-# See the docs for automated docker builds: https://docs.docker.com/docker-cloud/builds/advanced/
+# Exit on error
+set -e
 
-# $IMAGE_NAME var is injected into the build so the tag is correct.
+# Show the commands we execute
+set -o xtrace
 
+ver=$(cat VERSION)
+export IMAGE_NAME="kbase/search_api:$ver"
 echo "Build hook running"
 export BRANCH=${TRAVIS_BRANCH:-`git symbolic-ref --short HEAD`}
 export DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
@@ -12,3 +17,5 @@ docker build --build-arg BUILD_DATE=$DATE \
              --build-arg VCS_REF=$COMMIT \
              --build-arg BRANCH=$BRANCH \
              -t ${IMAGE_NAME} .
+
+docker push $IMAGE_NAME
