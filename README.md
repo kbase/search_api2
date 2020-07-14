@@ -1,5 +1,4 @@
-
-Search API
+# Search API
 
 This is a small HTTP interface around KBase's elasticsearch indexes.
 
