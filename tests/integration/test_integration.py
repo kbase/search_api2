@@ -11,6 +11,10 @@ from tests.integration.data import (
     search_response2,
     search_request3,
     search_response3,
+    search_request4,
+    search_response4,
+    search_request5,
+    search_response5,
 )
 
 
@@ -84,7 +88,7 @@ def test_search_example3():
         data=json.dumps(search_request3),
     )
     data = resp.json()
-    data['jsonrpc'] == search_response3['jsonrpc']
+    assert data['jsonrpc'] == search_response3['jsonrpc']
     assert data['id'] == search_response3['id']
     assert len(data['result']) == 1
     res = data['result'][0]
@@ -97,3 +101,46 @@ def test_search_example3():
     assert len(res['objects']) > 0
     # TODO assert on access_group_narrative_info
     # assert ['access_group_narrative_info']
+
+
+def test_search_example4():
+    """Genome features count with no data"""
+    url = APP_URL + '/legacy'
+    resp = requests.post(
+        url=url,
+        data=json.dumps(search_request4),
+    )
+    data = resp.json()
+    assert data['jsonrpc'] == search_response4['jsonrpc']
+    assert data['id'] == search_response4['id']
+    assert len(data['result']) == 1
+    expected_res = search_response4['result'][0]
+    res = data['result'][0]
+    assert set(res.keys()) == set(expected_res.keys())
+    assert res['pagination'] == expected_res['pagination']
+    assert res['sorting_rules'] == expected_res['sorting_rules']
+    assert res['objects'] == expected_res['objects']
+    assert res['total'] > 0
+    assert res['search_time'] > 0
+
+
+def test_search_example5():
+    """Genome features search with results"""
+    url = APP_URL + '/legacy'
+    resp = requests.post(
+        url=url,
+        data=json.dumps(search_request5),
+    )
+    data = resp.json()
+    assert data['jsonrpc'] == search_response5['jsonrpc']
+    assert data['id'] == search_response5['id']
+    assert len(data['result']) == 1
+    expected_res = search_response5['result'][0]
+    res = data['result'][0]
+    assert set(res.keys()) == set(expected_res.keys())
+    assert res['pagination'] == expected_res['pagination']
+    assert res['sorting_rules'] == expected_res['sorting_rules']
+    assert len(res['objects']) > 0
+    assert len(res['objects_info']) > 0
+    assert res['total'] > 0
+    assert res['search_time'] > 0

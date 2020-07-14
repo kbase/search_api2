@@ -1,9 +1,10 @@
 import re
+from typing import Optional
 
 from src.utils.config import config
 from src.utils.formatting import iso8601_to_epoch
 from src.utils.user_profiles import get_user_profiles
-from src.utils.workspace import get_workspace_info
+from src.utils.workspace import get_workspace_info, get_object_info
 import src.es_client as es_client
 
 # Mappings from search2 document fields to search1 fields:
@@ -24,7 +25,7 @@ def search_objects(params: dict, results: dict, meta: dict):
     Convert Elasticsearch results into the RPC results conforming to the
     "search_objects" method
     """
-    post_processing = params.get('post_processing', {})
+    post_processing = _get_post_processing(params)
     objects = _get_object_data_from_search_results(results, post_processing)
     ret = {
         'pagination': params.get('pagination', {}),
@@ -34,6 +35,7 @@ def search_objects(params: dict, results: dict, meta: dict):
         'objects': objects,
     }
     _add_access_group_info(ret, results, meta, post_processing)
+    _add_objects_and_info(ret, results, meta, post_processing)
     return ret
 
 
@@ -60,14 +62,43 @@ def get_objects(params, results, meta):
     Convert Elasticsearch results into RPC results conforming to the spec for
     the "get_objects" method.
     """
-    post_processing = params.get('post_processing', {})
-    objects = _get_object_data_from_search_results(results, post_processing)
+    post_processing = _get_post_processing(params)
     ret = {
         'search_time': results['search_time'],
-        'objects': objects,
     }
     _add_access_group_info(ret, results, meta, post_processing)
+    _add_objects_and_info(ret, results, meta, post_processing)
     return ret
+
+
+def _get_post_processing(params: dict) -> dict:
+    """
+    Extract and set defaults for the post processing options
+    """
+    pp = params.get('post_processing', {})
+    # ids_only - shortcut to mark both skips as true and include_highlight as false.
+    if pp.get('ids_only') == 1:
+        pp['include_highlight'] = 0
+        pp['skip_info'] = 1
+        pp['skip_data'] = 1
+    return pp
+
+
+def _add_objects_and_info(ret: dict, search_results: dict, meta: dict, post_processing: dict):
+    """
+    Populate the fields for `objects` and `objects_info`.
+
+    Args:
+        ret: final method result object (mutated)
+        search_results: return value from es_client.query.search
+        meta: RPC meta object (contains auth token)
+        post_processing: some query options pulled from the RPC method params
+    """
+    objects = _get_object_data_from_search_results(search_results, post_processing)
+    ret['objects'] = objects
+    infos = _get_object_infos(objects, meta)
+    if infos is not None:
+        ret['objects_info'] = infos
 
 
 def _add_access_group_info(ret: dict, search_results: dict, meta: dict, post_processing: dict):
@@ -176,7 +207,11 @@ def _get_object_data_from_search_results(search_results, post_processing):
         for (search2_key, search1_key) in _KEY_MAPPING.items():
             obj[search1_key] = source.get(search2_key)
         # The nested 'data' is all object-specific, so exclude all global keys
-        obj['data'] = {key: source[key] for key in source if key not in _KEY_MAPPING}
+        obj_data = {key: source[key] for key in source if key not in _KEY_MAPPING}
+        if post_processing.get('skip_data') != 1:
+            obj['data'] = obj_data
+        if post_processing.get('skip_keys') != 1:
+            obj['key_props'] = obj_data
         obj['guid'] = _get_guid_from_doc(result)
         obj['kbase_id'] = obj['guid'].strip('WS:')
         idx_pieces = result['index'].split(config['prefix_delimiter'])
@@ -190,17 +225,34 @@ def _get_object_data_from_search_results(search_results, post_processing):
             obj['type'] = 'GenomeFeature'
         # Set defaults for required fields in objects/data
         # Set some more top-level data manually that we use in the UI
-        obj['key_props'] = obj['data']
-        highlight = result.get('highlight', {})
-        transformed_highlight = {}
-        for key, value in highlight.items():
-            transformed_highlight[_KEY_MAPPING.get(key, key)] = value
-        obj['highlight'] = transformed_highlight
+        if post_processing.get('include_highlight') == 1:
+            highlight = result.get('highlight', {})
+            transformed_highlight = {}
+            for key, value in highlight.items():
+                transformed_highlight[_KEY_MAPPING.get(key, key)] = value
+            obj['highlight'] = transformed_highlight
         # Always set object_name as a string type
         obj['object_name'] = obj.get('object_name') or ''
         obj['type'] = obj.get('type') or ''
         object_data.append(obj)
     return object_data
+
+
+def _get_object_infos(objects: list, meta: dict) -> Optional[dict]:
+    """
+    Args:
+        objects: results from _get_object_data_from_search_results
+        post_processing: The field pulled from the RPC params
+        meta: rpc meta object with 'auth' key
+    """
+    if len(objects) == 0:
+        return None
+    refs = {obj['kbase_id'] for obj in objects}
+    infos = get_object_info(refs, meta['auth'])
+    return {
+        f"{info[6]}/{info[0]}/{info[4]}": info
+        for info in infos
+    }
 
 
 def _get_guid_from_doc(doc):

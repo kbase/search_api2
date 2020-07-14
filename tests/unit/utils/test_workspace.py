@@ -1,9 +1,8 @@
 import pytest
 import responses
 
-from src.exceptions import UnauthorizedAccess
 from src.utils.config import config
-from src.utils.workspace import ws_auth, get_workspace_info
+from src.utils.workspace import ws_auth, get_workspace_info, get_object_info
 
 mock_ws_ids = {
   "version": "1.1",
@@ -32,6 +31,50 @@ mock_ws_info = {
     ]]
 }
 
+mock_obj_info = {
+    "version": "1.1",
+    "result": [
+        {
+            "infos": [
+                [
+                    87524,
+                    "GCF_000314385.1",
+                    "KBaseGenomes.Genome-17.0",
+                    "2020-07-02T21:06:36+0000",
+                    5,
+                    "username",
+                    15792,
+                    "ReferenceDataManager",
+                    "3c62af7370ef698c34ce6397dfb5ca81",
+                    6193087,
+                    None
+                ],
+                [
+                    87515,
+                    "GCF_000314305.1",
+                    "KBaseGenomes.Genome-17.0",
+                    "2020-07-02T21:05:07+0000",
+                    5,
+                    "username",
+                    15792,
+                    "ReferenceDataManager",
+                    "11360251e96d69ca4b8f857372ce9a02",
+                    5858028,
+                    None
+                ]
+            ],
+            "paths": [
+                [
+                    "15792/87524/5"
+                ],
+                [
+                    "15792/87515/5"
+                ]
+            ]
+        }
+    ]
+}
+
 
 @responses.activate
 def test_ws_auth_valid():
@@ -51,7 +94,7 @@ def test_ws_auth_blank():
 def test_ws_auth_invalid():
     # Mock the workspace call
     responses.add(responses.POST, config['workspace_url'], status=403)
-    with pytest.raises(UnauthorizedAccess):
+    with pytest.raises(RuntimeError):
         ws_auth('x')
 
 
@@ -84,3 +127,15 @@ def test_get_workspace_info_invalid2():
                   json=resp, status=200)
     with pytest.raises(RuntimeError):
         get_workspace_info(1, 'token')
+
+
+@responses.activate
+def test_get_object_info_valid():
+    responses.add(
+        responses.POST,
+        config['workspace_url'],
+        json=mock_obj_info,
+        status=200
+    )
+    infos = get_object_info([1, 2], 'token')
+    assert infos == mock_obj_info['result'][0]['infos']
