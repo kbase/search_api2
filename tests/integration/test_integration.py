@@ -4,7 +4,7 @@ import requests
 import subprocess
 
 from src.utils.wait_for_service import wait_for_service
-from tests.integration.test_data import (
+from tests.integration.data import (
     search_request1,
     search_response1,
     search_request2,
