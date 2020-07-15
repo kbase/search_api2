@@ -47,7 +47,8 @@ _SORT_PROP_MAPPING = {
     'genome_scientific_name': 'genome_scientific_name.raw',
     'access_group_id': 'access_group',
     'type': 'obj_type_name',
-    'timestamp': 'timestamp'
+    'timestamp': 'timestamp',
+    'guid': 'id',
 }
 
 
@@ -56,7 +57,6 @@ def search_objects(params):
     Convert parameters from the "search_objects" RPC method into an Elasticsearch query.
     """
     query = _get_search_params(params)
-    # TODO check highlighting against the PR
     if params.get('include_highlight'):
         # We need a special highlight query so that the main query does not generate
         # highlights for bits of the query which are not user-generated.
@@ -146,7 +146,6 @@ def _get_search_params(params):
         ts = match_filter['timestamp']
         min_ts = ts.get('min_date')
         max_ts = ts.get('max_date')
-        print('min_ts and max_ts', min_ts, max_ts)
         if min_ts is not None and max_ts is not None and min_ts < max_ts:
             query['bool']['must'] = query['bool'].get('must', [])
             query['bool']['must'].append({'range': {'timestamp': {'gte': min_ts, 'lte': max_ts}}})
@@ -178,9 +177,14 @@ def _get_search_params(params):
             if obj_type not in type_blacklist
         ]
     # Handle sorting options
-    sorting_rules = params.get('sorting_rules', [])
+    if 'sorting_rules' not in params:
+        params['sorting_rules'] = [{
+          "property": "timestamp",
+          "is_object_property": 0,
+          "ascending": 1
+        }]
     sort = []  # type: list
-    for sort_rule in sorting_rules:
+    for sort_rule in params['sorting_rules']:
         prop = sort_rule.get('property')
         is_obj_prop = sort_rule.get('is_object_property', True)
         ascending = sort_rule.get('ascending', True)

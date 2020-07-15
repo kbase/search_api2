@@ -22,35 +22,41 @@ init_elasticsearch()
 # TODO test the following fields: object_name, obj_id, version, type, creator
 
 
-def test_search_objects_valid():
+@patch('src.search1_conversion.convert_result.get_object_info')
+@patch('src.search1_conversion.convert_result.get_workspace_info')
+@patch('src.search1_conversion.convert_result.get_user_profiles')
+def test_search_objects_valid(user_patched, ws_patched, infos_patched):
     params = {
         'post_processing': {
             'add_narrative_info': 1,
             'add_access_group_info': 1,
+            'include_highlight': 1,
         }
     }
-    with patch('src.search1_conversion.convert_result.get_workspace_info') as ws_patched:
-        with patch('src.search1_conversion.convert_result.get_user_profiles') as user_patched:
-            ws_patched.return_value = mock_ws_info
-            user_patched.return_value = mock_user_profiles
-            final = convert_result.search_objects(params, test_search_results, {'auth': None})
+    infos_patched.return_value = []
+    ws_patched.return_value = mock_ws_info
+    user_patched.return_value = mock_user_profiles
+    final = convert_result.search_objects(params, test_search_results, {'auth': None})
     for key in expected_search_results:
         assert key in final
         assert expected_search_results[key] == final[key], key
 
 
-def test_get_objects_valid():
+@patch('src.search1_conversion.convert_result.get_object_info')
+@patch('src.search1_conversion.convert_result.get_workspace_info')
+@patch('src.search1_conversion.convert_result.get_user_profiles')
+def test_get_objects_valid(user_patched, ws_patched, infos_patched):
     params = {
         'post_processing': {
             'add_narrative_info': 1,
             'add_access_group_info': 1,
+            'include_highlight': 1,
         }
     }
-    with patch('src.search1_conversion.convert_result.get_workspace_info') as ws_patched:
-        with patch('src.search1_conversion.convert_result.get_user_profiles') as user_patched:
-            ws_patched.return_value = mock_ws_info
-            user_patched.return_value = mock_user_profiles
-            final = convert_result.get_objects(params, test_search_results, {'auth': None})
+    infos_patched.return_value = []
+    ws_patched.return_value = mock_ws_info
+    user_patched.return_value = mock_user_profiles
+    final = convert_result.get_objects(params, test_search_results, {'auth': None})
     for key in expected_get_objects:
         assert key in final
         assert expected_get_objects[key] == final[key], key
@@ -81,7 +87,6 @@ def test_search_types_valid():
       },
     }
     final = convert_result.search_types(params, test_results, {'auth': None})
-    print('FINAL', final)
     for key in expected:
         assert key in final
         assert expected[key] == final[key], key

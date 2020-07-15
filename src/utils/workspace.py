@@ -3,9 +3,10 @@ Workspace user authentication: find workspaces the user can search
 """
 import json
 import requests
+from typing import Optional
 
 from src.utils.config import config
-from src.exceptions import UnauthorizedAccess
+# from src.exceptions import UnauthorizedAccess
 
 
 def ws_auth(auth_token):
@@ -15,24 +16,12 @@ def ws_auth(auth_token):
     """
     if not auth_token:
         return []  # anonymous users
-    ws_url = config['workspace_url']
     # TODO session cache this
-    # Make a request to the workspace using the user's auth token to find their readable workspace IDs
-    payload = {
-        'method': 'Workspace.list_workspace_ids',
-        'version': '1.1',
-        'params': [{'perm': 'r'}]
-    }
-    headers = {'Authorization': auth_token}
-    resp = requests.post(
-        url=ws_url,
-        data=json.dumps(payload),
-        headers=headers,
-    )
-    if not resp.ok:
-        # TODO raise server error on non-auth error
-        raise UnauthorizedAccess(ws_url, resp.text)
-    return resp.json()['result'][0]['workspaces']
+    # Make a request to the workspace using the user's auth token to find their
+    # readable workspace IDs
+    params = {'perm': 'r'}
+    result = _req('list_workspace_ids', params, auth_token)
+    return result['workspaces']
 
 
 def get_workspace_info(workspace_id, auth_token):
@@ -42,25 +31,41 @@ def get_workspace_info(workspace_id, auth_token):
     if not auth_token:
         # TODO are we sure we want this? Doesn't make a lot of sense
         return []  # anonymous users
-    ws_url = config['workspace_url']
     # TODO session cache this
-    # Make a request to the workspace using the user's auth token to find their readable workspace IDs
-    payload = {
-        'method': 'Workspace.get_workspace_info',
-        'version': '1.1',
-        'params': [{'id': workspace_id}]
+    # Make a request to the workspace using the user's auth token to find their
+    # readable workspace IDs
+    params = {'id': workspace_id}
+    return _req('get_workspace_info', params, auth_token)
+
+
+def get_object_info(refs, token=None):
+    params = {
+        'includeMetadata': 1,
+        'objects': [{'ref': ref} for ref in refs],
     }
-    headers = {'Authorization': auth_token}
+    result = _req('get_object_info3', params, token)
+    return result['infos']
+
+
+def _req(method: str, params: dict, token: Optional[str]):
+    """Make a generic workspace http/rpc request"""
+    payload = {
+        'method': 'Workspace.' + method,
+        'version': '1.1',
+        'id': 0,
+        'params': [params],
+    }
+    headers = {'Authorization': token}
     resp = requests.post(
-        url=ws_url,
-        data=json.dumps(payload),
+        url=config['workspace_url'],
         headers=headers,
+        data=json.dumps(payload),
     )
     if not resp.ok:
         # TODO better error class
-        raise RuntimeError(ws_url, resp.text)
-    result = resp.json()['result']
-    if not len(result) > 0:
+        raise RuntimeError(resp.text)
+    result = resp.json().get('result')
+    if not result or len(result) == 0:
         # TODO better error class
-        raise RuntimeError(ws_url, resp.text)
+        raise RuntimeError(resp.text)
     return result[0]

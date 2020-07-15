@@ -33,6 +33,10 @@ definitions:
             objects:
               type: array
               items: {$ref: "#/definitions/searchResultHit" }
+            objects_info:
+              type: object
+              patternProperties:
+                '.*': {$ref: "#/definitions/objectInfo"}
             search_time: {type: integer}
             access_groups_info:
               type: object
@@ -95,6 +99,10 @@ definitions:
             objects:
               type: array
               items: {$ref: "#/definitions/searchResultHit"}
+            objects_info:
+              type: object
+              patternProperties:
+                '.*': {$ref: "#/definitions/objectInfo"}
             total: {type: integer}
             search_time: {type: integer}
             pagination:
