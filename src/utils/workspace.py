@@ -41,7 +41,6 @@ def get_workspace_info(workspace_id, auth_token):
 def get_object_info(refs, token=None):
     params = {
         'includeMetadata': 1,
-        'ignoreErrors': 1,
         'objects': [{'ref': ref} for ref in refs],
     }
     result = _req('get_object_info3', params, token)
