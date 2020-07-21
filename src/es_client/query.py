@@ -22,7 +22,7 @@ def search(params, meta):
     """
     user_query = params.get('query')
     authorized_ws_ids = []
-    if not params.get('public_only') and meta['auth']:
+    if not params.get('only_public') and meta['auth']:
         # Fetch the workspace IDs that the user can read
         # Used for simple access control
         authorized_ws_ids = ws_auth(meta['auth'])
@@ -33,10 +33,10 @@ def search(params, meta):
     if user_query:
         query['bool']['must'] = user_query
     # Our access control query is then inserted under a "filter" depending on options:
-    if params.get('public_only'):
+    if params.get('only_public'):
         # Public workspaces only; most efficient
         query['bool']['filter'] = {'term': {'is_public': True}}
-    elif params.get('private_only'):
+    elif params.get('only_private'):
         # Private workspaces only
         query['bool']['filter'] = [
             {'term': {'is_public': False}},

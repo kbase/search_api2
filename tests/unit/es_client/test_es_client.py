@@ -19,7 +19,7 @@ init_elasticsearch()
 
 def test_search_public_valid():
     params = {
-        'public_only': True,
+        'only_public': True,
         'track_total_hits': True,
     }
     result = search(params, {'auth': None})
@@ -38,7 +38,7 @@ def test_search_public_valid():
 
 def test_search_query_valid():
     params = {
-        'public_only': True,
+        'only_public': True,
         'query': {
             "term": {"name": "doc2"},
         },
@@ -116,7 +116,7 @@ def test_search_unknown_index():
 def test_search_private_valid():
     with patch('src.es_client.query.ws_auth') as mocked:
         mocked.return_value = [1, 2, 3]  # Authorized workspaces
-        params = {'private_only': True}
+        params = {'only_private': True}
         result = search(params, {'auth': 'x'})
         assert result['count'] == 2
         names = {hit['doc']['name'] for hit in result['hits']}
@@ -128,6 +128,6 @@ def test_search_private_valid():
 def test_search_private_no_access():
     with patch('src.es_client.query.ws_auth') as mocked:
         mocked.return_value = [55]  # Authorized workspaces
-        params = {'private_only': True}
+        params = {'only_private': True}
         result = search(params, {'auth': 'x'})
         assert result['count'] == 0
