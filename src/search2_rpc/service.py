@@ -9,6 +9,7 @@ import time
 from src.es_client import search
 from src.utils.config import config
 from src.utils.logger import logger
+from src.search2_conversion import convert_params, convert_result
 
 service = jsonrpcbase.JSONRPCService(
     info={
@@ -62,6 +63,16 @@ def search_objects(params, meta):
     return result
 
 
+def search_workspace(params, meta):
+    start = time.time()
+    params = convert_params.search_workspace(params, meta)
+    result = search(params, meta)
+    result = convert_result.search_workspace(result, params, meta)
+    logger.debug(f"Finished 'search_workspace' method in {time.time() - start}s")
+    return result
+
+
 service.add(show_indexes)
 service.add(show_config)
 service.add(search_objects)
+service.add(search_workspace)

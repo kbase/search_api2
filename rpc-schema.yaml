@@ -71,6 +71,7 @@ definitions:
             examples:
               - [[field1, asc], [field2, desc]]
             type: array
+            default: ["_score", "desc"]
             items:
               type: array
               minLength: 2
