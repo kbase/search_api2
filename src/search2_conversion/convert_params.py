@@ -23,6 +23,9 @@ def search_workspace(params, meta):
                 raise RuntimeError(f"Unknown type: {type}. Available types: {available}.")
             indexes.append(mapping[typ])
         converted["indexes"] = indexes
+    if "types" not in params or len(params["types"]) == 0:
+        indexes = list(config['global']['ws_type_to_indexes'].values())
+        converted["indexes"] = indexes
     if "sorts" in params:
         # Convert from our format into Elasticsearch's format
         # [[field, dir]] -> [{field: {'order': dir}}]
