@@ -7,5 +7,6 @@ cleanup () {
 
 cleanup
 trap cleanup EXIT
-
-PYTHONPATH=. pytest -vv -s tests/integration
+path=${1:-"tests/integration"}
+export PYTHONPATH=.
+poetry run pytest -vv -s $path

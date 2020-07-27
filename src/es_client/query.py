@@ -5,6 +5,7 @@ import re
 import json
 import requests
 
+from src.utils.logger import logger
 from src.utils.workspace import ws_auth
 from src.utils.config import config
 from src.utils.obj_utils import get_path
@@ -91,16 +92,18 @@ def search(params, meta):
 
 def _handle_es_err(resp):
     """Handle a non-2xx response from Elasticsearch."""
+    logger.error(f"Elasticsearch response error:\n{resp.text}")
     try:
         resp_json = resp.json()
     except Exception:
         raise RuntimeError(resp.text)
     err_type = get_path(resp_json, ['error', 'root_cause', 0, 'type'])
-    err_reason = get_path(resp_json, ['error', 'root_cause', 0, 'reason'])
+    err_reason = get_path(resp_json, ['error', 'reason'])
     if err_type is None:
         raise RuntimeError(resp.text)
     if err_type == 'index_not_found_exception':
         raise UnknownIndex(err_reason)
+    raise RuntimeError(err_reason)
 
 
 def _handle_response(resp_json):

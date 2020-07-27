@@ -82,12 +82,7 @@ definitions:
                   title: Sort direction
                   enum: ["asc", "desc"]
           filters:
-            title: Filters
-            description: |
-              Exact term and range matches on specific fields, with boolean
-              conjunction/disjunction
-            type:
-              "$ref": "#/definitions/filter_clause"
+            "$ref": "#/definitions/filter_clause"
           paging:
             type: object
             additionalProperties: false
