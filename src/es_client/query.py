@@ -5,6 +5,7 @@ import re
 import json
 import requests
 
+from src.utils.logger import logger
 from src.utils.workspace import ws_auth
 from src.utils.config import config
 from src.utils.obj_utils import get_path
@@ -22,7 +23,7 @@ def search(params, meta):
     """
     user_query = params.get('query')
     authorized_ws_ids = []
-    if not params.get('public_only') and meta['auth']:
+    if not params.get('only_public') and meta['auth']:
         # Fetch the workspace IDs that the user can read
         # Used for simple access control
         authorized_ws_ids = ws_auth(meta['auth'])
@@ -33,10 +34,10 @@ def search(params, meta):
     if user_query:
         query['bool']['must'] = user_query
     # Our access control query is then inserted under a "filter" depending on options:
-    if params.get('public_only'):
+    if params.get('only_public'):
         # Public workspaces only; most efficient
         query['bool']['filter'] = {'term': {'is_public': True}}
-    elif params.get('private_only'):
+    elif params.get('only_private'):
         # Private workspaces only
         query['bool']['filter'] = [
             {'term': {'is_public': False}},
@@ -91,16 +92,18 @@ def search(params, meta):
 
 def _handle_es_err(resp):
     """Handle a non-2xx response from Elasticsearch."""
+    logger.error(f"Elasticsearch response error:\n{resp.text}")
     try:
         resp_json = resp.json()
     except Exception:
         raise RuntimeError(resp.text)
     err_type = get_path(resp_json, ['error', 'root_cause', 0, 'type'])
-    err_reason = get_path(resp_json, ['error', 'root_cause', 0, 'reason'])
+    err_reason = get_path(resp_json, ['error', 'reason'])
     if err_type is None:
         raise RuntimeError(resp.text)
     if err_type == 'index_not_found_exception':
         raise UnknownIndex(err_reason)
+    raise RuntimeError(err_reason)
 
 
 def _handle_response(resp_json):
@@ -167,7 +170,6 @@ def _construct_index_name(params):
     # if params.get('exclude_indexes'):
     #     exclusions = params['exclude_indexes']
     #     # FIXME I could not get exclusions (prefixed with minus sign) to work
-    #     # without an asterisk
     #     exclusions_str = ','.join('-' + prefix + '*' + name for name in exclusions)
     #     index_name_str += ',' + exclusions_str
     return index_name_str

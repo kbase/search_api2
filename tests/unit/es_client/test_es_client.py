@@ -1,10 +1,12 @@
 import json
 import pytest
 import subprocess
+import responses
 
 # For mocking workspace calls
 from unittest.mock import patch
 
+from src.utils.config import config
 from src.exceptions import UnknownIndex
 from src.es_client import search
 from src.utils.wait_for_service import wait_for_service
@@ -19,7 +21,7 @@ init_elasticsearch()
 
 def test_search_public_valid():
     params = {
-        'public_only': True,
+        'only_public': True,
         'track_total_hits': True,
     }
     result = search(params, {'auth': None})
@@ -38,7 +40,7 @@ def test_search_public_valid():
 
 def test_search_query_valid():
     params = {
-        'public_only': True,
+        'only_public': True,
         'query': {
             "term": {"name": "doc2"},
         },
@@ -108,15 +110,18 @@ def test_search_by_index_valid():
 
 
 def test_search_unknown_index():
-    params = {'indexes': ['xyz']}
-    with pytest.raises(UnknownIndex):
+    idx_name = 'xyz'
+    full_name = config['index_prefix'] + '_' + idx_name
+    params = {'indexes': [idx_name]}
+    with pytest.raises(UnknownIndex) as ctx:
         search(params, {'auth': None})
+    assert str(ctx.value) == f"no such index [{full_name}]"
 
 
 def test_search_private_valid():
     with patch('src.es_client.query.ws_auth') as mocked:
         mocked.return_value = [1, 2, 3]  # Authorized workspaces
-        params = {'private_only': True}
+        params = {'only_private': True}
         result = search(params, {'auth': 'x'})
         assert result['count'] == 2
         names = {hit['doc']['name'] for hit in result['hits']}
@@ -128,6 +133,30 @@ def test_search_private_valid():
 def test_search_private_no_access():
     with patch('src.es_client.query.ws_auth') as mocked:
         mocked.return_value = [55]  # Authorized workspaces
-        params = {'private_only': True}
+        params = {'only_private': True}
         result = search(params, {'auth': 'x'})
         assert result['count'] == 0
+
+
+@responses.activate
+def test_es_response_error():
+    """Test the case where ES gives a non-2xx response."""
+    prefix = config['index_prefix']
+    delim = config['prefix_delimiter']
+    index_name_str = prefix + delim + "default_search"
+    url = config['elasticsearch_url'] + '/' + index_name_str + '/_search'
+    responses.add(responses.POST, url, json={}, status=500)
+    with pytest.raises(RuntimeError):
+        search({}, {'auth': None})
+
+
+@responses.activate
+def test_es_response_error_no_json():
+    """Test the case where ES gives a non-2xx response with a non-json body."""
+    prefix = config['index_prefix']
+    delim = config['prefix_delimiter']
+    index_name_str = prefix + delim + "default_search"
+    url = config['elasticsearch_url'] + '/' + index_name_str + '/_search'
+    responses.add(responses.POST, url, body="!", status=500)
+    with pytest.raises(RuntimeError):
+        search({}, {'auth': None})

@@ -49,3 +49,18 @@ def test_search_objects():
     result = service.call(json.dumps(params), {'auth': None})
     res = json.loads(result)
     assert res['result']['count'] > 0
+
+
+def test_search_workspace():
+    params = {
+        "method": "search_workspace",
+        "jsonrpc": "2.0",
+        "id": 0,
+        "params": {
+            "types": ["KBaseNarrative.Narrative"]
+        }
+    }
+    result = service.call(json.dumps(params), {'auth': None})
+    res = json.loads(result)
+    assert 'error' not in res
+    assert res['result']['count'] > 0

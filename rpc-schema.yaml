@@ -1,9 +1,9 @@
 ---
 $schema: http://json-schema.org/draft-07/schema#
 title: Search2 Method Schemas
-# JSON Schema definitions for every RPC method in this service
 definitions:
 
+  # JSON Schema definitions for every RPC method in this service
   methods:
     # Display public configuration details for the services
     show_config:
@@ -26,6 +26,109 @@ definitions:
             count:
               title: Document count
               type: integer
+
+    search_workspace:
+      params:
+        type: object
+        required: []
+        additionalProperties: false
+        properties:
+          types:
+            title: Types
+            description: |
+              Unversioned workspace type names to search against. Defaults to
+              search against all available types.
+            type: array
+            items: {type: string}
+          include_fields:
+            title: Include Fields
+            description: |
+              What fields to include in the results. Supports wildcards. If
+              empty, null, or absent, then all fields are returned.
+            examples:
+              - ["field1", "field2", "field3"]
+            type: array
+            items: {type: string}
+          search:
+            title: Search Query
+            description: Generic search query string
+            examples:
+              - "foo | bar + baz*"
+            type: object
+            required: [query]
+            additionalProperties: false
+            properties:
+              query:
+                type: string
+                description: Uses Elasticsearch's Simple Query String syntax
+              fields:
+                type: array
+                items: {type: string}
+                default: ["agg_fields"]
+          sorts:
+            title: Sorts
+            description: Fields to use for sorting results
+            examples:
+              - [[field1, asc], [field2, desc]]
+            type: array
+            default: ["_score", "desc"]
+            items:
+              type: array
+              minLength: 2
+              maxLength: 2
+              items:
+                - {type: string, title: "Field Name"}
+                - type: string
+                  title: Sort direction
+                  enum: ["asc", "desc"]
+          filters:
+            "$ref": "#/definitions/filter_clause"
+          paging:
+            type: object
+            additionalProperties: false
+            default: {length: 10, offset: 0}
+            properties:
+              length:
+                type: integer
+                default: 10
+              offset:
+                type: integer
+                default: 0
+          access:
+            type: object
+            additionalProperties: false
+            default: {only_public: false, only_private: false}
+            properties:
+              only_public:
+                type: boolean
+                description: Only return public documents. No auth needed.
+              only_private:
+                type: boolean
+                description: Only return private documents and no public. Auth required.
+          track_total_hits:
+            type: boolean
+            title: Track total hits
+            description: Track the true total of hits. Bypasses the 10k count limit.
+      # End of search_workspace.params
+      result:
+        type: object
+        required: [count, hits, search_time]
+        additionalProperties: false
+        properties:
+          count:
+            description: Total count of results
+            type: integer
+            minimum: 0
+          search_time:
+            description: |
+              Time in milliseconds that the request took for processing on
+              Elasticsearch
+            type: integer
+            minimum: 0
+          hits:
+            type: array
+            items: {type: object}
+    # End of search_workspace
 
     # Generic search of all objects under an index or alias
     search_objects:
@@ -160,3 +263,65 @@ definitions:
                     ".*":
                       type: array
                       items: {type: string}
+  # End of search_objects
+
+  # Non-method definitions
+
+  filter_clause:
+    title: Filter Clause
+    description: Filters applied to one or more fields with boolean operators
+    examples:
+      - {field: "field1", term: "xyz"}
+      - {operator: AND, fields: [{field: field1, term: xyz}, {field: field2, term: abc}]}
+    anyOf:
+      - {"$ref": "#/definitions/filter_bool"}
+      - {"$ref": "#/definitions/filter_field"}
+
+  filter_bool:
+    title: Filter Boolean
+    description: Filter multiple fields joined by a boolean operator
+    examples:
+      - {operator: AND, fields: [{field: field1, term: xyz}, {field: field2, term: abc}]}
+    type: object
+    additionalProperties: false
+    required: [fields, operator]
+    properties:
+      operator:
+        type: string
+        enum: ["AND", "OR"]
+      fields:
+        type: array
+        items:
+          anyOf:
+            - {"$ref": "#/definitions/filter_bool"}
+            - {"$ref": "$/defintions/filter_field"}
+
+  filter_field:
+    title: Filter Single Field
+    description: A filter on a specific field
+    examples:
+      - {field: "field1", term: "xyzvalue"}
+      - {field: "field1", range: {min: 10, max: 100}}
+    type: object
+    additionalProperties: false
+    required: [field]
+    properties:
+      field: {type: string}
+      range:
+        type: object
+        additionalProperties: false
+        properties:
+          max:
+            anyOf: [{type: integer}, {type: number}]
+          min:
+            anyOf: [{type: integer}, {type: number}]
+      term: {"$ref": "#/definitions/scalar_type"}
+      not_term: {"$ref": "#/definitions/scalar_type"}
+
+  scalar_type:
+    anyOf:
+      - type: number
+      - type: integer
+      - type: string
+      - type: boolean
+      - type: "null"
