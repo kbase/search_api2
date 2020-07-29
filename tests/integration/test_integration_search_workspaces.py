@@ -24,7 +24,7 @@ def test_narrative_example():
             "fields": ["agg_fields", "scientific_name"]
         },
         "filters": {
-            "field": "source", "term": "refseq"
+            "field": "tags", "term": "refdata"
         },
         "paging": {
             "length": 10,
@@ -42,4 +42,4 @@ def test_narrative_example():
         })
     )
     data = resp.json()
-    print("DATA", data)
+    assert data['result']['count'] > 0

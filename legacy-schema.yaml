@@ -169,17 +169,6 @@ definitions:
   data:
     title: Search result
     type: object
-    required:
-      - creator
-      - shared_users
-      - timestamp
-      - creation_date
-      - is_public
-      - access_group
-      - obj_id
-      - version
-      - copied
-      - tags
     properties:
       creator: {type: string}
       shared_users:
@@ -291,7 +280,13 @@ definitions:
         type: integer
       - title: Object name
         type: string
-      - title: Saved at
+      - title: Type
+        type: string
+      - title: Saved Date
+        type: string
+      - title: Version
+        type: integer
+      - title: Author
         type: string
       - title: Workspace Id
         type: integer

@@ -170,7 +170,6 @@ def _construct_index_name(params):
     # if params.get('exclude_indexes'):
     #     exclusions = params['exclude_indexes']
     #     # FIXME I could not get exclusions (prefixed with minus sign) to work
-    #     # without an asterisk
     #     exclusions_str = ','.join('-' + prefix + '*' + name for name in exclusions)
     #     index_name_str += ',' + exclusions_str
     return index_name_str
