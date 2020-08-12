@@ -1,11 +1,12 @@
 #!/bin/sh
 
 set -e
+set -o xtrace
 
 export PYTHONPATH=.
 export WORKSPACE_URL="http://localhost:5555/ws"
 
-path=${1:-"tests/unit"}
+path=${@:-"tests/unit"}
 
 poetry run flake8
 poetry run mypy --ignore-missing-imports src/**/*.py

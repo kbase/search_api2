@@ -294,7 +294,7 @@ definitions:
         items:
           anyOf:
             - {"$ref": "#/definitions/filter_bool"}
-            - {"$ref": "$/defintions/filter_field"}
+            - {"$ref": "#/definitions/filter_field"}
 
   filter_field:
     title: Filter Single Field

@@ -4,9 +4,9 @@ FROM python:3.7-alpine
 ARG BUILD_DATE
 ARG VCS_REF
 ARG BRANCH=develop
+ENV DOCKERIZE_VERSION v0.6.1
 
 # Install dockerize
-ENV DOCKERIZE_VERSION v0.6.1
 RUN apk --update add --virtual build-dependencies curl tar gzip && \
     curl -o dockerize.tar.gz \
       https://raw.githubusercontent.com/kbase/dockerize/master/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
@@ -35,4 +35,4 @@ RUN apk --update add --virtual build-dependencies libffi-dev libressl-dev musl-d
 COPY . /app
 
 ENTRYPOINT ["/usr/local/bin/dockerize"]
-CMD ["sh", "-x", "scripts/start_server.sh"]
+CMD ["sh", "-x", "scripts/start_server"]

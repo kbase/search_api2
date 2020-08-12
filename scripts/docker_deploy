@@ -3,8 +3,6 @@
 
 # Exit on error
 set -e
-
-# Show the commands we execute
 set -o xtrace
 
 ver=$(cat VERSION)

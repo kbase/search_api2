@@ -15,6 +15,7 @@ def search_workspace(params, meta):
     if "types" in params:
         # Get the index names from KBase type names using global config data
         indexes = []
+        # TODO allow for both unversioned and version type filtering here
         mapping = config['global']['ws_type_to_indexes']
         for typ in params['types']:
             if typ not in mapping:

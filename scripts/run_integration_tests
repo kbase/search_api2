@@ -1,4 +1,6 @@
 #!/bin/sh
+set -e
+set -o xtrace
 
 cleanup () {
   echo "Stopping container.."
@@ -7,6 +9,6 @@ cleanup () {
 
 cleanup
 trap cleanup EXIT
-path=${1:-"tests/integration"}
+path=${@:-"tests/integration"}
 export PYTHONPATH=.
 poetry run pytest -vv -s $path
