@@ -43,3 +43,31 @@ def test_narrative_example():
     )
     data = resp.json()
     assert data['result']['count'] > 0
+
+
+def test_dashboard_example():
+    params = {
+      "id": 1597353298754,
+      "jsonrpc": "2.0",
+      "method": "search_workspace",
+      "params": {
+        "filters": {
+          "fields": [
+            {"field": "is_temporary", "term": False},
+            {"field": "creator", "term": "jayrbolton"}
+          ],
+          "operator": "AND"
+        },
+        "paging": {"length": 20, "offset": 0},
+        "sorts": [["timestamp", "desc"], ["_score", "desc"]],
+        "track_total_hits": False,
+        "types": ["KBaseNarrative.Narrative"]
+      }
+    }
+    url = APP_URL + '/rpc'
+    resp = requests.post(
+        url=url,
+        data=json.dumps(params),
+    )
+    data = resp.json()
+    assert data['result']['count'] > 0

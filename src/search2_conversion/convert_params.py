@@ -47,7 +47,8 @@ def search_workspace(params, meta):
             }
         })
     if "filters" in params:
-        converted["query"]["bool"]["must"].append(_convert_filters(params['filters']))
+        converted_query = _convert_filters(params['filters'])
+        converted["query"]["bool"]["must"].append(converted_query)
     return converted
 
 
@@ -57,16 +58,20 @@ def _convert_filters(filters):
         if filters['operator'] == 'AND':
             # Recursive call for sub-clauses
             return {
-                "must": [
-                    _convert_filters(f) for f in filters['fields']
-                ]
+                "bool": {
+                    "must": [
+                        _convert_filters(f) for f in filters['fields']
+                    ]
+                }
             }
         else:
             # Recursive call for sub-clauses
             return {
-                "should": [
-                    _convert_filters(f) for f in filters['fields']
-                ]
+                "bool": {
+                    "should": [
+                        _convert_filters(f) for f in filters['fields']
+                    ]
+                }
             }
     elif "term" in filters:
         # Base case term match
@@ -74,8 +79,10 @@ def _convert_filters(filters):
     elif "not_term" in filters:
         # Base case negated term match
         return {
-            "must_not": {
-                "term": {filters["field"]: {"value": filters["not_term"]}}
+            "bool": {
+                "must_not": {
+                    "term": {filters["field"]: {"value": filters["not_term"]}}
+                }
             }
         }
     elif "range" in filters:
