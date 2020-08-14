@@ -26,7 +26,7 @@ jobs:
     - name: Poetry installation
       run: poetry install
     - name: Run tests
-      run: sh scripts/run_tests.sh
+      run: scripts/run_tests
     - name: Codecov
       uses: codecov/codecov-action@v1
       with:
