@@ -45,22 +45,32 @@ def test_search_workspace():
     expected = {
         'query': {
             'bool': {
-                'must': [{
-                    'simple_query_string': {
-                        'fields': ['x', 'y'],
-                        'query': 'foo | bar + baz*',
-                        'default_operator': 'AND'
+                'must': [
+                    {
+                        'simple_query_string': {
+                            'fields': ['x', 'y'],
+                            'query': 'foo | bar + baz*',
+                            'default_operator': 'AND'
+                        }
+                    },
+                    {
+                        'bool': {
+                            'must': [
+                                {
+                                    'bool': {
+                                        'should': [
+                                            {'range': {'x': {'lte': 20, 'gte': 10}}},
+                                            {'bool': {
+                                                'must_not': {'term': {'y': {'value': 1}}}
+                                            }}
+                                        ]
+                                    }
+                                },
+                                {'term': {'x': {'value': 1}}}
+                            ]
+                        }
                     }
-                }, {
-                    'must': [{
-                        'should': [
-                            {'range': {'x': {'lte': 20, 'gte': 10}}},
-                            {'must_not': {'term': {'y': {'value': 1}}}}
-                        ]
-                    }, {
-                        'term': {'x': {'value': 1}}
-                    }]
-                }]
+                ]
             }
         },
         'only_public': False,
