@@ -1,4 +1,5 @@
 from src.utils.config import config
+from src.exceptions import UnknownType
 
 
 def search_workspace(params, meta):
@@ -19,9 +20,9 @@ def search_workspace(params, meta):
         mapping = config['global']['ws_type_to_indexes']
         for typ in params['types']:
             if typ not in mapping:
-                # TODO proper error class with code
                 available = list(mapping.keys())
-                raise RuntimeError(f"Unknown type: {type}. Available types: {available}.")
+                msg = f"Unknown type: {type}. Available types: {available}."
+                raise UnknownType(msg)
             indexes.append(mapping[typ])
         converted["indexes"] = indexes
     if "types" not in params or len(params["types"]) == 0:

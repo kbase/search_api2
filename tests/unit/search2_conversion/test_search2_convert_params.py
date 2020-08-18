@@ -2,6 +2,7 @@ import pytest
 
 from src.utils.config import config
 from src.search2_conversion import convert_params
+from src.exceptions import ResponseError
 
 # TODO Test invalid parameters
 
@@ -91,7 +92,7 @@ def test_search_workspace_invalid_type():
     params = {
         'types': ['xyz'],
     }
-    with pytest.raises(RuntimeError):
+    with pytest.raises(ResponseError):
         convert_params.search_workspace(params, {})
 
 

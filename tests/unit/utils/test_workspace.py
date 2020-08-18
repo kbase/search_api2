@@ -3,6 +3,7 @@ import responses
 
 from src.utils.config import config
 from src.utils.workspace import ws_auth, get_workspace_info, get_object_info
+from src.exceptions import ResponseError
 
 mock_ws_ids = {
   "version": "1.1",
@@ -94,8 +95,12 @@ def test_ws_auth_blank():
 def test_ws_auth_invalid():
     # Mock the workspace call
     responses.add(responses.POST, config['workspace_url'], status=403)
-    with pytest.raises(RuntimeError):
+    with pytest.raises(ResponseError) as ctx:
         ws_auth('x')
+    err = ctx.value
+    assert err.status == 403
+    assert err.code == -32001
+    assert len(err.message) > 0
 
 
 @responses.activate
@@ -114,8 +119,12 @@ def test_get_workspace_info_blank():
 @responses.activate
 def test_get_workspace_info_invalid():
     responses.add(responses.POST, config['workspace_url'], status=500)
-    with pytest.raises(RuntimeError):
+    with pytest.raises(ResponseError) as ctx:
         get_workspace_info(1, 'token')
+    err = ctx.value
+    assert err.status == 403
+    assert err.code == -32001
+    assert len(err.message) > 0
 
 
 @responses.activate
@@ -125,8 +134,12 @@ def test_get_workspace_info_invalid2():
     }
     responses.add(responses.POST, config['workspace_url'],
                   json=resp, status=200)
-    with pytest.raises(RuntimeError):
+    with pytest.raises(ResponseError) as ctx:
         get_workspace_info(1, 'token')
+    err = ctx.value
+    assert err.status == 403
+    assert err.code == -32001
+    assert len(err.message) > 0
 
 
 @responses.activate

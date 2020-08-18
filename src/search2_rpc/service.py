@@ -10,6 +10,7 @@ from src.es_client import search
 from src.utils.config import config
 from src.utils.logger import logger
 from src.search2_conversion import convert_params, convert_result
+from src.exceptions import ElasticsearchError
 
 service = jsonrpcbase.JSONRPCService(
     info={
@@ -31,7 +32,7 @@ def show_indexes(params, meta):
     )
     if not resp.ok:
         # TODO better error class
-        raise RuntimeError(f'Elasticsearch error:\n{resp.text}')
+        raise ElasticsearchError(resp.text)
     resp_json = resp.json()
     result = []
     # Drop the prefixes

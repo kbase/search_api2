@@ -24,6 +24,14 @@ The [search configuration file](https://github.com/kbase/index_runner_spec/blob/
 * `aliases` is a list of Elasticsearch index aliases to a list of index names. These are all searchable as index names.
 * `mappings` gives the type definitions for every specific index in the Elasticsearch database. Use these type definitions to find out what kind of data you will get back in the search results.
 
+### Custom error codes
+
+* `-32001` - authorization failed
+* `-32002` - unknown ES index name
+* `-32003` - Elasticsearch response error
+* `-32004` - User profile service response error
+* `-32005` - Unknown workspace type
+
 ### <url>/rpc
 
 Uses [JSON RPC 2.0 format](https://www.jsonrpc.org/specification).

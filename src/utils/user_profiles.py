@@ -2,6 +2,7 @@ import json
 import requests
 
 from src.utils.config import config
+from src.exceptions import UserProfileError
 
 
 def get_user_profiles(usernames: list, auth_token):
@@ -26,6 +27,5 @@ def get_user_profiles(usernames: list, auth_token):
         headers=headers,
     )
     if not resp.ok:
-        # TODO better error class
-        raise RuntimeError(url, resp.text)
+        raise UserProfileError(url, resp.text)
     return resp.json()['result'][0]
