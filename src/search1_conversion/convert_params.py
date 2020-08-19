@@ -26,7 +26,7 @@ ObjectData type:
           used to create the object and their version and version control
           commit hash. Not all keys may be present; if not their values were
           not available in the search data.
-    highlight - dict of string to list of string - search result highlights from ES. TODO
+    highlight - dict of string to list of string - search result highlights from ES
           The keys are the field names and the list contains the sections in
           each field that matched the search query. Fields with no hits will
           not be available. Short fields that matched are shown in their
@@ -151,7 +151,6 @@ def _get_search_params(params):
             query['bool']['must'] = query['bool'].get('must', [])
             query['bool']['must'].append({'range': {'timestamp': {'gte': min_ts, 'lte': max_ts}}})
         else:
-            # TODO proper error
             raise ResponseError(code=-32602, message="Invalid timestamp range in match_filter/timestamp")
     # Handle a search on tags, which corresponds to the generic `tags` field in all indexes.
     if match_filter.get('source_tags'):
