@@ -30,6 +30,23 @@ def test_rpc_valid():
     assert result['result']['dev']
 
 
+def test_auth_fail_resp():
+    resp = requests.post(
+        BASE_URL + "/legacy",
+        headers={"Authorization": "xyz"},
+        data=json.dumps({
+            "jsonrpc": "2.0",
+            "id": "0",
+            "method": "KBaseSearchEngine.get_objects",
+            "params": [{"guids": ["xyz"]}],
+        })
+    )
+    result = resp.json()
+    assert result['error']['code'] == -32001
+    assert resp.status_code == 400
+    print(resp.text)
+
+
 def test_legacy_valid():
     """Test a basic valid request to /legacy"""
     resp = requests.post(
@@ -43,6 +60,8 @@ def test_legacy_valid():
             }]
         })
     )
+    print(json.dumps(resp.json(), indent=4))
+    assert resp.status_code == 200
     result = resp.json()
     assert result['id'] == 0
     assert result['jsonrpc'] == '2.0'
@@ -52,13 +71,13 @@ def test_legacy_valid():
 def test_rpc_invalid():
     """Test a basic empty request to /rpc"""
     resp = requests.get(BASE_URL + '/rpc')
-    assert resp.json()['error']['code'] == -32700  # Invalid params
+    assert resp.json()['error']['code'] == -32600  # Invalid params
 
 
 def test_legacy_invalid():
     """Test a basic empty request to /legacy"""
     resp = requests.get(BASE_URL + '/legacy')
-    assert resp.json()['error']['code'] == -32700  # Invalid params
+    assert resp.json()['error']['code'] == -32600  # Invalid params
 
 
 def test_handle_options():

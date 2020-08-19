@@ -94,13 +94,11 @@ def test_ws_auth_blank():
 @responses.activate
 def test_ws_auth_invalid():
     # Mock the workspace call
-    responses.add(responses.POST, config['workspace_url'], status=403)
+    responses.add(responses.POST, config['workspace_url'], status=401)
     with pytest.raises(ResponseError) as ctx:
         ws_auth('x')
     err = ctx.value
-    assert err.status == 403
-    assert err.code == -32001
-    assert len(err.message) > 0
+    assert err.jsonrpc_code == -32001
 
 
 @responses.activate
@@ -122,9 +120,7 @@ def test_get_workspace_info_invalid():
     with pytest.raises(ResponseError) as ctx:
         get_workspace_info(1, 'token')
     err = ctx.value
-    assert err.status == 403
-    assert err.code == -32001
-    assert len(err.message) > 0
+    assert err.jsonrpc_code == -32001
 
 
 @responses.activate
@@ -137,8 +133,7 @@ def test_get_workspace_info_invalid2():
     with pytest.raises(ResponseError) as ctx:
         get_workspace_info(1, 'token')
     err = ctx.value
-    assert err.status == 403
-    assert err.code == -32001
+    assert err.jsonrpc_code == -32001
     assert len(err.message) > 0
 
 

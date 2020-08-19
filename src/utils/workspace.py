@@ -6,7 +6,7 @@ import requests
 from typing import Optional
 
 from src.utils.config import config
-from src.exceptions import ResponseError
+from src.exceptions import AuthError
 
 
 def ws_auth(auth_token):
@@ -67,6 +67,5 @@ def _req(method: str, params: dict, token: Optional[str]):
     except json.decoder.JSONDecodeError:
         pass
     if not resp.ok or not result or len(result) == 0:
-        msg = f"Authorization failed with response:\n{resp.text}"
-        raise ResponseError(code=-32001, message=msg, status=403)
+        raise AuthError(result, resp.text)
     return result[0]
