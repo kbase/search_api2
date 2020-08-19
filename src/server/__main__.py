@@ -61,7 +61,8 @@ async def page_not_found(request, err):
 async def any_exception(request, err):
     """
     Handle any unexpected server error.
-    Ideally, this should never be reached. JSONRPCBase will handle method error responses.
+    Theoretically, this should never be reached. JSONRPCBase will handle method
+    error responses.
     """
     traceback.print_exc()
     return sanic.response.json({

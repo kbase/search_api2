@@ -3,6 +3,7 @@ import responses
 
 from src.utils.config import config
 from src.utils.user_profiles import get_user_profiles
+from src.exceptions import UserProfileError
 
 
 mock_resp = {
@@ -32,5 +33,5 @@ def test_get_user_profiles_noauth():
 @responses.activate
 def test_get_user_profiles_invalid():
     responses.add(responses.POST, config['user_profile_url'], status=400)
-    with pytest.raises(RuntimeError):
+    with pytest.raises(UserProfileError):
         get_user_profiles(['username'], 'x')

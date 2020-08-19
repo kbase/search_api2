@@ -1,6 +1,7 @@
 import pytest
 
 from src.search1_conversion import convert_params
+from src.exceptions import ResponseError
 
 
 def test_search_objects_valid():
@@ -80,7 +81,7 @@ def test_search_objects_timestamp():
 
 
 def test_search_objects_timestamp_invalid():
-    with pytest.raises(RuntimeError):
+    with pytest.raises(ResponseError):
         params = {
             'match_filter': {'timestamp': {'min_date': 0, 'max_date': 0}}
         }
@@ -155,7 +156,7 @@ def test_search_objects_sorting():
 
 
 def test_search_objects_sorting_invalid_prop():
-    with pytest.raises(RuntimeError):
+    with pytest.raises(ResponseError):
         params = {
             'sorting_rules': [
                 {'property': 'x', 'is_object_property': False, 'ascending': False},

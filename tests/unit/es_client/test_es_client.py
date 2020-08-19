@@ -10,6 +10,7 @@ from src.utils.config import config
 from src.exceptions import UnknownIndex
 from src.es_client import search
 from src.utils.wait_for_service import wait_for_service
+from src.exceptions import ElasticsearchError
 from tests.helpers import init_elasticsearch
 
 
@@ -146,7 +147,7 @@ def test_es_response_error():
     index_name_str = prefix + delim + "default_search"
     url = config['elasticsearch_url'] + '/' + index_name_str + '/_search'
     responses.add(responses.POST, url, json={}, status=500)
-    with pytest.raises(RuntimeError):
+    with pytest.raises(ElasticsearchError):
         search({}, {'auth': None})
 
 
@@ -158,5 +159,5 @@ def test_es_response_error_no_json():
     index_name_str = prefix + delim + "default_search"
     url = config['elasticsearch_url'] + '/' + index_name_str + '/_search'
     responses.add(responses.POST, url, body="!", status=500)
-    with pytest.raises(RuntimeError):
+    with pytest.raises(ElasticsearchError):
         search({}, {'auth': None})

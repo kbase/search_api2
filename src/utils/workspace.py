@@ -6,7 +6,7 @@ import requests
 from typing import Optional
 
 from src.utils.config import config
-# from src.exceptions import UnauthorizedAccess
+from src.exceptions import ResponseError
 
 
 def ws_auth(auth_token):
@@ -61,11 +61,12 @@ def _req(method: str, params: dict, token: Optional[str]):
         headers=headers,
         data=json.dumps(payload),
     )
-    if not resp.ok:
-        # TODO better error class
-        raise RuntimeError(resp.text)
-    result = resp.json().get('result')
-    if not result or len(result) == 0:
-        # TODO better error class
-        raise RuntimeError(resp.text)
+    result = None
+    try:
+        result = resp.json().get('result')
+    except json.decoder.JSONDecodeError:
+        pass
+    if not resp.ok or not result or len(result) == 0:
+        msg = f"Authorization failed with response:\n{resp.text}"
+        raise ResponseError(code=-32001, message=msg, status=403)
     return result[0]

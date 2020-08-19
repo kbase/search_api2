@@ -20,7 +20,9 @@ def init_config():
         'https://ci.kbase.us/services/user_profile/rpc'
     ).strip('/')
     # Load the global configuration release (non-environment specific, public config)
-    if not config_url.startswith('http'):
+    allowed_protocols = ('https://', 'http://', 'file://')
+    matches_protocol = (config_url.startswith(prot) for prot in allowed_protocols)
+    if not any(matches_protocol):
         raise RuntimeError(f"Invalid config url: {config_url}")
     with urllib.request.urlopen(config_url) as res:  # nosec
         global_config = yaml.safe_load(res)
