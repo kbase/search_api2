@@ -61,11 +61,13 @@ def _req(method: str, params: dict, token: Optional[str]):
         headers=headers,
         data=json.dumps(payload),
     )
+    resp_json = None
     result = None
     try:
         result = resp.json().get('result')
+        resp_json = resp.json()
     except json.decoder.JSONDecodeError:
         pass
     if not resp.ok or not result or len(result) == 0:
-        raise AuthError(result, resp.text)
+        raise AuthError(resp_json, resp.text)
     return result[0]
