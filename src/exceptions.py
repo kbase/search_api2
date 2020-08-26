@@ -30,7 +30,7 @@ class UnknownIndex(ResponseError):
 class UserProfileError(ResponseError):
 
     def __init__(self, url, resp_text):
-        msg = "User profile service error:\nResponse: {resp_text}\nURL: {url}"
+        msg = f"User profile service error:\nResponse: {resp_text}\nURL: {url}"
         super().__init__(code=-32004, message=msg)
 
 
