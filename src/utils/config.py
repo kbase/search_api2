@@ -17,7 +17,7 @@ def init_config():
     )
     user_profile_url = os.environ.get(
         'USER_PROFILE_URL',
-        'https://ci.kbase.us/services/user_profile/rpc'
+        'https://ci.kbase.us/services/user_profile/rpc/'
     )
     # Load the global configuration release (non-environment specific, public config)
     allowed_protocols = ('https://', 'http://', 'file://')

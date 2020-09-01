@@ -15,6 +15,7 @@ from tests.integration.data import (
     search_response4,
     search_request5,
     search_response5,
+    search_request6,
 )
 
 
@@ -66,7 +67,6 @@ def test_search_example3():
         data=json.dumps(search_request3),
     )
     data = resp.json()
-    print('data', data)
     assert data['jsonrpc'] == search_response3['jsonrpc']
     assert data['id'] == search_response3['id']
     assert len(data['result']) == 1
@@ -123,3 +123,22 @@ def test_search_example5():
     assert len(res['objects_info']) > 0
     assert res['total'] > 0
     assert res['search_time'] > 0
+
+
+def test_search_example6():
+    """Search example with many options and narrative info."""
+    url = APP_URL + '/legacy'
+    resp = requests.post(
+        url=url,
+        headers={'Authorization': os.environ['WS_TOKEN']},
+        data=json.dumps(search_request6),
+    )
+    data = resp.json()
+    assert data['jsonrpc'] == '2.0'
+    assert data['id'] == search_request6['id']
+    assert len(data['result']) == 1
+    res = data['result'][0]
+    assert len(res['objects']) > 0
+    assert len(res['objects_info']) > 0
+    for obj in res['objects']:
+        assert len(obj['highlight']) > 0

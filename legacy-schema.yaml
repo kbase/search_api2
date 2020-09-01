@@ -70,14 +70,7 @@ definitions:
               start: {type: integer}
               count: {type: integer}
             post_processing:
-              type: object
-              properties:
-                ids_only: {$ref: "#/definitions/sdk_boolean"}
-                skip_info: {$ref: "#/definitions/sdk_boolean"}
-                skip_keys: {$ref: "#/definitions/sdk_boolean"}
-                skip_data: {$ref: "#/definitions/sdk_boolean"}
-                include_highlight: {$ref: "#/definitions/sdk_boolean"}
-                add_narrative_info: {$ref: "#/definitions/sdk_boolean"}
+              $ref: "#/definitions/postProcessing"
             sorting_rules:
               type: array
               items:
@@ -386,6 +379,7 @@ definitions:
       skip_data: {$ref: "#/definitions/sdk_boolean"}
       include_highlight: {$ref: "#/definitions/sdk_boolean"}
       add_narrative_info: {$ref: "#/definitions/sdk_boolean"}
+      add_access_group_info: {$ref: "#/definitions/sdk_boolean"}
 
   objectRef:
     type: object

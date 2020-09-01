@@ -133,6 +133,6 @@ def test_sloppy_rpc_conversion():
         })
     )
     result = resp.json()
-    assert result['id'] == '0'
+    assert result['id']
     assert result['jsonrpc'] == '2.0'
     assert len(result['result']) == 1

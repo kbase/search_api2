@@ -21,7 +21,9 @@ def test_search_objects_valid():
 def test_search_objects_highlight():
     params = {
         'match_filter': {'full_text_in_all': 'x'},
-        'include_highlight': True
+        'post_processing': {
+            'include_highlight': 1
+        }
     }
     expected = {
         'query': {'bool': {'must': [{'match': {'agg_fields': 'x'}}]}},
