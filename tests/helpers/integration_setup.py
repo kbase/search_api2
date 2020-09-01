@@ -16,7 +16,7 @@ def setup():
     ES_URL = os.environ.get("ES_URL", "http://localhost:9500")
     # TOKEN = os.environ["TOKEN"]
     INDEX_PREFIX = os.environ.get('INDEX_PREFIX', 'search2')
-    USER_PROFILE_URL = os.environ.get('USER_PROFILE_URL', 'https://ci.kbase.us/services/user_profile')
+    USER_PROFILE_URL = os.environ.get('USER_PROFILE_URL', 'https://ci.kbase.us/services/user_profile/rpc')
     WS_URL = os.environ.get('WS_URL', 'https://ci.kbase.us/services/ws')
     IMAGE_NAME = "kbase/search2"
     # Build and start the app using docker

@@ -58,7 +58,8 @@ def search_objects(params):
     Convert parameters from the "search_objects" RPC method into an Elasticsearch query.
     """
     query = _get_search_params(params)
-    if params.get('include_highlight'):
+    post_proc = params.get('post_processing', {})
+    if post_proc.get('include_highlight') == 1:
         # We need a special highlight query so that the main query does not generate
         # highlights for bits of the query which are not user-generated.
         highlight_query = {'bool': {}}

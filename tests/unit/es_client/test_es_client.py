@@ -87,7 +87,7 @@ def test_search_sort_valid():
 def test_search_highlight_valid():
     params = {
         'query': {'term': {'name': 'doc1'}},
-        'highlight': {'name': {}}
+        'highlight': {'fields': {'name': {}}}
     }
     result = search(params, {'auth': None})
     highlights: set = {hit['highlight']['name'][0] for hit in result['hits']}

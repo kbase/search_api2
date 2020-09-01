@@ -1,6 +1,7 @@
 """The main entrypoint for running the Flask server."""
 import json
 import sanic
+import time
 import traceback
 
 from src.search1_rpc import service as legacy_service
@@ -108,7 +109,7 @@ def _convert_rpc_formats(body: str):
     if 'version' not in data and 'jsonrpc' not in data:
         data['jsonrpc'] = '2.0'
     if 'id' not in data:
-        data['id'] = '0'
+        data['id'] = int(time.time() * 1000)
     return data
 
 

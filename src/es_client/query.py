@@ -76,7 +76,7 @@ def search(params, meta):
         options['_source'] = params.get('source')
     # Search results highlighting
     if params.get('highlight'):
-        options['highlight'] = {'fields': params['highlight']}
+        options['highlight'] = params['highlight']
     if params.get('track_total_hits'):
         options['track_total_hits'] = params.get('track_total_hits')
     headers = {'Content-Type': 'application/json'}
