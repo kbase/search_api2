@@ -174,7 +174,7 @@ def _fetch_narrative_info(results, meta):
     narr_infos = {}
     for narr in narrative_hits:
         _id = narr['access_group']
-        if _id not in ws_infos:
+        if str(_id) not in ws_infos:
             continue
         [workspace_id, workspace_name, owner, moddate,
          max_objid, user_permission, global_permission,
