@@ -29,7 +29,6 @@ def test_search_objects_highlight():
         'query': {'bool': {'must': [{'match': {'agg_fields': 'x'}}]}},
         'highlight': {
             'fields': {'*': {}},
-            'highlight_query': {'bool': {'must': [{'match': {'agg_fields': 'x'}}]}},
             'require_field_match': False,
         },
         'size': 20, 'from': 0,
