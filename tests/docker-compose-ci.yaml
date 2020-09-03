@@ -1,0 +1,24 @@
+version: '3.4'
+
+# This docker-compose is for developer convenience, not for running in production.
+
+services:
+
+  # Must have an ssh tunnel to CI Elasticsearch via localhost:9500
+  web:
+    network_mode: host
+    build:
+      context: ../
+    volumes:
+      - ${PWD}:/app
+    ports:
+      - "127.0.0.1:5000:5000"
+    environment:
+      - DEVELOPMENT=1
+      - PYTHONUNBUFFERED=true
+      - ELASTICSEARCH_URL=http://localhost:9500
+      - INDEX_PREFIX=search2
+      - INDEX_PREFIX_DELIMITER=.
+      - USER_PROFILE_URL=https://ci.kbase.us/services/user_profile/rpc
+      - WORKERS=2
+
