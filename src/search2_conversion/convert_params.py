@@ -50,9 +50,9 @@ def search_workspace(params, meta):
     if "filters" in params:
         converted_query = _convert_filters(params['filters'])
         converted["query"]["bool"]["must"].append(converted_query)
-    if "paging" in params:
-        converted['from'] = params['paging'].get('offset', 0)
-        converted['size'] = params['paging'].get('length', 10)
+    paging = params.get('paging', {})
+    converted['from'] = paging.get('offset', 0)
+    converted['size'] = paging.get('length', 10)
     return converted
 
 
