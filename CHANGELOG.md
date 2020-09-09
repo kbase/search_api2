@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+# [0.5.0] - 2020-09-09
+### Added
+- Search across all indexes within a prefix rather than using the
+  `default_search` alias so that we can search automatically created indexes
 
 ## [0.4.8] - 2020-09-09
 ### Fixed
