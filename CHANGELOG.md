@@ -6,8 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## [0.4.8] - 2020-09-09
+### Fixed
+- Set pagination parameters for the `search_workspace` method
+
 ## [0.4.7] - 2020-09-03
-## Fixed
+### Fixed
 - Include narrative info parameter setting bug
 
 ## [0.4.6] - 2020-08-31

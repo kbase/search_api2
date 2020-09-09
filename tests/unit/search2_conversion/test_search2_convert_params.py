@@ -78,6 +78,8 @@ def test_search_workspace():
         'only_private': True,
         'track_total_hits': True,
         'indexes': ['narrative'],
+        'from': 10,
+        'size': 20,
         'sort': [{
             'x': {'order': 'desc'}
         }, {
@@ -102,6 +104,8 @@ def test_search_workspace_blank():
     indexes = list(config['global']['ws_type_to_indexes'].values())
     expected = {
         'query': {'bool': {'must': []}},
+        'size': 10,
+        'from': 0,
         'track_total_hits': False,
         'indexes': indexes,
     }
