@@ -157,7 +157,7 @@ def _construct_index_name(params):
     """
     prefix = config['index_prefix']
     delim = config['prefix_delimiter']
-    index_name_str = prefix + delim + "default_search"
+    index_name_str = prefix + delim + "*"
     if params.get('indexes'):
         index_names = [
             prefix + delim + name.lower()

@@ -26,7 +26,7 @@ def test_search_public_valid():
         'track_total_hits': True,
     }
     result = search(params, {'auth': None})
-    assert result['count'] == 4
+    assert result['count'] == 5
     assert result['search_time'] >= 0
     assert result['aggregations'] == {}
     expected: set = {
@@ -34,6 +34,10 @@ def test_search_public_valid():
         ('index2', 'public-doc1'),
         ('index1', 'public-doc2'),
         ('index2', 'public-doc2'),
+        (
+            config['global']['ws_type_to_indexes']['KBaseNarrative.Narrative'],
+            'narrative1'
+        )
     }
     docs = {(doc['index'], doc['id']) for doc in result['hits']}
     assert docs == expected
@@ -63,10 +67,11 @@ def test_search_aggs_valid():
         'aggs': {'count_by_index': {'terms': {'field': '_index'}}}
     }
     result = search(params, {'auth': None})
-    assert result['count'] == 4
+    assert result['count'] == 5
     assert result['aggregations']['count_by_index']['counts'] == [
         {'key': 'test_index1', 'count': 2},
         {'key': 'test_index2', 'count': 2},
+        {'key': 'test_narrative', 'count': 1},
     ]
 
 
@@ -75,13 +80,13 @@ def test_search_sort_valid():
     result = search(params, {'auth': None})
     docs = [r['doc'] for r in result['hits']]
     timestamps = [r['timestamp'] for r in docs]
-    assert timestamps == [12, 12, 10, 10]
+    assert timestamps == [12, 12, 10, 10, 1]
     # And ascending
     params = {'sort': [{'timestamp': {'order': 'asc'}}, '_score']}
     result = search(params, {'auth': None})
     docs = [r['doc'] for r in result['hits']]
     timestamps = [r['timestamp'] for r in docs]
-    assert timestamps == [10, 10, 12, 12]
+    assert timestamps == [1, 10, 10, 12, 12]
 
 
 def test_search_highlight_valid():
@@ -100,7 +105,11 @@ def test_search_source_filtering_valid():
     }
     result = search(params, {'auth': None})
     docs = {json.dumps(r['doc']) for r in result['hits']}
-    assert docs == {'{"name": "public-doc1"}', '{"name": "public-doc2"}'}
+    assert docs == {
+        '{"name": "public-doc1"}',
+        '{"name": "public-doc2"}',
+        '{"name": "narrative1"}'
+    }
 
 
 def test_search_by_index_valid():
@@ -144,7 +153,7 @@ def test_es_response_error():
     """Test the case where ES gives a non-2xx response."""
     prefix = config['index_prefix']
     delim = config['prefix_delimiter']
-    index_name_str = prefix + delim + "default_search"
+    index_name_str = prefix + delim + "*"
     url = config['elasticsearch_url'] + '/' + index_name_str + '/_search'
     responses.add(responses.POST, url, json={}, status=500)
     with pytest.raises(ElasticsearchError):
@@ -156,7 +165,7 @@ def test_es_response_error_no_json():
     """Test the case where ES gives a non-2xx response with a non-json body."""
     prefix = config['index_prefix']
     delim = config['prefix_delimiter']
-    index_name_str = prefix + delim + "default_search"
+    index_name_str = prefix + delim + "*"
     url = config['elasticsearch_url'] + '/' + index_name_str + '/_search'
     responses.add(responses.POST, url, body="!", status=500)
     with pytest.raises(ElasticsearchError):
