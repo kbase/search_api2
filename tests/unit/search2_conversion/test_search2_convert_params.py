@@ -104,6 +104,8 @@ def test_search_workspace_blank():
     indexes = list(config['global']['ws_type_to_indexes'].values())
     expected = {
         'query': {'bool': {'must': []}},
+        'size': 10,
+        'from': 0,
         'track_total_hits': False,
         'indexes': indexes,
     }
