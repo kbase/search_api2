@@ -39,7 +39,7 @@ def search_workspace(params, meta):
     if "search" in params:
         # Elasticsearch Simple Query String
         query = params["search"]["query"]
-        fields = params["search"]["fields"]
+        fields = params["search"].get("fields", ['agg_fields'])
         converted["query"]["bool"]["must"].append({
             "simple_query_string": {
                 "fields": fields,
@@ -50,6 +50,9 @@ def search_workspace(params, meta):
     if "filters" in params:
         converted_query = _convert_filters(params['filters'])
         converted["query"]["bool"]["must"].append(converted_query)
+    if "paging" in params:
+        converted['from'] = params['paging'].get('offset', 0)
+        converted['size'] = params['paging'].get('length', 10)
     return converted
 
 

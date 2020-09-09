@@ -78,6 +78,8 @@ def test_search_workspace():
         'only_private': True,
         'track_total_hits': True,
         'indexes': ['narrative'],
+        'from': 10,
+        'size': 20,
         'sort': [{
             'x': {'order': 'desc'}
         }, {
