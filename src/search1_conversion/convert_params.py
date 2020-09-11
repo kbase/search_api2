@@ -68,7 +68,10 @@ def search_objects(params):
             # Match full text for any field in the objects
             highlight_query['bool']['must'] = [{
                 'match': {
-                    'agg_fields': match_filter['full_text_in_all']
+                    'agg_fields': {
+                        'query': match_filter['full_text_in_all'],
+                        'operator': 'AND',
+                    }
                 }
             }]
         # Note that search_objects, being used by both the legacy and current

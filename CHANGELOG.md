@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.9] - 2020-09-11
+### Changed
+- Use the AND operator for legacy full-text search
 
 ## [0.4.8] - 2020-09-09
 ### Fixed
