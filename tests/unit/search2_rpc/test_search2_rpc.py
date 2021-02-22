@@ -5,16 +5,26 @@ object. We test here that things are correctly wrapped, but we don't need to
 test search logic here.
 """
 import json
-import subprocess
 
 from src.search2_rpc import service
-from src.utils.wait_for_service import wait_for_service
 from tests.helpers import init_elasticsearch
 
+from tests.helpers.unit_setup import (
+    start_service,
+    stop_service
+)
+
 ES_URL = 'http://localhost:9200'
-subprocess.run("docker-compose up -d", shell=True)
-wait_for_service(ES_URL, 'Elasticsearch')
-init_elasticsearch()
+APP_URL = 'http://localhost:5000'
+
+
+def setup_module(module):
+    start_service(APP_URL, 'searchapi2')
+    init_elasticsearch()
+
+
+def teardown_module(module):
+    stop_service()
 
 
 def test_show_indexes():

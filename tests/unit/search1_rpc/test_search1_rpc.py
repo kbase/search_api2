@@ -6,17 +6,28 @@ test search logic here.
 """
 import json
 import responses
-import subprocess
 
 from src.search1_rpc import service
 from src.utils.config import config
-from src.utils.wait_for_service import wait_for_service
 from tests.helpers import init_elasticsearch
 
+from tests.helpers.unit_setup import (
+    start_service,
+    stop_service
+)
+
 ES_URL = 'http://localhost:9200'
-subprocess.run("docker-compose up -d", shell=True)
-wait_for_service(ES_URL, 'Elasticsearch')
-init_elasticsearch()
+
+
+def setup_module(module):
+    start_service(ES_URL, 'Elasticsearch')
+    init_elasticsearch()
+
+
+def teardown_module(module):
+    stop_service()
+
+
 mock_obj_info = {
     "version": "1.1",
     "result": [
@@ -64,6 +75,7 @@ def test_get_objects_valid():
     res = json.loads(result)
     assert res['jsonrpc'] == '2.0'
     assert res['id'] == 0
+    assert 'result' in res
     assert len(res['result']) == 1
 
 
@@ -79,6 +91,7 @@ def test_search_objects_valid():
     }
     result = service.call(json.dumps(params), {'auth': None})
     res = json.loads(result)
+    assert 'result' in res
     assert len(res['result']) == 1
 
 
@@ -91,4 +104,5 @@ def test_search_types_valid():
     }
     result = service.call(json.dumps(params), {'auth': None})
     res = json.loads(result)
+    assert 'result' in res
     assert len(res['result']) == 1

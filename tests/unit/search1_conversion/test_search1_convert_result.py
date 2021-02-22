@@ -1,8 +1,6 @@
-from unittest.mock import patch
-import subprocess
+from unittest import mock
 
 from src.search1_conversion import convert_result
-from src.utils.wait_for_service import wait_for_service
 from tests.helpers import init_elasticsearch
 
 from tests.unit.search1_conversion.data import (
@@ -13,19 +11,36 @@ from tests.unit.search1_conversion.data import (
     expected_get_objects,
 )
 
+from tests.helpers.unit_setup import (
+    start_service,
+    stop_service
+)
+
 ES_URL = 'http://localhost:9200'
-subprocess.run("docker-compose up -d", shell=True)
-wait_for_service(ES_URL, 'Elasticsearch')
-init_elasticsearch()
+
+
+def setup_module(module):
+    start_service(ES_URL, 'Elasticsearch')
+    init_elasticsearch()
+
+
+def teardown_module(module):
+    stop_service()
 
 # TODO test post processing
 # TODO test the following fields: object_name, obj_id, version, type, creator
 
 
-@patch('src.search1_conversion.convert_result.get_object_info')
-@patch('src.search1_conversion.convert_result.get_workspace_info')
-@patch('src.search1_conversion.convert_result.get_user_profiles')
-def test_search_objects_valid(user_patched, ws_patched, infos_patched):
+def mocked_get_workspace_info(workspace_id, auth_token):
+    return mock_ws_info[str(workspace_id)]
+
+
+@mock.patch('src.search1_conversion.convert_result.get_workspace_info')
+@mock.patch('src.search1_conversion.convert_result.get_user_profiles')
+def test_search_objects_valid(get_user_profiles_patched, get_workspace_info_patched):
+    get_workspace_info_patched.side_effect = mocked_get_workspace_info
+    get_user_profiles_patched.return_value = mock_user_profiles
+
     params = {
         'post_processing': {
             'add_narrative_info': 1,
@@ -33,19 +48,20 @@ def test_search_objects_valid(user_patched, ws_patched, infos_patched):
             'include_highlight': 1,
         }
     }
-    infos_patched.return_value = []
-    ws_patched.return_value = mock_ws_info
-    user_patched.return_value = mock_user_profiles
+
     final = convert_result.search_objects(params, test_search_results, {'auth': None})
+
     for key in expected_search_results:
         assert key in final
         assert expected_search_results[key] == final[key], key
 
 
-@patch('src.search1_conversion.convert_result.get_object_info')
-@patch('src.search1_conversion.convert_result.get_workspace_info')
-@patch('src.search1_conversion.convert_result.get_user_profiles')
-def test_get_objects_valid(user_patched, ws_patched, infos_patched):
+@mock.patch('src.search1_conversion.convert_result.get_workspace_info')
+@mock.patch('src.search1_conversion.convert_result.get_user_profiles')
+def test_get_objects_valid(get_user_profiles_patched, get_workspace_info_patched):
+    get_workspace_info_patched.side_effect = mocked_get_workspace_info
+    get_user_profiles_patched.return_value = mock_user_profiles
+
     params = {
         'post_processing': {
             'add_narrative_info': 1,
@@ -53,9 +69,7 @@ def test_get_objects_valid(user_patched, ws_patched, infos_patched):
             'include_highlight': 1,
         }
     }
-    infos_patched.return_value = []
-    ws_patched.return_value = mock_ws_info
-    user_patched.return_value = mock_user_profiles
+
     final = convert_result.get_objects(params, test_search_results, {'auth': None})
     for key in expected_get_objects:
         assert key in final
@@ -80,11 +94,11 @@ def test_search_types_valid():
         }
     }
     expected = {
-      "search_time": 1,
-      "type_to_count": {
-          'x': 10,
-          'y': 20,
-      },
+        "search_time": 1,
+        "type_to_count": {
+            'x': 10,
+            'y': 20,
+        },
     }
     final = convert_result.search_types(params, test_results, {'auth': None})
     for key in expected:
