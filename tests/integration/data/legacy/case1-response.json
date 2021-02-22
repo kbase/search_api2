@@ -1,0 +1,159 @@
+{
+	"jsonrpc": "2.0",
+	"result": [{
+		"pagination": {
+			"start": 0,
+			"count": 20
+		},
+		"sorting_rules": [{
+			"is_object_property": 0,
+			"property": "access_group_id",
+			"ascending": 0
+		}, {
+			"is_object_property": 0,
+			"property": "type",
+			"ascending": 1
+		}],
+		"total": 2,
+		"search_time": 173,
+		"objects": [{
+			"object_name": "Narrative.1574286995467",
+			"access_group": 45320,
+			"obj_id": 1,
+			"version": 13,
+			"timestamp": 1586801969406,
+			"type": "Narrative",
+			"creator": "jayrbolton",
+			"data": {
+				"narrative_title": "Refdata import",
+				"is_temporary": false,
+				"is_narratorial": false,
+				"data_objects": [{
+					"name": "ecoli_2contigs_orig",
+					"obj_type": "KBaseGenomes.Genome-17.0"
+				}, {
+					"name": "small_genbank__test_batch_sub_dir_1",
+					"obj_type": "KBaseGenomes.Genome-15.1"
+				}, {
+					"name": "test_import_assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "test_import",
+					"obj_type": "KBaseGenomes.Genome-17.0"
+				}, {
+					"name": "GCF_002287175.1_assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "GCF_002287175.1",
+					"obj_type": "KBaseGenomes.Genome-17.0"
+				}, {
+					"name": "GCF_000302455.1_assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "GCF_000302455.1",
+					"obj_type": "KBaseGenomes.Genome-17.0"
+				}, {
+					"name": "GCF_000762265.1_assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "GCF_000762265.1",
+					"obj_type": "KBaseGenomes.Genome-17.0"
+				}],
+				"owner": "jayrbolton",
+				"modified_at": 1586801969000,
+				"cells": [{
+					"desc": "Load RefSeq genomes from NCBI to KBase",
+					"cell_type": "kbase_app"
+				}, {
+					"desc": "List RefSeq genomes in KBase",
+					"cell_type": "kbase_app"
+				}, {
+					"desc": "List RefSeq genomes in NCBI databases",
+					"cell_type": "kbase_app"
+				}],
+				"total_cells": 3,
+				"static_narrative_saved": null,
+				"static_narrative_ref": null,
+				"shared_users": ["jayrbolton"],
+				"creation_date": "2019-11-20T21:56:35+0000",
+				"is_public": true,
+				"copied": null,
+				"tags": ["narrative"],
+				"obj_type_version": "4.0",
+				"obj_type_module": "KBaseNarrative"
+			},
+			"guid": "WS:45320/1/1",
+			"kbase_id": "45320/1/1",
+			"index_name": "narrative_2",
+			"type_ver": 0,
+			"highlight": {
+				"data_objects.name": ["<em>ecoli_2contigs_orig</em>"]
+			}
+		}, {
+			"object_name": "ecoli_2contigs_orig",
+			"access_group": 33192,
+			"obj_id": 36,
+			"version": 1,
+			"timestamp": 1574185738033,
+			"type": "Genome",
+			"creator": "jayrbolton",
+			"data": {
+				"genome_id": "ecoli_2contigs_orig",
+				"scientific_name": "Escherichia coli str. K-12 substr. MG1655",
+				"publication_titles": ["Direct Submission", "Direct Submission", "Direct Submission", "Direct Submission", "Direct Submission", "Direct Submission", "Escherichia coli K-12: a cooperatively developed annotation snapshot--2005", "Direct Submission", "Direct Submission", "Highly accurate genome sequences of Escherichia coli K-12 strains MG1655 and W3110", "Workshop on Annotation of Escherichia coli K-12", "The complete genome sequence of Escherichia coli K-12", "Escherichia coli K-12 MG1655 yqiK-rfaE intergenic region, genomic sequence correction", "ASAP: Escherichia coli K-12 strain MG1655 version m56", "A manual approach to accurate translation start site annotation: an E. coli K-12 case study", "Direct Submission", "Direct Submission", "A more accurate sequence comparison between genomes of Escherichia coli K12 W3110 and MG1655 strains"],
+				"publication_authors": ["Blattner,F.R. and Plunkett,G. III.", "Plunkett,G. III.", "Plunkett,G. III.", "Plunkett,G. III.", "Blattner,F.R. and Plunkett,G. III.", "Rudd,K.E.", "Riley,M., Abe,T., Arnaud,M.B., Berlyn,M.K., Blattner,F.R., Chaudhuri,R.R., Glasner,J.D., Horiuchi,T., Keseler,I.M., Kosuge,T., Mori,H., Perna,N.T., Plunkett,G. III, Rudd,K.E., Serres,M.H., Thomas,G.H., Thomson,N.R., Wishart,D. and Wanner,B.L.", "Blattner,F.R. and Plunkett,G. III.", "Blattner,F.R. and Plunkett,G. III.", "Hayashi,K., Morooka,N., Yamamoto,Y., Fujita,K., Isono,K., Choi,S., Ohtsubo,E., Baba,T., Wanner,B.L., Mori,H. and Horiuchi,T.", "Arnaud,M., Berlyn,M.K.B., Blattner,F.R., Galperin,M.Y., Glasner,J.D., Horiuchi,T., Kosuge,T., Mori,H., Perna,N.T., Plunkett,G. III, Riley,M., Rudd,K.E., Serres,M.H., Thomas,G.H. and Wanner,B.L.", "Blattner,F.R., Plunkett,G. III, Bloch,C.A., Perna,N.T., Burland,V., Riley,M., Collado-Vides,J., Glasner,J.D., Rode,C.K., Mayhew,G.F., Gregor,J., Davis,N.W., Kirkpatrick,H.A., Goeden,M.A., Rose,D.J., Mau,B. and Shao,Y.", "Perna,N.T.", "Glasner,J.D., Perna,N.T., Plunkett,G. III, Anderson,B.D., Bockhorst,J., Hu,J.C., Riley,M., Rudd,K.E. and Serres,M.H.", "Rudd,K.E.", "Rudd,K.E.", "Blattner,F.R. and Plunkett,G. III.", "Hayashi,K., Morooka,N., Mori,H. and Horiuchi,T."],
+				"size": 4641772,
+				"num_contigs": 2,
+				"genome_type": null,
+				"gc_content": 0.5079,
+				"taxonomy": "Bacteria; Proteobacteria; Gammaproteobacteria; Enterobacterales; Enterobacteriaceae; Escherichia; Escherichia coli; Escherichia coli K-12",
+				"mean_contig_length": 2320886.0,
+				"external_origination_date": "08-Aug-2016",
+				"original_source_file_name": "GCF_000005845.2_ASM584v2_altered_genomic.gbff",
+				"cds_count": 4319,
+				"feature_count": 4319,
+				"mrna_count": 0,
+				"non_coding_feature_count": 773,
+				"assembly_ref": "45290:1:1",
+				"source_id": "NC_000913",
+				"feature_counts": {
+					"CDS": 4319,
+					"gene": 4498,
+					"misc_feature": 11,
+					"mobile_element": 49,
+					"ncRNA": 65,
+					"non_coding_features": 773,
+					"non_coding_genes": 179,
+					"protein_encoding_gene": 4319,
+					"rRNA": 22,
+					"rep_origin": 1,
+					"repeat_region": 355,
+					"tRNA": 89,
+					"tmRNA": 2
+				},
+				"source": "Genbank",
+				"warnings": [],
+				"shared_users": ["jayrbolton"],
+				"creation_date": "2020-09-08T21:00:43+0000",
+				"is_public": true,
+				"copied": "45290/2/1",
+				"tags": ["narrative"],
+				"obj_type_version": "17.0",
+				"obj_type_module": "KBaseGenomes"
+			},
+			"guid": "WS:33192/36/1",
+			"kbase_id": "33192/36/1",
+			"index_name": "genome_2",
+			"type_ver": 0,
+			"highlight": {
+				"genome_id": ["<em>ecoli_2contigs_orig</em>"],
+				"object_name": ["<em>ecoli_2contigs_orig</em>"]
+			}
+		}],
+		"access_group_narrative_info": {
+			"45320": ["Refdata import", 1, 1586801969000, "jayrbolton", "Jay Bolton"],
+			"33192": ["Test fiesta", 1, 1599598844000, "jayrbolton", "Jay Bolton"]
+		}
+	}],
+	"id": "5092263263143479"
+}

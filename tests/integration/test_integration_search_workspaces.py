@@ -2,15 +2,20 @@ import json
 import os
 import requests
 
-from tests.helpers.integration_setup import setup
-from src.utils.wait_for_service import wait_for_service
-
+from tests.helpers.integration_setup import (
+    start_service,
+    stop_service
+)
 
 APP_URL = os.environ.get("APP_URL", 'http://localhost:5000')
-setup()
 
-# This implicitly tests the "/" path
-wait_for_service(APP_URL, "search2")
+
+def setup_module(module):
+    start_service(APP_URL)
+
+
+def teardown_module(module):
+    stop_service()
 
 
 def test_narrative_example():
@@ -42,27 +47,28 @@ def test_narrative_example():
         })
     )
     data = resp.json()
+    assert 'result' in data
     assert data['result']['count'] > 0
 
 
 def test_dashboard_example():
     params = {
-      "id": 1597353298754,
-      "jsonrpc": "2.0",
-      "method": "search_workspace",
-      "params": {
-        "filters": {
-          "fields": [
-            {"field": "is_temporary", "term": False},
-            {"field": "creator", "term": "jayrbolton"}
-          ],
-          "operator": "AND"
-        },
-        "paging": {"length": 20, "offset": 0},
-        "sorts": [["timestamp", "desc"], ["_score", "desc"]],
-        "track_total_hits": False,
-        "types": ["KBaseNarrative.Narrative"]
-      }
+        "id": 1597353298754,
+        "jsonrpc": "2.0",
+        "method": "search_workspace",
+        "params": {
+            "filters": {
+                "fields": [
+                  {"field": "is_temporary", "term": False},
+                  {"field": "creator", "term": "jayrbolton"}
+                ],
+                "operator": "AND"
+            },
+            "paging": {"length": 20, "offset": 0},
+            "sorts": [["timestamp", "desc"], ["_score", "desc"]],
+            "track_total_hits": False,
+            "types": ["KBaseNarrative.Narrative"]
+        }
     }
     url = APP_URL + '/rpc'
     resp = requests.post(
@@ -70,4 +76,5 @@ def test_dashboard_example():
         data=json.dumps(params),
     )
     data = resp.json()
+    assert 'result' in data
     assert data['result']['count'] > 0

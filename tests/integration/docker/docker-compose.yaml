@@ -1,0 +1,60 @@
+version: "3.4"
+
+# This docker-compose is for developer workflows, not for running in production.
+
+# This
+
+networks:
+  kbase-dev:
+
+services:
+  searchapi2:
+    depends_on:
+      - estunnel
+    container_name: searchapi2
+    # network_mode: host
+    build:
+      context: ../../..
+    volumes:
+      - ${PWD}/../../..:/app
+    networks:
+      - kbase-dev
+    ports:
+      - "127.0.0.1:5000:5000"
+    dns:
+      - "8.8.8.8"
+    environment:
+      - DEVELOPMENT=1
+      - PYTHONUNBUFFERED=true
+      - ELASTICSEARCH_URL=http://estunnel:9500
+      - INDEX_PREFIX=search2
+      - INDEX_PREFIX_DELIMITER=.
+      - USER_PROFILE_URL=https://ci.kbase.us/services/user_profile/rpc
+      - WORKERS=2
+      - LOGLEVEL=WARNING
+  estunnel:
+    # To connect to kbase-ui
+    networks:
+      - kbase-dev
+    # So it can be poked at from the host
+    ports:
+      - "127.0.0.1:9500:9500"
+    build:
+      context: ../estunnel
+    environment:
+      # IP for elasticsearch instance within the KBase network the SSHHOST resides within
+      - IP
+
+      # The KBase SSHHOST to which the tunnel should connect. 
+      - SSHHOST
+
+      # invented to have a form similar to SSHPASS
+      # this should be the host
+
+      - SSHUSER
+      # official env var for SSHPASS
+      # this should be the password for the KBase dev account used above
+
+      - SSHPASS
+    # image: kbase/estunnel
+  # Must have an ssh tunnel to CI Elasticsearch via localhost:9500
