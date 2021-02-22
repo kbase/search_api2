@@ -35,15 +35,6 @@ def get_workspace_info(workspace_id, auth_token=None):
     return _req('get_workspace_info', params, auth_token)
 
 
-def get_object_info(refs, token=None):
-    params = {
-        'includeMetadata': 1,
-        'objects': [{'ref': ref} for ref in refs],
-    }
-    result = _req('get_object_info3', params, token)
-    return result['infos']
-
-
 def _req(method: str, params: dict, token: Optional[str]):
     """Make a generic workspace http/rpc request"""
     payload = {
