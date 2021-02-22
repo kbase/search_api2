@@ -23,6 +23,10 @@ def init_logger():
     stdout_handler.setFormatter(formatter)
     logger.addHandler(stdout_handler)
     print(f'Logger and level: {logger}')
+    print('''
+** To see more or less logging information, adjust the
+** log level with the LOGLEVEL environment variable
+''')
     return logger
 
 
