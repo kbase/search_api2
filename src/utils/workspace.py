@@ -24,13 +24,10 @@ def ws_auth(auth_token):
     return result['workspaces']
 
 
-def get_workspace_info(workspace_id, auth_token):
+def get_workspace_info(workspace_id, auth_token=None):
     """
     Given a list of workspace ids, return the associated workspace info for each one
     """
-    if not auth_token:
-        # TODO are we sure we want this? Doesn't make a lot of sense
-        return []  # anonymous users
     # TODO session cache this
     # Make a request to the workspace using the user's auth token to find their
     # readable workspace IDs
