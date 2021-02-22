@@ -26,7 +26,7 @@ WORKDIR /app
 
 # Install dependencies
 COPY pyproject.toml poetry.lock /app/
-RUN apk --update add --no-cache --virtual build-dependencies libffi-dev libressl-dev musl-dev python3-dev build-base git && \
+RUN apk --update add --no-cache --virtual build-dependencies libffi-dev libressl-dev musl-dev python3-dev build-base git rust cargo && \
     pip install --upgrade pip poetry==1.0.9 && \
     poetry config virtualenvs.create false && \
     poetry install --no-dev --no-interaction --no-ansi && \
