@@ -136,7 +136,6 @@ search_response3 = {
             "ascending": 1
         }],
         "objects": [],
-        "objects_info": [],
         "total": 6509,
         "search_time": 1918,
         "access_group_narrative_info": {},
@@ -313,33 +312,6 @@ search_response5 = {
     "search_time": 3183,
     "access_groups_info": {
       "4258": [4258, "KBasePublicGenomesV5", "kbasetest", "2017-02-02T06:31:09+0000", 36987, "n", "r", "unlocked", {}]
-    },
-    "objects_info": {
-      "4258/25234/1": [
-          25234,
-          "kb|g.28454",
-          "KBaseGenomes.Genome-8.0",
-          "2016-01-23T10:20:08+0000",
-          1,
-          "kbasetest",
-          4258,
-          "KBasePublicGenomesV5",
-          "f0f46269f7491407f8377cf5969c0cd9",
-          6317976,
-          {
-            "GC content": "39.3381390370841",
-            "Genetic code": "11",
-            "Taxonomy": "Bacteria; Firmicutes; Clostridia; Clostridiales; Eubacteriaceae; Acetobacterium; Acetobacterium woodii DSM 1030",  # noqa
-            "Source ID": "931626.3",
-            "Size": "4044777",
-            "Number features": "3832",
-            "Number contigs": "1",
-            "Domain": "Bacteria",
-            "Source": "KBase Central Store",
-            "Name": "Acetobacterium woodii DSM 1030",
-            "MD5": "31c52c7713b9ba638580e9d1812558e5"
-          }
-      ]
     }
   }]
 }

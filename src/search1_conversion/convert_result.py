@@ -82,7 +82,7 @@ def _get_post_processing(params: dict) -> dict:
 
 def _add_objects_and_info(ret: dict, search_results: dict, meta: dict, post_processing: dict):
     """
-    Populate the fields for `objects` and `objects_info`.
+    Populate the fields for `objects`.
 
     Args:
         ret: final method result object (mutated)

@@ -33,10 +33,6 @@ definitions:
             objects:
               type: array
               items: {$ref: "#/definitions/searchResultHit" }
-            objects_info:
-              type: object
-              patternProperties:
-                '.*': {$ref: "#/definitions/objectInfo"}
             search_time: {type: integer}
             access_groups_info:
               type: object
@@ -92,10 +88,6 @@ definitions:
             objects:
               type: array
               items: {$ref: "#/definitions/searchResultHit"}
-            objects_info:
-              type: object
-              patternProperties:
-                '.*': {$ref: "#/definitions/objectInfo"}
             total: {type: integer}
             search_time: {type: integer}
             pagination:
@@ -263,32 +255,6 @@ definitions:
         type: string
       - title: Lock Status
         type: string
-      - title: Metadata
-        $ref: "#/definitions/metadata"
-
-  objectInfo:
-    type: array
-    items:
-      - title: Object Id
-        type: integer
-      - title: Object name
-        type: string
-      - title: Type
-        type: string
-      - title: Saved Date
-        type: string
-      - title: Version
-        type: integer
-      - title: Author
-        type: string
-      - title: Workspace Id
-        type: integer
-      - title: Workspace name
-        type: string
-      - title: Checksum
-        type: string
-      - title: Object size
-        type: integer
       - title: Metadata
         $ref: "#/definitions/metadata"
 
