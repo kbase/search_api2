@@ -120,5 +120,5 @@ ssh -L 9500:<elasticsearch_ip>:9500 username@login1.berkeley.kbase.us
 Then you can run the integration test script:
 
 ```sh
-sh scripts/run_integration_tests.sh
+sh scripts/run_integration_tests
 ```
