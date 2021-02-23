@@ -52,7 +52,6 @@ def test_auth_fail_resp():
     assert 'error' in result
     assert result['error']['code'] == -32001
     assert resp.status_code == 400
-    # print(resp.text)
 
 
 def test_legacy_valid():
@@ -69,7 +68,6 @@ def test_legacy_valid():
             }]
         })
     )
-    # print(json.dumps(resp.json(), indent=4))
     assert resp.status_code == 200
     result = resp.json()
     assert result['id'] == 0

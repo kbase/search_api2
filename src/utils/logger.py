@@ -23,9 +23,13 @@ def init_logger():
     stdout_handler.setFormatter(formatter)
     logger.addHandler(stdout_handler)
     print(f'Logger and level: {logger}')
-    print('''
+    print(f'''
 ** To see more or less logging information, adjust the
-** log level with the LOGLEVEL environment variable
+** log level by setting the LOGLEVEL environment variable 
+** to one of:
+**   CRITICAL ERROR WARNING INFO DEBUG NOTSET
+** It is currently set to:
+**   {level}
 ''')
     return logger
 

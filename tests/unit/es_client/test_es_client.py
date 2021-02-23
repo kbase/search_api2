@@ -1,6 +1,5 @@
 import json
 import pytest
-import subprocess
 import responses
 
 # For mocking workspace calls
@@ -9,7 +8,6 @@ from unittest.mock import patch
 from src.utils.config import config
 from src.exceptions import UnknownIndex
 from src.es_client import search
-from src.utils.wait_for_service import wait_for_service
 from src.exceptions import ElasticsearchError
 from tests.helpers import init_elasticsearch
 

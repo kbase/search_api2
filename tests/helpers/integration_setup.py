@@ -18,7 +18,7 @@ def start_service(app_url):
 
     # Build and start the app using docker-compose
     cwd = 'tests/integration/docker'
-    print(f'Running docker-compose file in "{cwd}"')
+    logger.info(f'Running docker-compose file in "{cwd}"')
     cmd = "docker-compose --no-ansi up"
     logger.info(f'Running command:\n{cmd}')
     container_out = open("container.out", "w")

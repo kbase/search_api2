@@ -2,7 +2,7 @@ import json
 import os
 import requests
 import pytest
-
+from src.utils.logger import logger
 from tests.helpers.integration_setup import (
     start_service,
     stop_service
@@ -35,7 +35,7 @@ def teardown_module(module):
 
 def load_data_file(name):
     file_path = os.path.join(os.path.dirname(__file__), 'data/legacy', name)
-    print(f'loading data file from "{file_path}"')
+    logger.info(f'loading data file from "{file_path}"')
     with open(file_path) as f:
         return json.load(f)
 

@@ -16,7 +16,7 @@ def start_service(wait_for_url, wait_for_name):
     global container_out
     global container_err
 
-    cmd = f"docker-compose --no-ansi up"
+    cmd = "docker-compose --no-ansi up"
     logger.info(f'Running command:\n{cmd}')
     container_out = open("container.out", "w")
     container_err = open("container.err", "w")
