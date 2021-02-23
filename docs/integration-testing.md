@@ -1,62 +1,4 @@
-# An E-Z Guide
-
-This is a set of tasks which worked well for me on MacOS.
-
-## Unit Testing
-
-Install virtual environment for python:
-
-```sh
-python -m venv venv
-source  venv/bin/activate
-python -m pip install --upgrade pip
-```
-
-Install `poetry`:
-
-```sh
-pip install poetry
-```
-
-Unit tests are run locally, so need to install all python dependencies:
-
-```sh
-poetry install
-```
-
-> TODO: should be able to run unit tests in a container, to avoid the need for any host-level installs.
-
-Run the tests!
-
-```sh
-sh scripts/run_tests
-```
-
-To run tests in a given directory or individual test modules:
-
-```sh
-PYTHONPATH=. poetry run pytest -vv tests/unit/PATH
-```
-
-e.g. to run all the `es_client` tests:
-
-```sh
-PYTHONPATH=. poetry run pytest -vv tests/unit/es_client
-```
-
-And to run all the unit tests plus associated code quality evaluations:
-
-```sh
-make test
-```
-
-or
-
-```sh
-sh scripts/run_tests
-```
-
-## Integration Tests
+# Integration Testing
 
 The integration tests run inside a Docker container. An associated ssh tunnel proxies elastic search requests into KBase. This tunnel is also run in a container. To ease the process of coordinating the startup of these containers, the are scripted in a docker-compose config file.
 
@@ -93,7 +35,6 @@ The default logging level is "DEBUG" which can emit an annoying level of message
 ```bash
 LOGLEVEL=ERROR make integration-tests
 ```
-
 
 If all goes well you should see something like:
 
@@ -132,5 +73,4 @@ tests/integration/test_integration_search_workspaces.py::test_narrative_example 
 tests/integration/test_integration_search_workspaces.py::test_dashboard_example PASSED
 
 =================================================== 9 passed in 24.27s ====================================================
-(venv) erikpearson@Eriks-MBP-2 search_api2 %
 ```
