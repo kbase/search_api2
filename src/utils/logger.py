@@ -25,7 +25,7 @@ def init_logger():
     print(f'Logger and level: {logger}')
     print(f'''
 ** To see more or less logging information, adjust the
-** log level by setting the LOGLEVEL environment variable 
+** log level by setting the LOGLEVEL environment variable
 ** to one of:
 **   CRITICAL ERROR WARNING INFO DEBUG NOTSET
 ** It is currently set to:
