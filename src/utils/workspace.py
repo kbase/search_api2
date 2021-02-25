@@ -9,19 +9,27 @@ from src.utils.config import config
 from src.exceptions import AuthError
 
 
-def ws_auth(auth_token):
+def ws_auth(auth_token, public_only, private_only):
     """
     Get a list of workspace IDs that the given username is allowed to access in
     the workspace.
     """
-    if not auth_token:
-        return []  # anonymous users
     # TODO session cache this
     # Make a request to the workspace using the user's auth token to find their
     # readable workspace IDs
-    params = {'perm': 'r'}
+    params = {
+        'perm': 'r'
+    }
+
+    if public_only:
+        params['onlyGlobal'] = 1
+    elif private_only:
+        params['excludeGlobal'] = 1
+    else:
+        params['excludeGlobal'] = 0
+
     result = _req('list_workspace_ids', params, auth_token)
-    return result['workspaces']
+    return result.get('workspaces', []) + result.get('pub', [])
 
 
 def get_workspace_info(workspace_id, auth_token=None):
@@ -29,8 +37,6 @@ def get_workspace_info(workspace_id, auth_token=None):
     Given a list of workspace ids, return the associated workspace info for each one
     """
     # TODO session cache this
-    # Make a request to the workspace using the user's auth token to find their
-    # readable workspace IDs
     params = {'id': workspace_id}
     return _req('get_workspace_info', params, auth_token)
 
@@ -43,7 +49,11 @@ def _req(method: str, params: dict, token: Optional[str]):
         'id': 0,
         'params': [params],
     }
-    headers = {'Authorization': token}
+
+    headers = {}
+    if token is not None:
+        headers['Authorization'] = token
+
     resp = requests.post(
         url=config['workspace_url'],
         headers=headers,
