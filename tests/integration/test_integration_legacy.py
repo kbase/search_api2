@@ -3,10 +3,6 @@ import os
 import requests
 import pytest
 from src.utils.logger import logger
-from tests.helpers.integration_setup import (
-    start_service,
-    stop_service
-)
 from tests.integration.legacy_data import (
     search_request1,
     search_response1,
@@ -20,17 +16,10 @@ from tests.integration.legacy_data import (
     search_response5,
     search_request6,
 )
-
-
-APP_URL = os.environ.get("APP_URL", 'http://localhost:5000')
-
-
-def setup_module(module):
-    start_service(APP_URL)
-
-
-def teardown_module(module):
-    stop_service()
+from tests.helpers.common import (
+    assert_jsonrpc20_result,
+    equal
+)
 
 
 def load_data_file(name):
@@ -40,8 +29,8 @@ def load_data_file(name):
         return json.load(f)
 
 
-def test_search_example1():
-    url = APP_URL + '/legacy'
+def test_search_example1(service):
+    url = service['app_url'] + '/legacy'
     resp = requests.post(
         url=url,
         data=json.dumps(search_request1),
@@ -58,8 +47,8 @@ def test_search_example1():
     assert res['objects'] == expected_res['objects']
 
 
-def test_search_example2():
-    url = APP_URL + '/legacy'
+def test_search_example2(service):
+    url = service['app_url'] + '/legacy'
     resp = requests.post(
         url=url,
         data=json.dumps(search_request2),
@@ -74,8 +63,8 @@ def test_search_example2():
     assert res['type_to_count']  # TODO match more closely when things are more indexed
 
 
-def test_search_example3():
-    url = APP_URL + '/legacy'
+def test_search_example3(service):
+    url = service['app_url'] + '/legacy'
     resp = requests.post(
         url=url,
         data=json.dumps(search_request3),
@@ -94,9 +83,9 @@ def test_search_example3():
     assert len(res['objects']) > 0
 
 
-def test_search_example4():
+def test_search_example4(service):
     """Genome features count with no data"""
-    url = APP_URL + '/legacy'
+    url = service['app_url'] + '/legacy'
     resp = requests.post(
         url=url,
         data=json.dumps(search_request4),
@@ -115,9 +104,9 @@ def test_search_example4():
     assert res['search_time'] > 0
 
 
-def test_search_example5():
+def test_search_example5(service):
     """Genome features search with results"""
-    url = APP_URL + '/legacy'
+    url = service['app_url'] + '/legacy'
     resp = requests.post(
         url=url,
         data=json.dumps(search_request5),
@@ -136,9 +125,9 @@ def test_search_example5():
     assert res['search_time'] > 0
 
 
-def test_search_example6():
+def test_search_example6(service):
     """Search example with many options and narrative info."""
-    url = APP_URL + '/legacy'
+    url = service['app_url'] + '/legacy'
 
     if 'WS_TOKEN' not in os.environ:
         pytest.skip('Token required for this test')
@@ -164,52 +153,12 @@ def test_search_example6():
 # workspace info and narrative info, for public data.
 
 
-def assert_jsonrpc_result(actual, expected):
-    assert actual['jsonrpc'] == '2.0'
-    assert actual['id'] == expected['id']
-    assert 'result' in actual
-    result = actual['result']
-    assert isinstance(result,  list)
-    assert 'error' not in actual
-    return result
-
-
-def equal(d1, d2, path=[]):
-    if isinstance(d1, dict):
-        if isinstance(d2, dict):
-            d1_keys = set(d1.keys())
-            d2_keys = set(d2.keys())
-            if len(d1_keys.difference(d2_keys)) > 0:
-                return [False, path]
-            for key in d1_keys:
-                path.append(key)
-                if not equal(d1[key], d2[key], path):
-                    return [False, path]
-                path.pop()
-
-            return [True, path]
-        else:
-            return [False, path]
-    elif isinstance(d1, list):
-        if isinstance(d2, list):
-            if len(d1) != len(d2):
-                return [False, path]
-            i = 0
-            for d1value, d2value in zip(d1, d2):
-                i += 1
-                path.append(i)
-                if not equal(d1value, d2value, path):
-                    return [False, path]
-            return [True, path]
-    else:
-        return [d2 == d1, path]
-
 # Simulates search from data-search with a search term, only public data
 
 
-def test_search_case1():
-    """Search example with many options and narrative info."""
-    url = APP_URL + '/legacy'
+def test_search_case1(service):
+    """Search example with many options and narrative info, with token."""
+    url = service['app_url'] + '/legacy'
 
     if 'WS_TOKEN' not in os.environ:
         pytest.skip('Token required for this test')
@@ -224,7 +173,25 @@ def test_search_case1():
     )
     data = resp.json()
     #  TODO: should be version 1.1 (aka jsonrpc 1.1)
-    assert_jsonrpc_result(data, response_data)
+    assert_jsonrpc20_result(data, response_data)
+    [is_equal, path] = equal(data, response_data)
+    assert is_equal, path
+
+
+def test_search_case1_no_auth(service):
+    """Search example with many options and narrative info, without token."""
+    url = service['app_url'] + '/legacy'
+
+    request_data = load_data_file('case1-request.json')
+    response_data = load_data_file('case1-response.json')
+
+    resp = requests.post(
+        url=url,
+        data=json.dumps(request_data),
+    )
+    data = resp.json()
+    #  TODO: should be version 1.1 (aka jsonrpc 1.1)
+    assert_jsonrpc20_result(data, response_data)
     [is_equal, path] = equal(data, response_data)
     assert is_equal, path
 

@@ -2,23 +2,9 @@ import json
 import os
 import requests
 
-from tests.helpers.integration_setup import (
-    start_service,
-    stop_service
-)
-
-APP_URL = os.environ.get("APP_URL", 'http://localhost:5000')
 
 
-def setup_module(module):
-    start_service(APP_URL)
-
-
-def teardown_module(module):
-    stop_service()
-
-
-def test_narrative_example():
+def test_narrative_example(service):
     params = {
         "access": {
             "only_public": True,
@@ -36,7 +22,7 @@ def test_narrative_example():
             "offset": 0
         }
     }
-    url = APP_URL + '/rpc'
+    url = service['app_url'] + '/rpc'
     resp = requests.post(
         url=url,
         data=json.dumps({
@@ -51,7 +37,7 @@ def test_narrative_example():
     assert data['result']['count'] > 0
 
 
-def test_dashboard_example():
+def test_dashboard_example(service):
     params = {
         "id": 1597353298754,
         "jsonrpc": "2.0",
@@ -70,7 +56,7 @@ def test_dashboard_example():
             "types": ["KBaseNarrative.Narrative"]
         }
     }
-    url = APP_URL + '/rpc'
+    url = service['app_url'] + '/rpc'
     resp = requests.post(
         url=url,
         data=json.dumps(params),
