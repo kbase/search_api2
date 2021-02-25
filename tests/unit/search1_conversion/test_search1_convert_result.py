@@ -1,7 +1,6 @@
 from unittest import mock
-
+import json
 from src.search1_conversion import convert_result
-from tests.helpers import init_elasticsearch
 
 from tests.unit.search1_conversion.data import (
     mock_ws_info,
@@ -11,33 +10,34 @@ from tests.unit.search1_conversion.data import (
     expected_get_objects,
 )
 
-from tests.helpers.unit_setup import (
-    start_service,
-    stop_service
-)
+original_expected = json.dumps(expected_search_results)
 
-ES_URL = 'http://localhost:9200'
-
-
-def setup_module(module):
-    start_service(ES_URL, 'Elasticsearch')
-    init_elasticsearch()
-
-
-def teardown_module(module):
-    stop_service()
 
 # TODO test post processing
 # TODO test the following fields: object_name, obj_id, version, type, creator
 
 
 def mocked_get_workspace_info(workspace_id, auth_token):
-    return mock_ws_info[str(workspace_id)]
+    # if auth provided, assume the private workspaces.
+    info = mock_ws_info.get(str(workspace_id))
+    if info is not None:
+        if auth_token is not None:
+            # private and public workspaces, if either
+            # public or user perms are not n (no access)
+            # can access.
+            if info[6] != 'n' or info[5] != 'n':
+                return info
+        else:
+            # public workspaces
+            if info[6] != 'n':
+                return info
+
+    return None
 
 
 @mock.patch('src.search1_conversion.convert_result.get_workspace_info')
 @mock.patch('src.search1_conversion.convert_result.get_user_profiles')
-def test_search_objects_valid(get_user_profiles_patched, get_workspace_info_patched):
+def test_search_objects_valid(get_user_profiles_patched, get_workspace_info_patched, services):
     get_workspace_info_patched.side_effect = mocked_get_workspace_info
     get_user_profiles_patched.return_value = mock_user_profiles
 
@@ -58,7 +58,7 @@ def test_search_objects_valid(get_user_profiles_patched, get_workspace_info_patc
 
 @mock.patch('src.search1_conversion.convert_result.get_workspace_info')
 @mock.patch('src.search1_conversion.convert_result.get_user_profiles')
-def test_get_objects_valid(get_user_profiles_patched, get_workspace_info_patched):
+def test_get_objects_valid(get_user_profiles_patched, get_workspace_info_patched, services):
     get_workspace_info_patched.side_effect = mocked_get_workspace_info
     get_user_profiles_patched.return_value = mock_user_profiles
 
@@ -76,7 +76,7 @@ def test_get_objects_valid(get_user_profiles_patched, get_workspace_info_patched
         assert expected_get_objects[key] == final[key], key
 
 
-def test_search_types_valid():
+def test_search_types_valid(services):
     params = {
         'post_processing': {
         }

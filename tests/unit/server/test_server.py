@@ -1,29 +1,29 @@
 import json
 import requests
 
-from tests.helpers import init_elasticsearch
+# from tests.helpers import init_elasticsearch
 
-from tests.helpers.unit_setup import (
-    start_service,
-    stop_service
-)
+# from tests.helpers.unit_setup import (
+#     start_service,
+#     stop_service
+# )
 
-APP_URL = 'http://localhost:5000'
-
-
-def setup_module(module):
-    start_service(APP_URL, 'searchapi2')
-    init_elasticsearch()
+# APP_URL = 'http://localhost:5000'
 
 
-def teardown_module(module):
-    stop_service()
+# def setup_module(module):
+#     start_service(APP_URL, 'searchapi2')
+#     init_elasticsearch()
 
 
-def test_rpc_valid():
+# def teardown_module(module):
+#     stop_service()
+
+
+def test_rpc_valid(services):
     """Test a basic valid request to /rpc"""
     resp = requests.post(
-        APP_URL + '/rpc',
+        services['app_url'] + '/rpc',
         data=json.dumps({
             "jsonrpc": "2.0",
             "id": 0,
@@ -36,9 +36,9 @@ def test_rpc_valid():
     assert result['result']['dev']
 
 
-def test_auth_fail_resp():
+def test_auth_fail_resp(services):
     resp = requests.post(
-        APP_URL + "/legacy",
+        services['app_url'] + "/legacy",
         headers={"Authorization": "xyz"},
         data=json.dumps({
             # TODO: version 1.1
@@ -54,10 +54,10 @@ def test_auth_fail_resp():
     assert resp.status_code == 400
 
 
-def test_legacy_valid():
+def test_legacy_valid(services):
     """Test a basic valid request to /legacy"""
     resp = requests.post(
-        APP_URL + '/legacy',
+        services['app_url'] + '/legacy',
         data=json.dumps({
             # TODO: version 1.1
             "jsonrpc": "2.0",
@@ -77,9 +77,9 @@ def test_legacy_valid():
     assert len(result['result']) == 1
 
 
-def test_rpc_invalid():
+def test_rpc_invalid(services):
     """Test a basic empty request to /rpc"""
-    resp = requests.get(APP_URL + '/rpc')
+    resp = requests.get(services['app_url'] + '/rpc')
     result = resp.json()
     assert 'error' in result
     assert result['error']['code'] == -32600  # Invalid params
@@ -91,9 +91,9 @@ def test_rpc_invalid():
 # disfavors GET
 # Also, KBase clients should not be encouraged to think that GET
 # is acceptable.
-def test_legacy_invalid():
+def test_legacy_invalid(services):
     """Test a basic empty request to /legacy"""
-    resp = requests.get(APP_URL + '/legacy')
+    resp = requests.get(services['app_url'] + '/legacy')
     # TODO: should be a 405 - method not allowed
     result = resp.json()
     assert 'error' in result
@@ -103,11 +103,11 @@ def test_legacy_invalid():
 # rather in the proxy.
 
 
-def test_handle_options():
+def test_handle_options(services):
     """Handle a cors-style options requests on all paths"""
     paths = ['/', '/rpc', '/status', '/legacy']
     for path in paths:
-        resp = requests.options(APP_URL + path)
+        resp = requests.options(services['app_url'] + path)
         assert resp.status_code == 204
         assert resp.text == ''
         assert resp.headers.get('Access-Control-Allow-Origin') == '*'
@@ -115,18 +115,18 @@ def test_handle_options():
         assert resp.headers.get('Access-Control-Allow-Headers') == '*'
 
 
-def test_404():
-    resp = requests.get(APP_URL + '/xyz')
+def test_404(services):
+    resp = requests.get(services['app_url'] + '/xyz')
     assert resp.status_code == 404
     assert resp.text == ''
 
 
-def test_legacy_rpc_conversion():
+def test_legacy_rpc_conversion(services):
     """
     Test that a JSON-RPC 1.1 request is still handled ok
     """
     resp = requests.post(
-        APP_URL + '/legacy',
+        services['app_url'] + '/legacy',
         data=json.dumps({
             "version": "1.1",
             "id": 0,
@@ -144,12 +144,12 @@ def test_legacy_rpc_conversion():
 
 
 # TODO: why accept non-compliant requests?
-def test_sloppy_rpc_conversion():
+def test_sloppy_rpc_conversion(services):
     """
     Test that a Sloppy-RPC request is still handled ok
     """
     resp = requests.post(
-        APP_URL + '/legacy',
+        services['app_url'] + '/legacy',
         data=json.dumps({
             "method": "KBaseSearchEngine.get_objects",
             "params": [{

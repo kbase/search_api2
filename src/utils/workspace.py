@@ -9,7 +9,7 @@ from src.utils.config import config
 from src.exceptions import AuthError
 
 
-def ws_auth(auth_token, public_only, private_only):
+def ws_auth(auth_token, public_only=False, private_only=False):
     """
     Get a list of workspace IDs that the given username is allowed to access in
     the workspace.
@@ -34,7 +34,7 @@ def ws_auth(auth_token, public_only, private_only):
 
 def get_workspace_info(workspace_id, auth_token=None):
     """
-    Given a list of workspace ids, return the associated workspace info for each one
+    Given a workspace id, return the associated workspace info
     """
     # TODO session cache this
     params = {'id': workspace_id}

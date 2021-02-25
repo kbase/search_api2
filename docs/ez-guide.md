@@ -35,13 +35,13 @@ sh scripts/run_tests
 To run tests in a given directory or individual test modules:
 
 ```sh
-PYTHONPATH=. poetry run pytest -vv tests/unit/PATH
+WORKSPACE_URL="http://localhost:5555/ws" PYTHONPATH=. poetry run pytest -vv tests/unit/PATH
 ```
 
 e.g. to run all the `es_client` tests:
 
 ```sh
-PYTHONPATH=. poetry run pytest -vv tests/unit/es_client
+WORKSPACE_URL="http://localhost:5555/ws" PYTHONPATH=. poetry run pytest -vv tests/unit/es_client
 ```
 
 And to run all the unit tests plus associated code quality evaluations:

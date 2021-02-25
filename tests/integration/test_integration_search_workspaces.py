@@ -1,7 +1,5 @@
 import json
-import os
 import requests
-
 
 
 def test_narrative_example(service):

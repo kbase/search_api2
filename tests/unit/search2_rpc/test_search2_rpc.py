@@ -5,72 +5,81 @@ object. We test here that things are correctly wrapped, but we don't need to
 test search logic here.
 """
 import json
+# For mocking workspace calls
+from unittest.mock import patch
+from src.search2_rpc import service as rpc
+# from tests.helpers import init_elasticsearch
 
-from src.search2_rpc import service
-from tests.helpers import init_elasticsearch
+# from tests.helpers.unit_setup import (
+#     start_service,
+#     stop_service
+# )
 
-from tests.helpers.unit_setup import (
-    start_service,
-    stop_service
-)
-
-ES_URL = 'http://localhost:9200'
-APP_URL = 'http://localhost:5000'
-
-
-def setup_module(module):
-    start_service(APP_URL, 'searchapi2')
-    init_elasticsearch()
+# ES_URL = 'http://localhost:9200'
+# APP_URL = 'http://localhost:5000'
 
 
-def teardown_module(module):
-    stop_service()
+# def setup_module(module):
+#     start_service(APP_URL, 'searchapi2')
+#     init_elasticsearch()
 
 
-def test_show_indexes():
-    params = {
-        "method": "show_indexes",
-        "jsonrpc": "2.0",
-        "id": 0,
-    }
-    result = service.call(json.dumps(params), {'auth': None})
-    res = json.loads(result)
-    assert res['result']
+# def teardown_module(module):
+#     stop_service()
 
 
-def test_show_config():
-    params = {
-        "method": "show_config",
-        "jsonrpc": "2.0",
-        "id": 0,
-    }
-    result = service.call(json.dumps(params), {'auth': None})
-    res = json.loads(result)
-    assert res['result']
-
-
-def test_search_objects():
-    params = {
-        "method": "search_objects",
-        "jsonrpc": "2.0",
-        "id": 0,
-        "params": {}
-    }
-    result = service.call(json.dumps(params), {'auth': None})
-    res = json.loads(result)
-    assert res['result']['count'] > 0
-
-
-def test_search_workspace():
-    params = {
-        "method": "search_workspace",
-        "jsonrpc": "2.0",
-        "id": 0,
-        "params": {
-            "types": ["KBaseNarrative.Narrative"]
+def test_show_indexes(services):
+    with patch('src.es_client.query.ws_auth') as mocked:
+        mocked.return_value = [0, 1]  # Public workspaces
+        params = {
+            "method": "show_indexes",
+            "jsonrpc": "2.0",
+            "id": 0,
         }
-    }
-    result = service.call(json.dumps(params), {'auth': None})
-    res = json.loads(result)
-    assert 'error' not in res
-    assert res['result']['count'] > 0
+        result = rpc.call(json.dumps(params), {'auth': None})
+        res = json.loads(result)
+        assert res['result']
+
+
+def test_show_config(services):
+    with patch('src.es_client.query.ws_auth') as mocked:
+        mocked.return_value = [0, 1]  # Public workspaces
+        params = {
+            "method": "show_config",
+            "jsonrpc": "2.0",
+            "id": 0,
+        }
+        result = rpc.call(json.dumps(params), {'auth': None})
+        res = json.loads(result)
+        assert res['result']
+
+
+def test_search_objects(services):
+    with patch('src.es_client.query.ws_auth') as mocked:
+        mocked.return_value = [0, 1]  # Public workspaces
+        params = {
+            "method": "search_objects",
+            "jsonrpc": "2.0",
+            "id": 0,
+            "params": {}
+        }
+        result = rpc.call(json.dumps(params), {'auth': None})
+        res = json.loads(result)
+        assert res['result']['count'] > 0
+
+
+def test_search_workspace(services):
+    with patch('src.es_client.query.ws_auth') as mocked:
+        mocked.return_value = [0, 1]  # Public workspaces
+        params = {
+            "method": "search_workspace",
+            "jsonrpc": "2.0",
+            "id": 0,
+            "params": {
+                "types": ["KBaseNarrative.Narrative"]
+            }
+        }
+        result = rpc.call(json.dumps(params), {'auth': None})
+        res = json.loads(result)
+        assert 'error' not in res
+        assert res['result']['count'] > 0

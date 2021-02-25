@@ -41,6 +41,7 @@ test_search_results = {
 }
 
 mock_ws_info = {
+    # public workspace, refdata
     "0": [
         0,
         "workspace0",
@@ -54,6 +55,7 @@ mock_ws_info = {
             "searchtags": "refdata"
         }
     ],
+    # public workspace, narrative
     "1": [
         1,
         "workspace1",
@@ -67,6 +69,40 @@ mock_ws_info = {
             "searchtags": "narrative",
             "narrative": "1",
             "narrative_nice_name": "narrative1",
+            "is_temporary": "f"
+        }
+    ],
+    # private workspace, narrative
+    "100": [
+        100,
+        "workspace100",
+        "username",
+        "2020-01-02T03:04:05+0000",
+        388422,
+        "r",
+        "n",
+        "unlocked",
+        {
+            "searchtags": "narrative",
+            "narrative": "1",
+            "narrative_nice_name": "narrative 100",
+            "is_temporary": "f"
+        }
+    ],
+    # private, inaccessible workspace, narrative
+    "101": [
+        101,
+        "workspace101",
+        "username",
+        "2020-01-02T03:04:05+0000",
+        388422,
+        "n",
+        "n",
+        "unlocked",
+        {
+            "searchtags": "narrative",
+            "narrative": "1",
+            "narrative_nice_name": "narrative 101",
             "is_temporary": "f"
         }
     ]
@@ -178,7 +214,39 @@ expected_search_results = {
     "access_group_narrative_info": {
         '1': ['narrative1', 1, 1577934245000, 'username', 'User Example']
     },
-    "access_groups_info": mock_ws_info
+    "access_groups_info": {
+        # public workspace, refdata
+        "0": [
+            0,
+            "workspace0",
+            "username",
+            "2020-01-02T03:04:05+0000",
+            388422,
+            "n",
+            "r",
+            "unlocked",
+            {
+                "searchtags": "refdata"
+            }
+        ],
+        # public workspace, narrative
+        "1": [
+            1,
+            "workspace1",
+            "username",
+            "2020-01-02T03:04:05+0000",
+            388422,
+            "n",
+            "r",
+            "unlocked",
+            {
+                "searchtags": "narrative",
+                "narrative": "1",
+                "narrative_nice_name": "narrative1",
+                "is_temporary": "f"
+            }
+        ]
+    }
 }
 
 expected_get_objects = {
@@ -218,5 +286,37 @@ expected_get_objects = {
     "access_group_narrative_info": {
         '1': ['narrative1', 1, 1577934245000, 'username', 'User Example']
     },
-    "access_groups_info": mock_ws_info
+    "access_groups_info": {
+        # public workspace, refdata
+        "0": [
+            0,
+            "workspace0",
+            "username",
+            "2020-01-02T03:04:05+0000",
+            388422,
+            "n",
+            "r",
+            "unlocked",
+            {
+                "searchtags": "refdata"
+            }
+        ],
+        # public workspace, narrative
+        "1": [
+            1,
+            "workspace1",
+            "username",
+            "2020-01-02T03:04:05+0000",
+            388422,
+            "n",
+            "r",
+            "unlocked",
+            {
+                "searchtags": "narrative",
+                "narrative": "1",
+                "narrative_nice_name": "narrative1",
+                "is_temporary": "f"
+            }
+        ]
+    }
 }

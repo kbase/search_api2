@@ -5,12 +5,22 @@ from src.utils.config import config
 from src.utils.workspace import ws_auth, get_workspace_info
 from src.exceptions import ResponseError
 
-mock_ws_ids = {
+mock_ws_ids_with_auth = {
     "version": "1.1",
     "result": [
         {
             "workspaces": [1, 2, 3],
-            "pub": []
+            "pub": [10, 11]
+        }
+    ]
+}
+
+mock_ws_ids_without_auth = {
+    "version": "1.1",
+    "result": [
+        {
+            "workspaces": [],
+            "pub": [10, 11]
         }
     ]
 }
@@ -83,18 +93,21 @@ def test_ws_auth_valid():
     responses.add(responses.POST,
                   config['workspace_url'],
                   headers={'Authorization': 'valid_token'},
-                  json=mock_ws_ids,
+                  json=mock_ws_ids_with_auth,
                   status=200)
     result = ws_auth('valid_token')
-    assert result == [1, 2, 3]
+    assert result == [1, 2, 3, 10, 11]
 
 
-# TODO: look into this behavior.
-# This may imply that unauthenticated requests don't have
-# access to any workspaces ... but this isn't true.
+@responses.activate
 def test_ws_auth_blank():
+    # Mock the workspace call
+    responses.add(responses.POST,
+                  config['workspace_url'],
+                  json=mock_ws_ids_without_auth,
+                  status=200)
     result = ws_auth(None)
-    assert result == []
+    assert result == [10, 11]
 
 
 @responses.activate
@@ -102,9 +115,10 @@ def test_ws_auth_invalid():
     # Mock the workspace call
     responses.add(responses.POST,
                   config['workspace_url'],
+                  headers={'Authorization': 'invalid_token'},
                   status=401)
     with pytest.raises(ResponseError) as ctx:
-        ws_auth('x')
+        ws_auth('invalid_token')
     err = ctx.value
     assert err.jsonrpc_code == -32001
 
