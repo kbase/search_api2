@@ -151,7 +151,13 @@ def _fetch_narrative_info(results, meta):
 
     # Get profile for all owners in the search results
     user_profiles = get_user_profiles(list(owners), meta['auth'])
-    user_profile_map = {profile['user']['username']: profile for profile in user_profiles}
+    user_profile_map = {}
+    for profile in user_profiles:
+        if profile is not None:
+            username = profile['user']['username']
+            user_profile_map[username] = profile
+
+    # user_profile_map = {profile['user']['username']: profile for profile in user_profiles}
     narrative_index_name = config['global']['ws_type_to_indexes']['KBaseNarrative.Narrative']
     # TODO move this code into es_client.fetch_narratives
     # ES query params
@@ -178,6 +184,7 @@ def _fetch_narrative_info(results, meta):
         if user_profile is not None:
             real_name = user_profile['user']['realname']
         else:
+            # default to real name if the user profile is absent.
             real_name = owner
         if 'narrative' in ws_metadata:
             narr_infos[str(workspace_id)] = [
