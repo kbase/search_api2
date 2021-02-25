@@ -174,13 +174,18 @@ def _fetch_narrative_info(results, meta):
         [workspace_id, workspace_name, owner, moddate,
          max_objid, user_permission, global_permission,
          lockstat, ws_metadata] = ws_info
+        user_profile = user_profile_map.get(owner)
+        if user_profile is not None:
+            real_name = user_profile['user']['realname']
+        else:
+            real_name = owner
         if 'narrative' in ws_metadata:
             narr_infos[str(workspace_id)] = [
                 ws_metadata.get('narrative_nice_name', ''),
                 int(ws_metadata.get('narrative')),
                 iso8601_to_epoch(moddate) * 1000,
                 owner,
-                user_profile_map[owner]['user']['realname']
+                real_name
             ]
     return (ws_infos, narr_infos)
 
