@@ -37,7 +37,7 @@ def stop_service():
                                     lambda line: 'Stopping' in line and 'done' in line,
                                     timeout=stop_timeout,
                                     line_count=2):
-            raise Exception(f'Container did not stop in the alloted time of {stop_timeout} seconds')
+            logger.warning(f'Container did not stop in the alotted time of {stop_timeout} seconds')
         logger.info('...stopped!')
 
     if container_err is not None:
