@@ -8,7 +8,7 @@ from . import common
 container_process = None
 container_out = None
 container_err = None
-stop_timeout = 10
+stop_timeout = 30
 
 
 def start_service(wait_for_url, wait_for_name):

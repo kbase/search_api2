@@ -157,11 +157,13 @@ def test_get_workspace_info_invalid():
 @responses.activate
 def test_get_workspace_info_invalid2():
     resp = {
-        "version": "1.1", "result": []
+        "version": "1.1",
+        "result": []
     }
     responses.add(responses.POST,
                   config['workspace_url'],
-                  json=resp, status=200)
+                  json=resp,
+                  status=200)
     with pytest.raises(ResponseError) as ctx:
         get_workspace_info(1, 'token')
     err = ctx.value
