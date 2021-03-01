@@ -157,29 +157,10 @@ def _fetch_narrative_info(results, meta):
             username = profile['user']['username']
             user_profile_map[username] = profile
 
-    # user_profile_map = {profile['user']['username']: profile for profile in user_profiles}
-    narrative_index_name = config['global']['ws_type_to_indexes']['KBaseNarrative.Narrative']
-    # TODO move this code into es_client.fetch_narratives
-    # ES query params
-    search_params: dict = {
-        'indexes': [narrative_index_name],
-        'size': len(workspace_ids)
-    }
-    # Filter by workspace ID
-    matches = [
-        {'match': {'access_group': wsid}}
-        for wsid in workspace_ids
-    ]
-    search_params['query'] = {
-        'bool': {'should': matches}
-    }
-
     # Get all the source document objects for each narrative result
     narr_infos = {}
     for ws_info in ws_infos.values():
-        [workspace_id, workspace_name, owner, moddate,
-         max_objid, user_permission, global_permission,
-         lockstat, ws_metadata] = ws_info
+        [workspace_id, _, owner, moddate, _, _, _, _, ws_metadata] = ws_info
         user_profile = user_profile_map.get(owner)
         if user_profile is not None:
             real_name = user_profile['user']['realname']
