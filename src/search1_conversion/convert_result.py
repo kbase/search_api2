@@ -140,14 +140,14 @@ def _fetch_narrative_info(results, meta):
         workspace_id = hit_doc['access_group']
         workspace_ids.add(workspace_id)
 
+    if len(workspace_ids) == 0:
+        return {}, {}
+
     for workspace_id in workspace_ids:
         workspace_info = get_workspace_info(workspace_id, meta['auth'])
         if len(workspace_info) > 2:
             owners.add(workspace_info[2])
             ws_infos[str(workspace_id)] = workspace_info
-
-    if len(workspace_ids) == 0:
-        return ({}, {})
 
     # Get profile for all owners in the search results
     user_profiles = get_user_profiles(list(owners), meta['auth'])
@@ -175,7 +175,7 @@ def _fetch_narrative_info(results, meta):
                 owner,
                 real_name
             ]
-    return (ws_infos, narr_infos)
+    return ws_infos, narr_infos
 
 
 def _get_object_data_from_search_results(search_results, post_processing):
@@ -188,30 +188,30 @@ def _get_object_data_from_search_results(search_results, post_processing):
     # TODO post_processing/ids_only -- look at results in current api
     object_data = []  # type: list
     # Keys found in every ws object
-    for result in search_results['hits']:
-        source = result['doc']
+    for hit in search_results['hits']:
+        doc = hit['doc']
         obj: dict = {}
         for (search2_key, search1_key) in _KEY_MAPPING.items():
-            obj[search1_key] = source.get(search2_key)
+            obj[search1_key] = doc.get(search2_key)
         # The nested 'data' is all object-specific, so exclude all global keys
-        obj_data = {key: source[key] for key in source if key not in _KEY_MAPPING}
+        obj_data = {key: doc[key] for key in doc if key not in _KEY_MAPPING}
         if post_processing.get('skip_data') != 1:
             obj['data'] = obj_data
-        obj['guid'] = _get_guid_from_doc(result)
+        obj['guid'] = _get_guid_from_doc(hit)
         obj['kbase_id'] = obj['guid'].strip('WS:')
-        idx_pieces = result['index'].split(config['prefix_delimiter'])
+        idx_pieces = hit['index'].split(config['prefix_delimiter'])
         idx_name = idx_pieces[0]
         idx_ver = int(idx_pieces[1] or 0) if len(idx_pieces) == 2 else 0
 
         obj['index_name'] = idx_name
         obj['type_ver'] = idx_ver
         # For the UI, make the type field "GenomeFeature" instead of "Genome".
-        if 'genome_feature_type' in source:
+        if 'genome_feature_type' in doc:
             obj['type'] = 'GenomeFeature'
         # Set defaults for required fields in objects/data
         # Set some more top-level data manually that we use in the UI
         if post_processing.get('include_highlight') == 1:
-            highlight = result.get('highlight', {})
+            highlight = hit.get('highlight', {})
             transformed_highlight = {}
             for key, value in highlight.items():
                 transformed_highlight[_KEY_MAPPING.get(key, key)] = value
