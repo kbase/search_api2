@@ -104,3 +104,99 @@ def test_search_types_valid(services):
     for key in expected:
         assert key in final
         assert expected[key] == final[key], key
+
+
+def test_fetch_narrative_info_no_hits():
+    results = {
+        'hits': []
+    }
+    meta = {}
+    result = convert_result._fetch_narrative_info(results, meta)
+    assert len(result) == 2
+    assert result[0] == {}
+    assert result[1] == {}
+
+
+def test_fetch_narrative_info_no_access_group():
+    results = {
+        'hits': [{
+            'doc': {}
+        }]
+    }
+    meta = {}
+    result = convert_result._fetch_narrative_info(results, meta)
+    assert len(result) == 2
+    assert result[0] == {}
+    assert result[1] == {}
+
+
+@mock.patch('src.search1_conversion.convert_result.get_workspace_info')
+@mock.patch('src.search1_conversion.convert_result.get_user_profiles')
+def test_fetch_narrative_info_owner_has_profile(get_user_profiles_patched, get_workspace_info_patched, services):
+    get_workspace_info_patched.side_effect = mocked_get_workspace_info
+    get_user_profiles_patched.return_value = mock_user_profiles
+    results = {
+        'hits': [{
+            'doc': {
+                'access_group': 1
+            }
+        }]
+    }
+    meta = {
+        'auth': None
+    }
+    result = convert_result._fetch_narrative_info(results, meta)
+    assert len(result) == 2
+    narrative_info = result[1]
+    assert narrative_info['1'][4] == 'User Example'
+
+
+@mock.patch('src.search1_conversion.convert_result.get_workspace_info')
+@mock.patch('src.search1_conversion.convert_result.get_user_profiles')
+def test_fetch_narrative_info_owner_has_no_profile(get_user_profiles_patched, get_workspace_info_patched, services):
+    get_workspace_info_patched.side_effect = mocked_get_workspace_info
+    get_user_profiles_patched.return_value = []
+    results = {
+        'hits': [{
+            'doc': {
+                'access_group': 1
+            }
+        }]
+    }
+    meta = {
+        'auth': None
+    }
+    result = convert_result._fetch_narrative_info(results, meta)
+    assert len(result) == 2
+    narrative_info = result[1]
+    assert narrative_info['1'][4] == 'username'
+
+
+def test_get_object_data_from_search_results_feature():
+    results = {
+        'hits': [{
+            'highlight': {'name': '<em>name1</em>'},
+            'doc': {
+                'access_group': 1,
+                'creator': 'username',
+                'obj_id': 2,
+                'obj_name': 'object2',
+                'version': 1,
+                'obj_type_name': 'Module.Type-1.0',
+                'timestamp': 0,
+                'name': 'name1',
+                'genome_feature_type': 1
+            },
+            'id': 'WS::1:2',
+            'index': 'test_index1_1',
+        }]
+    }
+    post_processing = {
+
+    }
+    result = convert_result._get_object_data_from_search_results(results, post_processing)
+    assert isinstance(result, list)
+    [obj_data] = result
+    assert isinstance(obj_data, dict)
+    assert 'type' in obj_data
+    assert obj_data['type'] == 'GenomeFeature'
