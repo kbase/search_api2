@@ -10,8 +10,6 @@ def get_user_profiles(usernames: list, auth_token):
     Get a list of workspace IDs that the given username is allowed to access in
     the workspace.
     """
-    if not auth_token:
-        return []  # anonymous users
     url = config['user_profile_url']
     # TODO session cache this
     # Make a request to the workspace using the user's auth token to find their readable workspace IDs
@@ -20,7 +18,9 @@ def get_user_profiles(usernames: list, auth_token):
         'version': '1.1',
         'params': [usernames]
     }
-    headers = {'Authorization': auth_token}
+    headers = {}
+    if auth_token is not None:
+        headers['Authorization'] = auth_token
     resp = requests.post(
         url=url,
         data=json.dumps(payload),

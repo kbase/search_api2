@@ -11,23 +11,17 @@ container_err = None
 stop_timeout = 30
 
 
-def start_service(app_url):
+def start_service(wait_for_url, wait_for_name):
     global container_process
     global container_out
     global container_err
 
-    # Build and start the app using docker-compose
-    cwd = 'tests/integration/docker'
-    logger.info(f'Running docker-compose file in "{cwd}"')
     cmd = "docker-compose --no-ansi up"
     logger.info(f'Running command:\n{cmd}')
     container_out = open("container.out", "w")
     container_err = open("container.err", "w")
-    container_process = subprocess.Popen(cmd, shell=True,
-                                         stdout=container_out,
-                                         stderr=container_err,
-                                         cwd=cwd)
-    wait_for_service(app_url, "search2")
+    container_process = subprocess.Popen(cmd, shell=True, stdout=container_out, stderr=container_err)
+    wait_for_service(wait_for_url, wait_for_name)
 
 
 def stop_service():
@@ -39,12 +33,11 @@ def stop_service():
         logger.info('Stopping container')
         container_process.send_signal(signal.SIGTERM)
         logger.info('Waiting until service has stopped...')
-
         if not common.wait_for_line("container.err",
                                     lambda line: 'Stopping' in line and 'done' in line,
                                     timeout=stop_timeout,
-                                    line_count=1):
-            raise Exception(f'Container did not stop in the alloted time of {stop_timeout} seconds')
+                                    line_count=2):
+            logger.warning(f'Container did not stop in the alotted time of {stop_timeout} seconds')
         logger.info('...stopped!')
 
     if container_err is not None:

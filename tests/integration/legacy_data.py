@@ -3,7 +3,7 @@
 search_request1 = {
     "id": "xyz",
     "method": "KBaseSearchEngine.search_objects",
-    "version": "1.1",
+    "jsonrpc": "2.0",
     "params": [{
         "access_filter": {
             "with_private": 0,
@@ -38,9 +38,9 @@ search_response1 = {
             "count": 0
         },
         "sorting_rules": [{
-          "property": "timestamp",
-          "is_object_property": 0,
-          "ascending": 1
+            "property": "timestamp",
+            "is_object_property": 0,
+            "ascending": 1
         }],
         "objects": [],
         "total": 15039,
@@ -50,7 +50,7 @@ search_response1 = {
 
 # Method call to get type counts
 search_request2 = {
-    "version": "1.1",
+    "jsonrpc": "2.0",
     "method": "KBaseSearchEngine.search_types",
     "id": "6959719268936883",
     "params": [{
@@ -83,42 +83,42 @@ search_response2 = {
 }
 
 search_request3 = {
-  "id": "xyz",
-  "method": "KBaseSearchEngine.search_objects",
-  "params": [{
-    "access_filter": {
-      "with_private": 1,
-      "with_public": 1
-    },
-    "match_filter": {
-      "exclude_subobjects": 1,
-      "full_text_in_all": "coli",
-      "source_tags": ["refdata", "noindex"],
-      "source_tags_blacklist": 1
-    },
-    "pagination": {
-      "count": 20,
-      "start": 0
-    },
-    "post_processing": {
-      "add_narrative_info": 1,
-      "ids_only": 0,
-      "include_highlight": 1,
-      "skip_data": 0,
-      "skip_info": 0,
-      "skip_keys": 0
-    },
-    "sorting_rules": [{
-      "ascending": 0,
-      "is_object_property": 0,
-      "property": "access_group_id"
-    }, {
-      "ascending": 1,
-      "is_object_property": 0,
-      "property": "type"
-    }]
-  }],
-  "version": "1.1"
+    "id": "xyz",
+    "method": "KBaseSearchEngine.search_objects",
+    "params": [{
+        "access_filter": {
+          "with_private": 1,
+          "with_public": 1
+        },
+        "match_filter": {
+            "exclude_subobjects": 1,
+            "full_text_in_all": "coli",
+            "source_tags": ["refdata", "noindex"],
+            "source_tags_blacklist": 1
+        },
+        "pagination": {
+            "count": 20,
+            "start": 0
+        },
+        "post_processing": {
+            "add_narrative_info": 1,
+            "ids_only": 0,
+            "include_highlight": 1,
+            "skip_data": 0,
+            "skip_info": 0,
+            "skip_keys": 0
+        },
+        "sorting_rules": [{
+            "ascending": 0,
+            "is_object_property": 0,
+            "property": "access_group_id"
+        }, {
+            "ascending": 1,
+            "is_object_property": 0,
+            "property": "type"
+        }]
+    }],
+    "jsonrpc": "2.0"
 }
 
 search_response3 = {
@@ -144,101 +144,101 @@ search_response3 = {
 
 # Genome features search to get the total count
 search_request4 = {
-  "id": "17499051636214047",
-  "method": "KBaseSearchEngine.search_objects",
-  "params": [{
-    "access_filter": {
-      "with_private": 1,
-      "with_public": 1
-    },
-    "match_filter": {
-      "exclude_subobjects": 0,
-      "full_text_in_all": "coli",
-      "source_tags": [],
-      "source_tags_blacklist": 0
-    },
-    "object_types": ["GenomeFeature"],
-    "pagination": {
-      "count": 0,
-      "start": 0
-    },
-    "post_processing": {
-      "add_access_group_info": 0,
-      "ids_only": 1,
-      "include_highlight": 0,
-      "skip_data": 1,
-      "skip_info": 1,
-      "skip_keys": 1
-    }
-  }],
-  "version": "1.1"
+    "id": "17499051636214047",
+    "method": "KBaseSearchEngine.search_objects",
+    "params": [{
+        "access_filter": {
+          "with_private": 1,
+          "with_public": 1
+        },
+        "match_filter": {
+            "exclude_subobjects": 0,
+            "full_text_in_all": "coli",
+            "source_tags": [],
+            "source_tags_blacklist": 0
+        },
+        "object_types": ["GenomeFeature"],
+        "pagination": {
+            "count": 0,
+            "start": 0
+        },
+        "post_processing": {
+            "add_access_group_info": 0,
+            "ids_only": 1,
+            "include_highlight": 0,
+            "skip_data": 1,
+            "skip_info": 1,
+            "skip_keys": 1
+        }
+    }],
+    "jsonrpc": "2.0"
 }
 
 search_response4 = {
-  "jsonrpc": "2.0",
-  "id": "17499051636214047",
-  "result": [{
-    "pagination": {
-      "start": 0,
-      "count": 0
-    },
-    "sorting_rules": [{
-      "property": "timestamp",
-      "is_object_property": 0,
-      "ascending": 1
-    }],
-    "objects": [],
-    "total": 94222799,
-    "search_time": 355
-  }]
+    "jsonrpc": "2.0",
+    "id": "17499051636214047",
+    "result": [{
+        "pagination": {
+          "start": 0,
+          "count": 0
+        },
+        "sorting_rules": [{
+            "property": "timestamp",
+            "is_object_property": 0,
+            "ascending": 1
+        }],
+        "objects": [],
+        "total": 94222799,
+        "search_time": 355
+    }]
 }
 
 search_request5 = {
-  "id": "2328138435664152",
-  "method": "KBaseSearchEngine.search_objects",
-  "params": [{
-    "access_filter": {
-      "with_private": 1,
-      "with_public": 1
-    },
-    "match_filter": {
-      "exclude_subobjects": 0,
-      "full_text_in_all": "coli",
-      "source_tags": [],
-      "source_tags_blacklist": 0
-    },
-    "object_types": ["GenomeFeature"],
-    "pagination": {
-      "count": 20,
-      "start": 0
-    },
-    "post_processing": {
-      "add_access_group_info": 1,
-      "ids_only": 0,
-      "include_highlight": 1,
-      "skip_data": 0,
-      "skip_info": 0,
-      "skip_keys": 0
-    },
-    "sorting_rules": [{
-      "ascending": 1,
-      "is_object_property": 1,
-      "property": "genome_scientific_name"
-    }, {
-      "ascending": 1,
-      "is_object_property": 0,
-      "property": "guid"
-    }, {
-      "ascending": 1,
-      "is_object_property": 1,
-      "property": "feature_type"
-    }, {
-      "ascending": 1,
-      "is_object_property": 1,
-      "property": "id"
-    }]
-  }],
-  "version": "1.1"
+    "id": "2328138435664152",
+    "method": "KBaseSearchEngine.search_objects",
+    "params": [{
+        "access_filter": {
+          "with_private": 1,
+          "with_public": 1
+        },
+        "match_filter": {
+            "exclude_subobjects": 0,
+            "full_text_in_all": "coli",
+            "source_tags": [],
+            "source_tags_blacklist": 0
+        },
+        "object_types": ["GenomeFeature"],
+        "pagination": {
+            "count": 20,
+            "start": 0
+        },
+        "post_processing": {
+            "add_access_group_info": 1,
+            "ids_only": 0,
+            "include_highlight": 1,
+            "skip_data": 0,
+            "skip_info": 0,
+            "skip_keys": 0
+        },
+        "sorting_rules": [{
+            "ascending": 1,
+            "is_object_property": 1,
+            "property": "genome_scientific_name"
+        }, {
+            "ascending": 1,
+            "is_object_property": 0,
+            "property": "guid"
+        }, {
+            "ascending": 1,
+            "is_object_property": 1,
+            "property": "feature_type"
+        }, {
+            "ascending": 1,
+            "is_object_property": 1,
+            "property": "id"
+        }]
+    }],
+    "jsonrpc": "2.0"
 }
 
 search_response5 = {
@@ -352,6 +352,6 @@ search_request6 = {
         }]
     }],
     "method": "KBaseSearchEngine.search_objects",
-    "version": "1.1",
+    "jsonrpc": "2.0",
     "id": "4564119057768642"
 }

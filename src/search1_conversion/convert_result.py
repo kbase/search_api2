@@ -1,11 +1,8 @@
 import re
-from typing import Optional
-
 from src.utils.config import config
 from src.utils.formatting import iso8601_to_epoch
 from src.utils.user_profiles import get_user_profiles
-from src.utils.workspace import get_workspace_info, get_object_info
-import src.es_client as es_client
+from src.utils.workspace import get_workspace_info
 
 # Mappings from search2 document fields to search1 fields:
 _KEY_MAPPING = {
@@ -15,7 +12,6 @@ _KEY_MAPPING = {
     'version': 'version',
     'timestamp': 'timestamp',
     'obj_type_name': 'type',
-    # 'obj_type_version': 'type_ver',
     'creator': 'creator'
 }
 
@@ -86,7 +82,7 @@ def _get_post_processing(params: dict) -> dict:
 
 def _add_objects_and_info(ret: dict, search_results: dict, meta: dict, post_processing: dict):
     """
-    Populate the fields for `objects` and `objects_info`.
+    Populate the fields for `objects`.
 
     Args:
         ret: final method result object (mutated)
@@ -96,9 +92,6 @@ def _add_objects_and_info(ret: dict, search_results: dict, meta: dict, post_proc
     """
     objects = _get_object_data_from_search_results(search_results, post_processing)
     ret['objects'] = objects
-    infos = _get_object_infos(objects, meta)
-    if infos is not None:
-        ret['objects_info'] = infos
 
 
 def _add_access_group_info(ret: dict, search_results: dict, meta: dict, post_processing: dict):
@@ -135,58 +128,52 @@ def _fetch_narrative_info(results, meta):
     (id, name, owner, save_date, max_objid, user_perm, global_perm, lockstat, metadata)
     """
     hit_docs = [hit['doc'] for hit in results['hits']]
-    workspace_ids = []
+    workspace_ids = set()
     ws_infos = {}
     owners = set()
+
+    # Get workspace info for all unique workspaces in the search
+    # results
     for hit_doc in hit_docs:
         if 'access_group' not in hit_doc:
             continue
         workspace_id = hit_doc['access_group']
-        workspace_ids.append(workspace_id)
+        workspace_ids.add(workspace_id)
+
+    for workspace_id in workspace_ids:
         workspace_info = get_workspace_info(workspace_id, meta['auth'])
         if len(workspace_info) > 2:
             owners.add(workspace_info[2])
             ws_infos[str(workspace_id)] = workspace_info
+
     if len(workspace_ids) == 0:
         return ({}, {})
-    # Get profile for all owners
+
+    # Get profile for all owners in the search results
     user_profiles = get_user_profiles(list(owners), meta['auth'])
-    user_profile_map = {profile['user']['username']: profile for profile in user_profiles}
-    narrative_index_name = config['global']['ws_type_to_indexes']['KBaseNarrative.Narrative']
-    # TODO move this code into es_client.fetch_narratives
-    # ES query params
-    search_params: dict = {
-        'indexes': [narrative_index_name],
-        'size': len(workspace_ids)
-    }
-    # Filter by workspace ID
-    matches = [
-        {'match': {'access_group': wsid}}
-        for wsid in workspace_ids
-    ]
-    search_params['query'] = {
-        'bool': {'should': matches}
-    }
-    # Make the query for narratives on ES
-    search_results = es_client.search(search_params, meta)
+    user_profile_map = {}
+    for profile in user_profiles:
+        if profile is not None:
+            username = profile['user']['username']
+            user_profile_map[username] = profile
+
     # Get all the source document objects for each narrative result
-    narrative_hits = [hit['doc'] for hit in search_results['hits']]
     narr_infos = {}
-    for narr in narrative_hits:
-        _id = narr['access_group']
-        if str(_id) not in ws_infos:
-            continue
-        [workspace_id, workspace_name, owner, moddate,
-         max_objid, user_permission, global_permission,
-         lockstat, ws_metadata] = ws_infos[str(_id)]
-        if owner in user_profile_map:
-            # See type in legacy-schema.yaml/narrativeInfo
-            narr_infos[str(_id)] = [
-                narr.get('narrative_title', ''),
-                narr.get('obj_id'),
-                iso8601_to_epoch(moddate),  # Save date as an epoch
+    for ws_info in ws_infos.values():
+        [workspace_id, _, owner, moddate, _, _, _, _, ws_metadata] = ws_info
+        user_profile = user_profile_map.get(owner)
+        if user_profile is not None:
+            real_name = user_profile['user']['realname']
+        else:
+            # default to real name if the user profile is absent.
+            real_name = owner
+        if 'narrative' in ws_metadata:
+            narr_infos[str(workspace_id)] = [
+                ws_metadata.get('narrative_nice_name', ''),
+                int(ws_metadata.get('narrative')),
+                iso8601_to_epoch(moddate) * 1000,
                 owner,
-                user_profile_map[owner]['user']['realname'],
+                real_name
             ]
     return (ws_infos, narr_infos)
 
@@ -210,14 +197,12 @@ def _get_object_data_from_search_results(search_results, post_processing):
         obj_data = {key: source[key] for key in source if key not in _KEY_MAPPING}
         if post_processing.get('skip_data') != 1:
             obj['data'] = obj_data
-        if post_processing.get('skip_keys') != 1:
-            obj['key_props'] = obj_data
         obj['guid'] = _get_guid_from_doc(result)
         obj['kbase_id'] = obj['guid'].strip('WS:')
         idx_pieces = result['index'].split(config['prefix_delimiter'])
         idx_name = idx_pieces[0]
         idx_ver = int(idx_pieces[1] or 0) if len(idx_pieces) == 2 else 0
-        # Set to a string
+
         obj['index_name'] = idx_name
         obj['type_ver'] = idx_ver
         # For the UI, make the type field "GenomeFeature" instead of "Genome".
@@ -236,23 +221,6 @@ def _get_object_data_from_search_results(search_results, post_processing):
         obj['type'] = obj.get('type') or ''
         object_data.append(obj)
     return object_data
-
-
-def _get_object_infos(objects: list, meta: dict) -> Optional[dict]:
-    """
-    Args:
-        objects: results from _get_object_data_from_search_results
-        post_processing: The field pulled from the RPC params
-        meta: rpc meta object with 'auth' key
-    """
-    if len(objects) == 0:
-        return None
-    refs = {obj['kbase_id'] for obj in objects}
-    infos = get_object_info(refs, meta['auth'])
-    return {
-        f"{info[6]}/{info[0]}/{info[4]}": info
-        for info in infos
-    }
 
 
 def _get_guid_from_doc(doc):

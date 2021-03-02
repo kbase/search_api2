@@ -11,5 +11,21 @@
 coverage_report/
 .coverage
 /htmlcov/
+.pytest_cache/
 
 /coverage.xml
+
+# Testing artifacts
+# Captured container stderr and stdout
+container.err
+container.out
+
+# Development
+.vscode
+
+# Handy place to stache temporary work, whilst keeping 
+# git unencumbered
+/_temp
+
+# Python virtual environment
+venv

@@ -20,15 +20,22 @@ _ES_URL = 'http://localhost:9200'
 # Simple run once semaphore
 _COMPLETED = False
 
+#
+# For the test docs, note the workspace must match the doc's idea of permissions.
+# See data.py for the workspace definitions in which:
+# 0 - public workspace, refdata
+# 1 - public workspace, narrative
+# 100 - private workspace, narrative
+# 101 - private, inaccessible workspace, narrative
 test_docs = [
-    # Public doc
-    {'name': 'public-doc1', 'access_group': '1', 'is_public': True, 'timestamp': 10},
-    # Public doc
-    {'name': 'public-doc2', 'access_group': '99', 'is_public': True, 'timestamp': 12},
+    # Public doc, refdata
+    {'name': 'public-doc1', 'access_group': '0', 'is_public': True, 'timestamp': 10},
+    # Public doc, narrative
+    {'name': 'public-doc2', 'access_group': '1', 'is_public': True, 'timestamp': 12},
     # Private but accessible doc
-    {'name': 'private-doc1', 'is_public': False, 'access_group': '1', 'timestamp': 7},
+    {'name': 'private-doc1', 'is_public': False, 'access_group': '100', 'timestamp': 7},
     # Private but inaccessible doc
-    {'name': 'private2-doc1', 'is_public': False, 'access_group': '99', 'timestamp': 9},
+    {'name': 'private-doc2', 'is_public': False, 'access_group': '101', 'timestamp': 9},
 ]
 
 narrative_docs = [

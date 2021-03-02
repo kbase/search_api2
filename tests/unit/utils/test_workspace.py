@@ -2,17 +2,27 @@ import pytest
 import responses
 
 from src.utils.config import config
-from src.utils.workspace import ws_auth, get_workspace_info, get_object_info
+from src.utils.workspace import ws_auth, get_workspace_info
 from src.exceptions import ResponseError
 
-mock_ws_ids = {
-  "version": "1.1",
-  "result": [
-    {
-      "workspaces": [1, 2, 3],
-      "pub": []
-    }
-  ]
+mock_ws_ids_with_auth = {
+    "version": "1.1",
+    "result": [
+        {
+            "workspaces": [1, 2, 3],
+            "pub": [10, 11]
+        }
+    ]
+}
+
+mock_ws_ids_without_auth = {
+    "version": "1.1",
+    "result": [
+        {
+            "workspaces": [],
+            "pub": [10, 11]
+        }
+    ]
 }
 
 mock_ws_info = {
@@ -80,43 +90,64 @@ mock_obj_info = {
 @responses.activate
 def test_ws_auth_valid():
     # Mock the workspace call
-    responses.add(responses.POST, config['workspace_url'],
-                  json=mock_ws_ids, status=200)
+    responses.add(responses.POST,
+                  config['workspace_url'],
+                  headers={'Authorization': 'valid_token'},
+                  json=mock_ws_ids_with_auth,
+                  status=200)
     result = ws_auth('valid_token')
-    assert result == [1, 2, 3]
+    assert result == [1, 2, 3, 10, 11]
 
 
+@responses.activate
 def test_ws_auth_blank():
+    # Mock the workspace call
+    responses.add(responses.POST,
+                  config['workspace_url'],
+                  json=mock_ws_ids_without_auth,
+                  status=200)
     result = ws_auth(None)
-    assert result == []
+    assert result == [10, 11]
 
 
 @responses.activate
 def test_ws_auth_invalid():
     # Mock the workspace call
-    responses.add(responses.POST, config['workspace_url'], status=401)
+    responses.add(responses.POST,
+                  config['workspace_url'],
+                  headers={'Authorization': 'invalid_token'},
+                  status=401)
     with pytest.raises(ResponseError) as ctx:
-        ws_auth('x')
+        ws_auth('invalid_token')
     err = ctx.value
     assert err.jsonrpc_code == -32001
 
 
 @responses.activate
 def test_get_workspace_info_valid():
-    responses.add(responses.POST, config['workspace_url'],
-                  json=mock_ws_info, status=200)
+    responses.add(responses.POST,
+                  config['workspace_url'],
+                  json=mock_ws_info,
+                  status=200)
     result = get_workspace_info(1, 'token')
     assert result == mock_ws_info['result'][0]
 
 
-def test_get_workspace_info_blank():
+@responses.activate
+def test_get_workspace_info_public():
+    responses.add(responses.POST,
+                  config['workspace_url'],
+                  json=mock_ws_info,
+                  status=200)
     result = get_workspace_info(1, None)
-    assert result == []
+    assert result == mock_ws_info['result'][0]
 
 
 @responses.activate
 def test_get_workspace_info_invalid():
-    responses.add(responses.POST, config['workspace_url'], status=500)
+    responses.add(responses.POST,
+                  config['workspace_url'],
+                  status=500)
     with pytest.raises(ResponseError) as ctx:
         get_workspace_info(1, 'token')
     err = ctx.value
@@ -126,24 +157,15 @@ def test_get_workspace_info_invalid():
 @responses.activate
 def test_get_workspace_info_invalid2():
     resp = {
-        "version": "1.1", "result": []
+        "version": "1.1",
+        "result": []
     }
-    responses.add(responses.POST, config['workspace_url'],
-                  json=resp, status=200)
+    responses.add(responses.POST,
+                  config['workspace_url'],
+                  json=resp,
+                  status=200)
     with pytest.raises(ResponseError) as ctx:
         get_workspace_info(1, 'token')
     err = ctx.value
     assert err.jsonrpc_code == -32001
     assert len(err.message) > 0
-
-
-@responses.activate
-def test_get_object_info_valid():
-    responses.add(
-        responses.POST,
-        config['workspace_url'],
-        json=mock_obj_info,
-        status=200
-    )
-    infos = get_object_info([1, 2], 'token')
-    assert infos == mock_obj_info['result'][0]['infos']

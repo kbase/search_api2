@@ -21,40 +21,34 @@ def search(params, meta):
     ES 7 search query documentation:
     https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html
     """
-    user_query = params.get('query')
-    authorized_ws_ids = []
-    if not params.get('only_public') and meta['auth']:
-        # Fetch the workspace IDs that the user can read
-        # Used for simple access control
-        authorized_ws_ids = ws_auth(meta['auth'])
-    # Get the index name(s) to include and exclude (used in the URL below)
-    index_name_str = _construct_index_name(params)
-    # We insert the user's query as a "must" entry
+
+    # The query object, which we build up in steps below
     query = {'bool': {}}  # type: dict
+
+    # if not params.get('only_public') and meta['auth']:
+
+    # Fetch the workspace IDs that the user can read
+    # Used for access control and also to ensure that
+    # workspaces which are inaccessible in the workspace,
+    # but that fact is not yet updated in search, are
+    # still filtered out.
+    authorized_ws_ids = ws_auth(meta['auth'], params.get('only_public', False), params.get('only_private', False))
+
+    query['bool']['filter'] = [
+        {'terms': {'access_group': authorized_ws_ids}}
+    ]
+
+    # We insert the user's query as a "must" entry
+    user_query = params.get('query')
     if user_query:
         query['bool']['must'] = user_query
-    # Our access control query is then inserted under a "filter" depending on options:
-    if params.get('only_public'):
-        # Public workspaces only; most efficient
-        query['bool']['filter'] = {'term': {'is_public': True}}
-    elif params.get('only_private'):
-        # Private workspaces only
-        query['bool']['filter'] = [
-            {'term': {'is_public': False}},
-            {'terms': {'access_group': authorized_ws_ids}}
-        ]
-    else:
-        # Find all documents, whether private or public
-        query['bool']['filter'] = {
-            'bool': {
-                'should': [
-                    {'term': {'is_public': True}},
-                    {'terms': {'access_group': authorized_ws_ids}}
-                ]
-            }
-        }
+
+    # Get the index name(s) to include and exclude (used in the URL below)
+    index_name_str = _construct_index_name(params)
+
     # Make a query request to elasticsearch
     url = config['elasticsearch_url'] + '/' + index_name_str + '/_search'
+
     options = {
         'query': query,
         'size': 0 if params.get('count') else params.get('size', 10),
@@ -63,31 +57,41 @@ def search(params, meta):
         # Disallow expensive queries, such as joins, to prevent any denial of service
         # 'search': {'allow_expensive_queries': False},
     }
+
     if not params.get('count') and params.get('size', 10) > 0 and not params.get('track_total_hits'):
         options['terminate_after'] = 10000
+
     # User-supplied aggregations
     if params.get('aggs'):
         options['aggs'] = params['aggs']
+
     # User-supplied sorting rules
     if params.get('sort'):
         options['sort'] = params['sort']
+
     # User-supplied source filters
     if params.get('source'):
         options['_source'] = params.get('source')
+
     # Search results highlighting
     if params.get('highlight'):
         options['highlight'] = params['highlight']
+
     if params.get('track_total_hits'):
         options['track_total_hits'] = params.get('track_total_hits')
+
     headers = {'Content-Type': 'application/json'}
+
     # Allows index exclusion; otherwise there is an error
     params = {'allow_no_indices': 'true'}
+
     resp = requests.post(url, data=json.dumps(options), params=params, headers=headers)
+
     if not resp.ok:
         _handle_es_err(resp)
+
     resp_json = resp.json()
-    result = _handle_response(resp_json)
-    return result
+    return _handle_response(resp_json)
 
 
 def _handle_es_err(resp):

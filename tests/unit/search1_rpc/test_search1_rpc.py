@@ -6,17 +6,12 @@ test search logic here.
 """
 import json
 import responses
-import subprocess
-
-from src.search1_rpc import service
 from src.utils.config import config
-from src.utils.wait_for_service import wait_for_service
-from tests.helpers import init_elasticsearch
+from src.search1_rpc import service as rpc
+# For mocking workspace calls
+from unittest.mock import patch
 
-ES_URL = 'http://localhost:9200'
-subprocess.run("docker-compose up -d", shell=True)
-wait_for_service(ES_URL, 'Elasticsearch')
-init_elasticsearch()
+
 mock_obj_info = {
     "version": "1.1",
     "result": [
@@ -43,12 +38,13 @@ mock_obj_info = {
 
 
 @responses.activate
-def test_get_objects_valid():
+def test_get_objects_valid(services):
     # Mock the obj info request
     responses.add(responses.POST, config['workspace_url'],
                   json=mock_obj_info, status=200)
     # Allow elasticsearch calls
     responses.add_passthru("http://localhost:9200/")
+    # TODO: should be version 1.1
     params = {
         "method": "KBaseSearchEngine.get_objects",
         "jsonrpc": "2.0",
@@ -60,35 +56,45 @@ def test_get_objects_valid():
             }
         ],
     }
-    result = service.call(json.dumps(params), {'auth': None})
+    result = rpc.call(json.dumps(params), {'auth': None})
     res = json.loads(result)
+    # TODO: should be version 1.1
     assert res['jsonrpc'] == '2.0'
     assert res['id'] == 0
+    assert 'result' in res
     assert len(res['result']) == 1
 
 
-def test_search_objects_valid():
-    params = {
-        "method": "KBaseSearchEngine.search_objects",
-        "jsonrpc": "2.0",
-        "id": 0,
-        "params": [{
-            'match_filter': {},
-            'pagination': {'count': 0, 'start': 0},
-        }]
-    }
-    result = service.call(json.dumps(params), {'auth': None})
-    res = json.loads(result)
-    assert len(res['result']) == 1
+def test_search_objects_valid(services):
+    with patch('src.es_client.query.ws_auth') as mocked:
+        # TODO: should be version 1.1
+        mocked.return_value = [0, 1]  # Public workspaces
+        params = {
+            "method": "KBaseSearchEngine.search_objects",
+            "jsonrpc": "2.0",
+            "id": 0,
+            "params": [{
+                'match_filter': {},
+                'pagination': {'count': 0, 'start': 0},
+            }]
+        }
+        result = rpc.call(json.dumps(params), {'auth': None})
+        res = json.loads(result)
+        assert 'result' in res
+        assert len(res['result']) == 1
 
 
-def test_search_types_valid():
-    params = {
-        "method": "KBaseSearchEngine.search_types",
-        "jsonrpc": "2.0",
-        "id": "0",
-        "params": [{'object_types': ['x'], 'match_filter': {}}]
-    }
-    result = service.call(json.dumps(params), {'auth': None})
-    res = json.loads(result)
-    assert len(res['result']) == 1
+def test_search_types_valid(services):
+    with patch('src.es_client.query.ws_auth') as mocked:
+        # TODO: should be version 1.1
+        mocked.return_value = [0, 1]  # Public workspaces
+        params = {
+            "method": "KBaseSearchEngine.search_types",
+            "jsonrpc": "2.0",
+            "id": "0",
+            "params": [{'object_types': ['x'], 'match_filter': {}}]
+        }
+        result = rpc.call(json.dumps(params), {'auth': None})
+        res = json.loads(result)
+        assert 'result' in res
+        assert len(res['result']) == 1

@@ -1,10 +1,9 @@
 import json
 import os
 import requests
-
-from tests.helpers.integration_setup import setup
-from src.utils.wait_for_service import wait_for_service
-from tests.integration.data import (
+import pytest
+from src.utils.logger import logger
+from tests.integration.legacy_data import (
     search_request1,
     search_response1,
     search_request2,
@@ -17,17 +16,21 @@ from tests.integration.data import (
     search_response5,
     search_request6,
 )
+from tests.helpers.common import (
+    assert_jsonrpc20_result,
+    equal
+)
 
 
-APP_URL = os.environ.get("APP_URL", 'http://localhost:5000')
+def load_data_file(name):
+    file_path = os.path.join(os.path.dirname(__file__), 'data/legacy', name)
+    logger.info(f'loading data file from "{file_path}"')
+    with open(file_path) as f:
+        return json.load(f)
 
-setup()
-# This implicitly tests the "/" path
-wait_for_service(APP_URL, "search2")
 
-
-def test_search_example1():
-    url = APP_URL + '/legacy'
+def test_search_example1(service):
+    url = service['app_url'] + '/legacy'
     resp = requests.post(
         url=url,
         data=json.dumps(search_request1),
@@ -44,8 +47,8 @@ def test_search_example1():
     assert res['objects'] == expected_res['objects']
 
 
-def test_search_example2():
-    url = APP_URL + '/legacy'
+def test_search_example2(service):
+    url = service['app_url'] + '/legacy'
     resp = requests.post(
         url=url,
         data=json.dumps(search_request2),
@@ -60,8 +63,8 @@ def test_search_example2():
     assert res['type_to_count']  # TODO match more closely when things are more indexed
 
 
-def test_search_example3():
-    url = APP_URL + '/legacy'
+def test_search_example3(service):
+    url = service['app_url'] + '/legacy'
     resp = requests.post(
         url=url,
         data=json.dumps(search_request3),
@@ -78,13 +81,11 @@ def test_search_example3():
     assert res['total'] > 0
     assert res['search_time'] > 0
     assert len(res['objects']) > 0
-    # TODO assert on access_group_narrative_info
-    # assert ['access_group_narrative_info']
 
 
-def test_search_example4():
+def test_search_example4(service):
     """Genome features count with no data"""
-    url = APP_URL + '/legacy'
+    url = service['app_url'] + '/legacy'
     resp = requests.post(
         url=url,
         data=json.dumps(search_request4),
@@ -103,9 +104,9 @@ def test_search_example4():
     assert res['search_time'] > 0
 
 
-def test_search_example5():
+def test_search_example5(service):
     """Genome features search with results"""
-    url = APP_URL + '/legacy'
+    url = service['app_url'] + '/legacy'
     resp = requests.post(
         url=url,
         data=json.dumps(search_request5),
@@ -120,25 +121,85 @@ def test_search_example5():
     assert res['pagination'] == expected_res['pagination']
     assert res['sorting_rules'] == expected_res['sorting_rules']
     assert len(res['objects']) > 0
-    assert len(res['objects_info']) > 0
     assert res['total'] > 0
     assert res['search_time'] > 0
 
 
-def test_search_example6():
+def test_search_example6(service):
     """Search example with many options and narrative info."""
-    url = APP_URL + '/legacy'
+    url = service['app_url'] + '/legacy'
+
+    if 'WS_TOKEN' not in os.environ:
+        pytest.skip('Token required for this test')
+
     resp = requests.post(
         url=url,
         headers={'Authorization': os.environ['WS_TOKEN']},
         data=json.dumps(search_request6),
     )
     data = resp.json()
+    #  TODO: should be version 1.1 (aka jsonrpc 1.1)
     assert data['jsonrpc'] == '2.0'
     assert data['id'] == search_request6['id']
     assert len(data['result']) == 1
     res = data['result'][0]
     assert len(res['objects']) > 0
-    assert len(res['objects_info']) > 0
     for obj in res['objects']:
         assert len(obj['highlight']) > 0
+
+#
+
+# This is a normal data-search usage, which returns the
+# workspace info and narrative info, for public data.
+
+
+# Simulates search from data-search with a search term, only public data
+
+
+def test_search_case1(service):
+    """Search example with many options and narrative info, with token."""
+    url = service['app_url'] + '/legacy'
+
+    if 'WS_TOKEN' not in os.environ:
+        pytest.skip('Token required for this test')
+
+    request_data = load_data_file('case1-request.json')
+    response_data = load_data_file('case1-response.json')
+
+    resp = requests.post(
+        url=url,
+        headers={'Authorization': os.environ['WS_TOKEN']},
+        data=json.dumps(request_data),
+    )
+    data = resp.json()
+    #  TODO: should be version 1.1 (aka jsonrpc 1.1)
+    assert_jsonrpc20_result(data, response_data)
+    [is_equal, path] = equal(data, response_data)
+    assert is_equal, path
+
+
+def test_search_case1_no_auth(service):
+    """Search example with many options and narrative info, without token."""
+    url = service['app_url'] + '/legacy'
+
+    request_data = load_data_file('case1-request.json')
+    response_data = load_data_file('case1-response.json')
+
+    resp = requests.post(
+        url=url,
+        data=json.dumps(request_data),
+    )
+    data = resp.json()
+    #  TODO: should be version 1.1 (aka jsonrpc 1.1)
+    assert_jsonrpc20_result(data, response_data)
+    [is_equal, path] = equal(data, response_data)
+    assert is_equal, path
+
+# Simulates search from data-search with a search term, only private data
+
+# TODO:
+
+
+# Simulates search from data-search with a search term, only private and public data
+
+# TODO:
