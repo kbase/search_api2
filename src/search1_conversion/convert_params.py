@@ -211,7 +211,8 @@ def _get_search_params(params):
         'from': pagination.get('start', 0),
         'sort': sort,
         'public_only': not with_private and with_public,
-        'private_only': not with_public and with_private
+        'private_only': not with_public and with_private,
+        'track_total_hits': True
     }
     if 'GenomeFeature' in object_types:
         search_params['indexes'] = [_GENOME_FEATURES_IDX_NAME]
