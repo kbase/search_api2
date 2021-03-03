@@ -173,3 +173,27 @@ def test_es_response_error_no_json(services):
         responses.add(responses.POST, url, body="!", status=500)
         with pytest.raises(ElasticsearchError):
             search({}, {'auth': None})
+
+
+@responses.activate
+def test_es_response_error_default(services):
+    """Test the case where ES gives a non-2xx response with an unhandled err_type."""
+    with patch('src.es_client.query.ws_auth') as mocked:
+        mocked.return_value = [100]  # Private workspaces this fictional user has access to
+        prefix = config['index_prefix']
+        delim = config['prefix_delimiter']
+        index_name_str = prefix + delim + "default_search"
+        url = config['elasticsearch_url'] + '/' + index_name_str + '/_search'
+        error_response = {
+            'error': {
+                'reason': 'My error reason',
+                'root_cause': [
+                    {
+                        'type': 'unhandled'
+                    }
+                ]
+            }
+        }
+        responses.add(responses.POST, url, body=json.dumps(error_response), status=500)
+        with pytest.raises(ElasticsearchError):
+            search({}, {'auth': None})

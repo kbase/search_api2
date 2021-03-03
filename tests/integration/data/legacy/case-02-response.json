@@ -1,0 +1,1307 @@
+{
+	"id": "0008033925138730691",
+	"jsonrpc": "2.0",
+	"result": [{
+		"pagination": {
+			"start": 0,
+			"count": 15
+		},
+		"sorting_rules": [{
+			"property": "timestamp",
+			"ascending": 0,
+			"is_object_property": 0
+		}],
+		"total": 18011,
+		"search_time": 2445,
+		"objects": [{
+			"object_name": "Narrative.1594582422207",
+			"access_group": 52407,
+			"obj_id": 1,
+			"version": 65,
+			"timestamp": 1614657640817,
+			"type": "Narrative",
+			"creator": "zimingy",
+			"data": {
+				"narrative_title": "KBase Test Data",
+				"is_narratorial": false,
+				"data_objects": [{
+					"name": "small.interlaced_reads",
+					"obj_type": "KBaseFile.PairedEndLibrary-2.2"
+				}, {
+					"name": "metagenome.gff_metagenome.assembly.fa_assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "KBase_derived_16_paired_trim_MEGAHIT.contigs.fa_genome.gff_genome.assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "KBase_derived_16_paired_trim_MEGAHIT.contigs.fa_genome.gff_genome",
+					"obj_type": "KBaseGenomes.Genome-17.0"
+				}, {
+					"name": "archaea_test.fa_assembly.fa_assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "3300011599_1.fa_assembly.fa_assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "Listeria_monocytogenes_000196035.assembly.fa_assembly.fa_assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "KBase_derived_GCF_002287175.1.gbff_genome_assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "KBase_derived_GCF_002287175.1.gbff_genome",
+					"obj_type": "KBaseGenomes.Genome-17.0"
+				}, {
+					"name": "metagenome_test_annotated.assembly.fa_assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "Pseudomonas_stutzeri_RCH2.assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "test_metagenome",
+					"obj_type": "KBaseMetagenomes.AnnotatedMetagenomeAssembly-1.0"
+				}, {
+					"name": "metagenome_badabing.assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "metagenome_badabing",
+					"obj_type": "KBaseGenomes.Genome-17.0"
+				}, {
+					"name": "metagenome_badabing.assembly.fa_metagenome.assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "metagenome_badabing.assembly.fa_metagenome",
+					"obj_type": "KBaseMetagenomes.AnnotatedMetagenomeAssembly-1.0"
+				}],
+				"owner": "scanon",
+				"modified_at": 1614658102000,
+				"cells": [{
+					"desc": "KBase Test Data\nThis narrative is just a place holder for test data.  \nIf you add data to this narrative, you need to also add the same data with the exact same name in each of the other deploys.\n",
+					"cell_type": "markdown"
+				}, {
+					"desc": "Name: metagenome_badabing (MetagenomeAPI)\nThis is an assembly data set. The source can be found here...\nBerkeley: /kbase/testdata/metagenomebadabing.GFF_FASTA.zip\n",
+					"cell_type": "markdown"
+				}, {
+					"desc": "Import GFF3/FASTA file as Genome from Staging Area",
+					"cell_type": "kbase_app"
+				}, {
+					"desc": "Import GFF3/FASTA file as Annotated Metagenome Assembly from Staging Area",
+					"cell_type": "kbase_app"
+				}, {
+					"desc": "kbaseGenomeView",
+					"cell_type": "widget"
+				}, {
+					"desc": "Name: PseudomonasstutzeriRCH2.assembly (MetagemoneUtils)\nThis is an assembly data set. The source can be found here...\nBerkeley: /kbase/testdata/Pseudomonasstutzeri_RCH2.assembly.FASTA.zip\n",
+					"cell_type": "markdown"
+				}, {
+					"desc": "Import FASTA File as Assembly from Staging Area",
+					"cell_type": "kbase_app"
+				}, {
+					"desc": "Name: metagenometestannotated.assembly.fa_assembly (MetaGenomeAPI)\nThis is an assembly data set. The source can be found here...\nBerkeley: /kbase/testdata/metagenometest_annotated.assembly.FASTA.zip\n",
+					"cell_type": "markdown"
+				}, {
+					"desc": "Name: KBasederivedGCF002287175.1.gbffgenome (GenomeFileUtil)\nThis is a genome data set. The source can be found here...\nBerkeley: /kbase/testdata/GCF002287175.1.GENBANK.zip\n",
+					"cell_type": "markdown"
+				}, {
+					"desc": "Import GenBank File as Genome from Staging Area",
+					"cell_type": "kbase_app"
+				}, {
+					"desc": "Upload of a small interlaced read library\nlocation: ftp://ftp.kbase.us/test_data/small.inter.fq\n",
+					"cell_type": "markdown"
+				}, {
+					"desc": "Import FASTQ/SRA File as Reads from Staging Area",
+					"cell_type": "kbase_app"
+				}, {
+					"desc": "Name: archaeatest.faassembly.fa_assembly(AessemblyUtil)\nThis is a assembly data set. The source can be found here...\nBerkeley: /kbase/testdata/archaeatest.fa_assembly.FASTA.zip\n",
+					"cell_type": "markdown"
+				}, {
+					"desc": "Name: Listeriamonocytogenes000196035.assembly.faassembly.faassembly(AessemblyUtil)\nThis is a assembly data set. The source can be found here:\nBerkeley: /kbase/testdata/Listeriamonocytogenes000196035.assembly.faassembly.FASTA.zip\n",
+					"cell_type": "markdown"
+				}, {
+					"desc": "Name: KBasederived16pairedtrimMEGAHIT.contigs.fagenome.gff_genome(AessemblyUtil)\nThis is a genome data set. The source can be found here...\nBerkeley: /kbase/testdata/16pairedtrimMEGAHIT.contigs.fagenome.GFF__FASTA.zip\n",
+					"cell_type": "markdown"
+				}, {
+					"desc": "KBase_derived_16_paired_trim_MEGAHIT.contigs.fa_genome.gff_genome",
+					"cell_type": "data"
+				}, {
+					"desc": "Name: 33000115991.faassembly.fa_assembly(AessemblyUtil)\nThis is a assembly data set. The source can be found here:\nBerkeley: /kbase/testdata/33000115991.fa_assembly.FASTA.zip\n",
+					"cell_type": "markdown"
+				}, {
+					"desc": "Name: metagenome.gffmetagenome.assembly.faassembly(AessemblyUtil)\nThis is a assembly data set. The source can be found here:\nBerkeley: /kbase/testdata/metagenome.gffmetagenome.assembly.fa_assembly\n",
+					"cell_type": "markdown"
+				}],
+				"total_cells": 26,
+				"static_narrative_saved": null,
+				"static_narrative_ref": null,
+				"shared_users": ["zimingy", "scanon"],
+				"creation_date": "2020-07-12T19:33:42+0000",
+				"is_public": true,
+				"copied": null,
+				"tags": ["narrative"],
+				"obj_type_version": "4.0",
+				"obj_type_module": "KBaseNarrative",
+				"index_runner_ver": "1.9.17"
+			},
+			"guid": "WS:52407/1/1",
+			"kbase_id": "52407/1/1",
+			"index_name": "narrative_2",
+			"type_ver": 0,
+			"highlight": {
+				"cells.desc": ["Import GFF3/FASTA file as <em>Genome</em> from Staging Area", "Name: KBasederivedGCF002287175.1.gbffgenome (GenomeFileUtil)\nThis is a <em>genome</em> data set.", "Import GenBank File as <em>Genome</em> from Staging Area", "Name: KBasederived16pairedtrimMEGAHIT.contigs.fagenome.gff_genome(AessemblyUtil)\nThis is a <em>genome</em> data"],
+				"type": ["<em>Narrative</em>"]
+			}
+		}, {
+			"object_name": "metagenome_badabing",
+			"access_group": 52407,
+			"obj_id": 41,
+			"version": 1,
+			"timestamp": 1614655779259,
+			"type": "Genome",
+			"creator": "zimingy",
+			"data": {
+				"genome_id": "metagenome_badabing",
+				"scientific_name": "unknown_taxon",
+				"publication_titles": [],
+				"publication_authors": [],
+				"size": 70257324,
+				"num_contigs": 87272,
+				"genome_type": "draft isolate",
+				"gc_content": 0.63534,
+				"taxonomy": "Unconfirmed Organism",
+				"mean_contig_length": 805.0385461545513,
+				"external_origination_date": null,
+				"original_source_file_name": null,
+				"cds_count": 131854,
+				"feature_count": 131854,
+				"mrna_count": 0,
+				"non_coding_feature_count": 1733,
+				"assembly_ref": "52407:40:1",
+				"source_id": "unknown",
+				"feature_counts": {
+					"CDS": 131854,
+					"gene": 131854,
+					"non_coding_features": 1733,
+					"protein_encoding_gene": 131854,
+					"rRNA": 287,
+					"repeat_region": 422,
+					"tRNA": 1024
+				},
+				"source": "Other",
+				"warnings": ["Genome molecule_type SingleLetterAlphabet is not expected for domain Unknown.", "SUSPECT: This genome has 131854 genes that needed to be spoofed for existing parentless CDS.", "Unable to determine organism taxonomy"],
+				"shared_users": ["zimingy", "scanon"],
+				"creation_date": "2021-03-02T03:30:28+0000",
+				"is_public": true,
+				"copied": null,
+				"tags": ["narrative"],
+				"obj_type_version": "17.0",
+				"obj_type_module": "KBaseGenomes",
+				"index_runner_ver": "1.9.17"
+			},
+			"guid": "WS:52407/41/1",
+			"kbase_id": "52407/41/1",
+			"index_name": "genome_2",
+			"type_ver": 0,
+			"highlight": {
+				"warnings": ["<em>Genome</em> molecule_type SingleLetterAlphabet is not expected for domain Unknown.", "SUSPECT: This <em>genome</em> has 131854 genes that needed to be spoofed for existing parentless CDS."],
+				"type": ["<em>Genome</em>"]
+			}
+		}, {
+			"object_name": "Narrative.1484955375553",
+			"access_group": 16325,
+			"obj_id": 1,
+			"version": 30,
+			"timestamp": 1614644544954,
+			"type": "Narrative",
+			"creator": "gaprice",
+			"data": {
+				"narrative_title": "QUASTtest",
+				"is_narratorial": false,
+				"data_objects": [{
+					"name": "foobarbaz",
+					"obj_type": "KBaseGenomes.ContigSet-3.0"
+				}, {
+					"name": "MEGAHIT.contigs",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-4.1"
+				}],
+				"owner": "gaprice",
+				"modified_at": 1614644658000,
+				"cells": [{
+					"desc": "QUAST",
+					"cell_type": "kbase_app"
+				}, {
+					"desc": "Export Data Object To Staging Area",
+					"cell_type": "kbase_app"
+				}, {
+					"desc": "Assemble Reads with MEGAHIT",
+					"cell_type": "kbase_app"
+				}, {
+					"desc": "QUAST - Quality Assessment Tool for Genome Assemblies",
+					"cell_type": "kbase_app"
+				}, {
+					"desc": "Assess Quality of Assemblies with QUAST - v4.4",
+					"cell_type": "kbase_app"
+				}],
+				"total_cells": 9,
+				"static_narrative_saved": null,
+				"static_narrative_ref": null,
+				"shared_users": ["kbasetest", "swwang", "eapearson", "jrbolton", "janaka", "janakakbase", "thomasoniii", "gaprice"],
+				"creation_date": "2017-01-20T23:36:22+0000",
+				"is_public": false,
+				"copied": null,
+				"tags": ["narrative"],
+				"obj_type_version": "4.0",
+				"obj_type_module": "KBaseNarrative",
+				"index_runner_ver": "1.9.17"
+			},
+			"guid": "WS:16325/1/1",
+			"kbase_id": "16325/1/1",
+			"index_name": "narrative_2",
+			"type_ver": 0,
+			"highlight": {
+				"cells.desc": ["QUAST - Quality Assessment Tool for <em>Genome</em> Assemblies"],
+				"type": ["<em>Narrative</em>"]
+			}
+		}, {
+			"object_name": "Narrative.1587165662023",
+			"access_group": 51911,
+			"obj_id": 16,
+			"version": 50,
+			"timestamp": 1613962939430,
+			"type": "Narrative",
+			"creator": "dylan",
+			"data": {
+				"narrative_title": "CI - BLAST tests on AMA",
+				"is_narratorial": false,
+				"data_objects": [{
+					"name": "HL1M-N_Prodigal_Rfam-FILTER-2000-NOFUNC.AMA.assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "HL1M-N_Prodigal_Rfam-FILTER-2000-NOFUNC.AMA",
+					"obj_type": "KBaseMetagenomes.AnnotatedMetagenomeAssembly-1.0"
+				}, {
+					"name": "ama_genes.gff_metagenome.assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "ama_genes.gff_metagenome",
+					"obj_type": "KBaseMetagenomes.AnnotatedMetagenomeAssembly-1.0"
+				}, {
+					"name": "ama_original_gene_calls-Prokka.AMA.assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "ama_fresh_gene_calls-Prokka.AMA.assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "ama_fresh_gene_calls-Prokka.AMA",
+					"obj_type": "KBaseMetagenomes.AnnotatedMetagenomeAssembly-1.0"
+				}, {
+					"name": "ama_original_gene_calls-Prokka.AMA",
+					"obj_type": "KBaseMetagenomes.AnnotatedMetagenomeAssembly-1.0"
+				}, {
+					"name": "foo-import_test2.AMA.assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "foo-import_test2.AMA",
+					"obj_type": "KBaseMetagenomes.AnnotatedMetagenomeAssembly-1.0"
+				}, {
+					"name": "query-foo-BLASTn.FS.Seq",
+					"obj_type": "KBaseSequences.SequenceSet-1.1"
+				}, {
+					"name": "foo-BLASTn.FS",
+					"obj_type": "KBaseCollections.FeatureSet-4.0"
+				}, {
+					"name": "query-foo-BLASTp.FS.Seq",
+					"obj_type": "KBaseSequences.SequenceSet-1.1"
+				}, {
+					"name": "foo-BLASTp.FS",
+					"obj_type": "KBaseCollections.FeatureSet-4.0"
+				}, {
+					"name": "Compost_HQ_Bins.AMA",
+					"obj_type": "KBaseMetagenomes.AnnotatedMetagenomeAssembly-1.0"
+				}, {
+					"name": "Bin.012-Prokka.Genome",
+					"obj_type": "KBaseGenomes.Genome-17.0"
+				}, {
+					"name": "Bin.035-Prokka.Genome",
+					"obj_type": "KBaseGenomes.Genome-17.0"
+				}, {
+					"name": "Bin.001-Prokka.Genome",
+					"obj_type": "KBaseGenomes.Genome-17.0"
+				}, {
+					"name": "Bin.003-Prokka.Genome",
+					"obj_type": "KBaseGenomes.Genome-17.0"
+				}, {
+					"name": "Bin.004-Prokka.Genome",
+					"obj_type": "KBaseGenomes.Genome-17.0"
+				}, {
+					"name": "Bin.062-Prokka.Genome",
+					"obj_type": "KBaseGenomes.Genome-17.0"
+				}, {
+					"name": "Bin.032-Prokka.Genome",
+					"obj_type": "KBaseGenomes.Genome-17.0"
+				}, {
+					"name": "Compost_MAGs.GenomeSet",
+					"obj_type": "KBaseSearch.GenomeSet-3.0"
+				}, {
+					"name": "query-Compost_MAGs-AMA-rpoB.FeatureSet.Seq",
+					"obj_type": "KBaseSequences.SequenceSet-1.1"
+				}, {
+					"name": "query-Compost_MAGs-genomes-rpoB.FeatureSet.Seq",
+					"obj_type": "KBaseSequences.SequenceSet-1.1"
+				}, {
+					"name": "Compost_MAGs-genomes-rpoB.FeatureSet",
+					"obj_type": "KBaseCollections.FeatureSet-4.0"
+				}, {
+					"name": "Compost_MAGs-AMA-rpoB.FeatureSet",
+					"obj_type": "KBaseCollections.FeatureSet-4.0"
+				}, {
+					"name": "Genome_plus_AMA-rpoB.FeatureSet",
+					"obj_type": "KBaseCollections.FeatureSet-4.0"
+				}, {
+					"name": "Compost_MAGs.GenomeSet-BLASTp_Search.FeatureSet",
+					"obj_type": "KBaseCollections.FeatureSet-4.0"
+				}, {
+					"name": "Compost_HQ_Bins.AMA-BLASTp_Search.FeatureSet",
+					"obj_type": "KBaseCollections.FeatureSet-4.0"
+				}, {
+					"name": "BLASTp_Search.FeatureSet",
+					"obj_type": "KBaseCollections.FeatureSet-4.0"
+				}, {
+					"name": "Compost_MAGs.GenomeSet-run2-BLASTp_Search.FeatureSet",
+					"obj_type": "KBaseCollections.FeatureSet-4.0"
+				}, {
+					"name": "Compost_MAGs.GenomeSet-run3-BLASTp_Search.FeatureSet",
+					"obj_type": "KBaseCollections.FeatureSet-4.0"
+				}, {
+					"name": "Compost_MAGs.GenomeSet-run4-BLASTp_Search.FeatureSet",
+					"obj_type": "KBaseCollections.FeatureSet-4.0"
+				}, {
+					"name": "Compost_MAGs.GenomeSet-run5-BLASTp_Search.FeatureSet",
+					"obj_type": "KBaseCollections.FeatureSet-4.0"
+				}, {
+					"name": "Compost_HQ_Bins.AMA-run6-BLASTp_Search.FeatureSet",
+					"obj_type": "KBaseCollections.FeatureSet-4.0"
+				}, {
+					"name": "Compost_MAGs.GenomeSet-run6-BLASTp_Search.FeatureSet",
+					"obj_type": "KBaseCollections.FeatureSet-4.0"
+				}, {
+					"name": "run6-BLASTp_Search.FeatureSet",
+					"obj_type": "KBaseCollections.FeatureSet-4.0"
+				}, {
+					"name": "Compost_HQ_Bins.AMA-run7-BLASTp_Search.FeatureSet",
+					"obj_type": "KBaseCollections.FeatureSet-4.0"
+				}, {
+					"name": "Compost_MAGs.GenomeSet-run7-BLASTp_Search.FeatureSet",
+					"obj_type": "KBaseCollections.FeatureSet-4.0"
+				}, {
+					"name": "run7-BLASTp_Search.FeatureSet",
+					"obj_type": "KBaseCollections.FeatureSet-4.0"
+				}],
+				"owner": "dylan",
+				"modified_at": 1613962939000,
+				"cells": [{
+					"desc": "Batch Create Genome Set - v1.2.0",
+					"cell_type": "kbase_app"
+				}, {
+					"desc": "ama_fresh_gene_calls-Prokka.AMA",
+					"cell_type": "data"
+				}, {
+					"desc": "HL1M-N_Prodigal_Rfam-FILTER-2000-NOFUNC.AMA",
+					"cell_type": "data"
+				}, {
+					"desc": "BLASTn nuc-nuc Search - v2.10.1",
+					"cell_type": "kbase_app"
+				}, {
+					"desc": "BLASTp prot-prot Search - v2.10.1",
+					"cell_type": "kbase_app"
+				}, {
+					"desc": "foo-BLASTp.FS",
+					"cell_type": "data"
+				}, {
+					"desc": "Compost_MAGs-genomes-rpoB.FeatureSet",
+					"cell_type": "data"
+				}, {
+					"desc": "Compost_MAGs-AMA-rpoB.FeatureSet",
+					"cell_type": "data"
+				}, {
+					"desc": "Merge FeatureSets - v1.0.1",
+					"cell_type": "kbase_app"
+				}, {
+					"desc": "kbaseReportView",
+					"cell_type": "widget"
+				}, {
+					"desc": "Genome_plus_AMA-rpoB.FeatureSet",
+					"cell_type": "data"
+				}, {
+					"desc": "BLASTp prot-prot Search - v2.11.0",
+					"cell_type": "kbase_app"
+				}],
+				"total_cells": 14,
+				"static_narrative_saved": null,
+				"static_narrative_ref": null,
+				"shared_users": ["eapearson", "dylan", "kbaseuitest"],
+				"creation_date": "2020-07-04T04:27:55+0000",
+				"is_public": false,
+				"copied": null,
+				"tags": ["narrative"],
+				"obj_type_version": "4.0",
+				"obj_type_module": "KBaseNarrative",
+				"index_runner_ver": "1.9.17"
+			},
+			"guid": "WS:51911/16/1",
+			"kbase_id": "51911/16/1",
+			"index_name": "narrative_2",
+			"type_ver": 0,
+			"highlight": {
+				"cells.desc": ["Batch Create <em>Genome</em> Set - v1.2.0"],
+				"type": ["<em>Narrative</em>"]
+			}
+		}, {
+			"object_name": "Narrative.1605571868207",
+			"access_group": 57559,
+			"obj_id": 11,
+			"version": 107,
+			"timestamp": 1613410653476,
+			"type": "Narrative",
+			"creator": "ialarmedalien",
+			"data": {
+				"narrative_title": "Many cell types",
+				"is_narratorial": false,
+				"data_objects": [{
+					"name": "reads_test3_contigs",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "MyReads",
+					"obj_type": "KBaseSets.ReadsSet-1.2"
+				}, {
+					"name": "HierachicalClusters",
+					"obj_type": "KBaseFeatureValues.FeatureClusters-1.0"
+				}, {
+					"name": "KMeansClusters",
+					"obj_type": "KBaseFeatureValues.FeatureClusters-1.0"
+				}, {
+					"name": "Shewanella_Impute",
+					"obj_type": "KBaseFeatureValues.ExpressionMatrix-2.0"
+				}, {
+					"name": "MyReadsSet98",
+					"obj_type": "KBaseSets.ReadsSet-1.2"
+				}, {
+					"name": "CombinedReads",
+					"obj_type": "KBaseSets.ReadsSet-1.2"
+				}, {
+					"name": "combinatedReads",
+					"obj_type": "KBaseSets.ReadsSet-1.2"
+				}],
+				"owner": "ialarmedalien",
+				"modified_at": 1613410653000,
+				"cells": [{
+					"desc": "",
+					"cell_type": "code_cell"
+				}, {
+					"desc": "advancedViewCell\n",
+					"cell_type": "markdown"
+				}, {
+					"desc": "from biokbase.narrative.jobs.appmanager import AppManager\nAppManager().run_local_app_advanced(\n    \"eapearson_customInputDev/validate_custom_input\",\n    {\n    \"param1\": \"\",\n    \"param2\": None\n},\n    None,\n    tag=\"dev\",\n    cell_id=\"33ad1655-e44e-45f2-812a-64ec19d9d0a0\",\n    run_id=\"29391eac-21ac-4b26-88a6-a905e7be5c57\"\n)",
+					"cell_type": "code_cell"
+				}, {
+					"desc": "appCell2\n",
+					"cell_type": "markdown"
+				}, {
+					"desc": "app in batch mode\n",
+					"cell_type": "markdown"
+				}, {
+					"desc": "App Sleep",
+					"cell_type": "kbase_app"
+				}, {
+					"desc": "Cancelled whilst queueing\n",
+					"cell_type": "markdown"
+				}, {
+					"desc": "Cancelled whilst running\n",
+					"cell_type": "markdown"
+				}, {
+					"desc": "Generate an App Error",
+					"cell_type": "kbase_app"
+				}, {
+					"desc": "Assess Genome Quality with CheckM - v1.0.8",
+					"cell_type": "kbase_app"
+				}, {
+					"desc": "Align Reads using Bowtie2 v2.3.2",
+					"cell_type": "kbase_app"
+				}, {
+					"desc": "Run Templatomatic",
+					"cell_type": "kbase_app"
+				}, {
+					"desc": "bulkImportCell\n",
+					"cell_type": "markdown"
+				}, {
+					"desc": "print('show code settings: code shown')\nprint('python is shit')\n",
+					"cell_type": "code_cell"
+				}, {
+					"desc": "print('show code settings: code hidden')",
+					"cell_type": "code_cell"
+				}, {
+					"desc": "dataCell\n",
+					"cell_type": "markdown"
+				}, {
+					"desc": "Shewanella_Impute",
+					"cell_type": "data"
+				}, {
+					"desc": "editorCell\n",
+					"cell_type": "markdown"
+				}, {
+					"desc": "markdown cell\nThis is a markdown cell in all its glory!\n",
+					"cell_type": "markdown"
+				}, {
+					"desc": "outputCell\n",
+					"cell_type": "markdown"
+				}, {
+					"desc": "kbaseReportView",
+					"cell_type": "widget"
+				}, {
+					"desc": "viewCell\n",
+					"cell_type": "markdown"
+				}],
+				"total_cells": 29,
+				"static_narrative_saved": null,
+				"static_narrative_ref": null,
+				"shared_users": ["ialarmedalien"],
+				"creation_date": "2020-12-10T17:15:02+0000",
+				"is_public": true,
+				"copied": null,
+				"tags": ["narrative"],
+				"obj_type_version": "4.0",
+				"obj_type_module": "KBaseNarrative",
+				"index_runner_ver": "1.9.17"
+			},
+			"guid": "WS:57559/11/1",
+			"kbase_id": "57559/11/1",
+			"index_name": "narrative_2",
+			"type_ver": 0,
+			"highlight": {
+				"cells.desc": ["Assess <em>Genome</em> Quality with CheckM - v1.0.8"],
+				"type": ["<em>Narrative</em>"]
+			}
+		}, {
+			"object_name": "Narrative.1610463857540",
+			"access_group": 58624,
+			"obj_id": 1,
+			"version": 44,
+			"timestamp": 1612897762108,
+			"type": "Narrative",
+			"creator": "zimingy",
+			"data": {
+				"narrative_title": "kbase test data",
+				"is_narratorial": false,
+				"data_objects": [{
+					"name": "3300011599_1.fa_assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "16_paired_trim_MEGAHIT.contigs.fa_genome.assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "16_paired_trim_MEGAHIT.contigs.fa_genome",
+					"obj_type": "KBaseGenomes.Genome-17.0"
+				}, {
+					"name": "metagenome.gff_metagenome.assembly.fa_metagenome.assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "metagenome.gff_metagenome.assembly.fa_metagenome",
+					"obj_type": "KBaseMetagenomes.AnnotatedMetagenomeAssembly-1.0"
+				}, {
+					"name": "archaea_test.fa_assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "Listeria_monocytogenes_000196035.assembly.fa_assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "metagenome_test_annotated.assembly.fa_assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "gene_ontology",
+					"obj_type": "KBaseOntology.OntologyDictionary-2.0"
+				}, {
+					"name": "metagenome_test_annotated.assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "metagenome_badabing.assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "metagenome_badabing",
+					"obj_type": "KBaseMetagenomes.AnnotatedMetagenomeAssembly-1.0"
+				}, {
+					"name": "GCF_002287175.1",
+					"obj_type": "KBaseGenomes.Genome-17.0"
+				}, {
+					"name": "metagenome_badabing.assembly.fa_metagenome.assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "metagenome_badabing.assembly.fa_metagenome",
+					"obj_type": "KBaseMetagenomes.AnnotatedMetagenomeAssembly-1.0"
+				}, {
+					"name": "Rhodobacter_CACIA_14H1_contigs",
+					"obj_type": "KBaseGenomes.ContigSet-2.0"
+				}, {
+					"name": "Rhodobacter_CACIA_14H1_contigs.fa_assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}],
+				"owner": "zimingy",
+				"modified_at": 1614194641000,
+				"cells": [{
+					"desc": "This is the test narrative for AssemblyUtil tests\n",
+					"cell_type": "markdown"
+				}, {
+					"desc": "Import FASTA File as Assembly from Staging Area",
+					"cell_type": "kbase_app"
+				}, {
+					"desc": "Import GFF3/FASTA file as Genome from Staging Area",
+					"cell_type": "kbase_app"
+				}, {
+					"desc": "Rhodobacter_CACIA_14H1_contigs",
+					"cell_type": "data"
+				}, {
+					"desc": "Import GFF3/FASTA file as Annotated Metagenome Assembly from Staging Area",
+					"cell_type": "kbase_app"
+				}, {
+					"desc": "kbaseGenomeView",
+					"cell_type": "widget"
+				}],
+				"total_cells": 16,
+				"static_narrative_saved": null,
+				"static_narrative_ref": null,
+				"shared_users": ["zimingy"],
+				"creation_date": "2021-01-12T15:04:17+0000",
+				"is_public": true,
+				"copied": null,
+				"tags": ["narrative"],
+				"obj_type_version": "4.0",
+				"obj_type_module": "KBaseNarrative",
+				"index_runner_ver": "1.9.17"
+			},
+			"guid": "WS:58624/1/1",
+			"kbase_id": "58624/1/1",
+			"index_name": "narrative_2",
+			"type_ver": 0,
+			"highlight": {
+				"cells.desc": ["Import GFF3/FASTA file as <em>Genome</em> from Staging Area"],
+				"type": ["<em>Narrative</em>"]
+			}
+		}, {
+			"object_name": "Rhodobacter_sphaeroides_2.4.1_KBase.RAST",
+			"access_group": 59262,
+			"obj_id": 4,
+			"version": 1,
+			"timestamp": 1611981183498,
+			"type": "Genome",
+			"creator": "eapearson",
+			"data": {
+				"non_coding_feature_count": 67,
+				"copied": null,
+				"genome_id": "Rhodobacter_sphaeroides_2.4.1_KBase.RAST",
+				"taxonomy": "Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Rhodobacteraceae; Rhodobacter; Rhodobacter sphaeroides 2.4.1",
+				"source": "NCBI",
+				"publication_titles": [],
+				"num_contigs": 7,
+				"assembly_ref": "16:12:1",
+				"mean_contig_length": 657568.1428571428,
+				"obj_type_module": "KBaseGenomes",
+				"feature_count": 4280,
+				"genome_type": null,
+				"gc_content": 0.688,
+				"cds_count": 4280,
+				"shared_users": ["eaptest30", "eapearson", "*"],
+				"warnings": ["Genome molecule_type Unknown is not expected for domain Bacteria.", "Unable to determine organism taxonomy"],
+				"external_origination_date": null,
+				"mrna_count": 4280,
+				"scientific_name": "Rhodobacter sphaeroides 2.4.1",
+				"creation_date": "2021-01-30T04:33:06+0000",
+				"obj_type_version": "17.0",
+				"index_runner_ver": "1.9.17",
+				"tags": ["narrative"],
+				"original_source_file_name": null,
+				"size": 4602977,
+				"publication_authors": [],
+				"is_public": true,
+				"feature_counts": {
+					"CDS": 4280,
+					"non_coding_features": 67,
+					"mRNA": 4280,
+					"protein_encoding_gene": 4280
+				},
+				"source_id": "NCBI"
+			},
+			"guid": "WS:59262/4/1",
+			"kbase_id": "59262/4/1",
+			"index_name": "genome_2",
+			"type_ver": 0,
+			"highlight": {
+				"warnings": ["<em>Genome</em> molecule_type Unknown is not expected for domain Bacteria."],
+				"type": ["<em>Genome</em>"]
+			}
+		}, {
+			"object_name": "KBase_derived_GCF_002287175.1.gbff_genome",
+			"access_group": 52407,
+			"obj_id": 29,
+			"version": 1,
+			"timestamp": 1611940994702,
+			"type": "Genome",
+			"creator": "zimingy",
+			"data": {
+				"genome_id": "KBase_derived_GCF_002287175.1.gbff_genome",
+				"scientific_name": "Methanobacterium bryantii",
+				"publication_titles": ["Genomic analysis of methanogenic archaea reveals a shift towards energy conservation", "Direct Submission"],
+				"publication_authors": ["Gilmore,S.P., Henske,J.K., Sexton,J.A., Solomon,K.V., Seppala,S., Yoo,J.I., Huyett,L.M., Pressman,A., Cogan,J.Z., Kivenson,V., Peng,X., Tan,Y., Valentine,D.L. and O'Malley,M.A.", "Gilmore,S.P., Henske,J.K., Sexton,J.A., Solomon,K.V., Huyett,L.M., Yoo,J., Pressman,A., Cogan,Z., Valentine,D.L., O'Malley,M.A. and Tan,Y."],
+				"size": 3466370,
+				"num_contigs": 41,
+				"genome_type": "draft isolate",
+				"gc_content": 0.33192,
+				"taxonomy": "Unconfirmed Organism",
+				"mean_contig_length": 84545.60975609756,
+				"external_origination_date": "28-Jan-2021",
+				"original_source_file_name": "KBase_derived_GCF_002287175.1.gbff",
+				"cds_count": 3246,
+				"feature_count": 3246,
+				"mrna_count": 0,
+				"non_coding_feature_count": 99,
+				"assembly_ref": "52407:28:1",
+				"source_id": "NZ_LMVM01000001",
+				"feature_counts": {
+					"CDS": 3246,
+					"gene": 3293,
+					"misc_feature": 3,
+					"ncRNA": 2,
+					"non_coding_features": 99,
+					"non_coding_genes": 47,
+					"protein_encoding_gene": 3246,
+					"rRNA": 5,
+					"regulatory": 1,
+					"repeat_region": 1,
+					"tRNA": 40
+				},
+				"source": "RefSeq",
+				"warnings": ["Unable to determine organism taxonomy"],
+				"shared_users": ["zimingy", "scanon"],
+				"creation_date": "2021-01-29T17:23:17+0000",
+				"is_public": true,
+				"copied": null,
+				"tags": ["narrative"],
+				"obj_type_version": "17.0",
+				"obj_type_module": "KBaseGenomes",
+				"index_runner_ver": "1.9.17"
+			},
+			"guid": "WS:52407/29/1",
+			"kbase_id": "52407/29/1",
+			"index_name": "genome_2",
+			"type_ver": 0,
+			"highlight": {
+				"type": ["<em>Genome</em>"]
+			}
+		}, {
+			"object_name": "GCF_002287175.1_ASM228717v1_genomic.gbff_genome_2",
+			"access_group": 52407,
+			"obj_id": 26,
+			"version": 1,
+			"timestamp": 1611933804041,
+			"type": "Genome",
+			"creator": "zimingy",
+			"data": {
+				"genome_id": "GCF_002287175.1_ASM228717v1_genomic.gbff_genome_2",
+				"scientific_name": "Methanobacterium bryantii",
+				"publication_titles": ["Genomic analysis of methanogenic archaea reveals a shift towards energy conservation", "Direct Submission"],
+				"publication_authors": ["Gilmore,S.P., Henske,J.K., Sexton,J.A., Solomon,K.V., Huyett,L.M., Yoo,J., Pressman,A., Cogan,Z., Valentine,D.L., O'Malley,M.A. and Tan,Y.", "Gilmore,S.P., Henske,J.K., Sexton,J.A., Solomon,K.V., Seppala,S., Yoo,J.I., Huyett,L.M., Pressman,A., Cogan,J.Z., Kivenson,V., Peng,X., Tan,Y., Valentine,D.L. and O'Malley,M.A."],
+				"size": 3466370,
+				"num_contigs": 41,
+				"genome_type": "draft isolate",
+				"gc_content": 0.33192,
+				"taxonomy": "Unconfirmed Organism",
+				"mean_contig_length": 84545.60975609756,
+				"external_origination_date": "31-Jul-2019",
+				"original_source_file_name": "GCF_002287175.1_ASM228717v1_genomic.gbff",
+				"cds_count": 3246,
+				"feature_count": 3246,
+				"mrna_count": 0,
+				"non_coding_feature_count": 99,
+				"assembly_ref": "52407:25:1",
+				"source_id": "NZ_LMVM01000001",
+				"feature_counts": {
+					"CDS": 3246,
+					"gene": 3293,
+					"misc_feature": 3,
+					"ncRNA": 2,
+					"non_coding_features": 99,
+					"non_coding_genes": 47,
+					"protein_encoding_gene": 3246,
+					"rRNA": 5,
+					"regulatory": 1,
+					"repeat_region": 1,
+					"tRNA": 40
+				},
+				"source": "RefSeq",
+				"warnings": ["Unable to determine organism taxonomy"],
+				"shared_users": ["zimingy", "scanon"],
+				"creation_date": "2021-01-29T15:23:27+0000",
+				"is_public": true,
+				"copied": null,
+				"tags": ["narrative"],
+				"obj_type_version": "17.0",
+				"obj_type_module": "KBaseGenomes",
+				"index_runner_ver": "1.9.17"
+			},
+			"guid": "WS:52407/26/1",
+			"kbase_id": "52407/26/1",
+			"index_name": "genome_2",
+			"type_ver": 0,
+			"highlight": {
+				"type": ["<em>Genome</em>"]
+			}
+		}, {
+			"object_name": "GCF_002287175.1_ASM228717v1_genomic.gbff_genome",
+			"access_group": 52407,
+			"obj_id": 23,
+			"version": 1,
+			"timestamp": 1611933097634,
+			"type": "Genome",
+			"creator": "zimingy",
+			"data": {
+				"genome_id": "GCF_002287175.1_ASM228717v1_genomic.gbff_genome",
+				"scientific_name": "Methanobacterium bryantii",
+				"publication_titles": ["Genomic analysis of methanogenic archaea reveals a shift towards energy conservation", "Direct Submission"],
+				"publication_authors": ["Gilmore,S.P., Henske,J.K., Sexton,J.A., Solomon,K.V., Huyett,L.M., Yoo,J., Pressman,A., Cogan,Z., Valentine,D.L., O'Malley,M.A. and Tan,Y.", "Gilmore,S.P., Henske,J.K., Sexton,J.A., Solomon,K.V., Seppala,S., Yoo,J.I., Huyett,L.M., Pressman,A., Cogan,J.Z., Kivenson,V., Peng,X., Tan,Y., Valentine,D.L. and O'Malley,M.A."],
+				"size": 3466370,
+				"num_contigs": 41,
+				"genome_type": "draft isolate",
+				"gc_content": 0.33192,
+				"taxonomy": "Unconfirmed Organism",
+				"mean_contig_length": 84545.60975609756,
+				"external_origination_date": "28-Jan-2021",
+				"original_source_file_name": "KBase_derived_GCF_002287175.1.gbff",
+				"cds_count": 3246,
+				"feature_count": 3246,
+				"mrna_count": 0,
+				"non_coding_feature_count": 99,
+				"assembly_ref": "52407:22:1",
+				"source_id": "NZ_LMVM01000001",
+				"feature_counts": {
+					"CDS": 3246,
+					"gene": 3293,
+					"misc_feature": 3,
+					"ncRNA": 2,
+					"non_coding_features": 99,
+					"non_coding_genes": 47,
+					"protein_encoding_gene": 3246,
+					"rRNA": 5,
+					"regulatory": 1,
+					"repeat_region": 1,
+					"tRNA": 40
+				},
+				"source": "RefSeq",
+				"warnings": ["Unable to determine organism taxonomy"],
+				"shared_users": ["zimingy", "scanon"],
+				"creation_date": "2021-01-29T15:11:40+0000",
+				"is_public": true,
+				"copied": null,
+				"tags": ["narrative"],
+				"obj_type_version": "17.0",
+				"obj_type_module": "KBaseGenomes",
+				"index_runner_ver": "1.9.17"
+			},
+			"guid": "WS:52407/23/1",
+			"kbase_id": "52407/23/1",
+			"index_name": "genome_2",
+			"type_ver": 0,
+			"highlight": {
+				"type": ["<em>Genome</em>"]
+			}
+		}, {
+			"object_name": "GCF_002287175.1_assembly.fa_genome",
+			"access_group": 52407,
+			"obj_id": 19,
+			"version": 1,
+			"timestamp": 1611856021670,
+			"type": "Genome",
+			"creator": "zimingy",
+			"data": {
+				"genome_id": "GCF_002287175.1_assembly.fa_genome",
+				"scientific_name": "unknown_taxon",
+				"publication_titles": [],
+				"publication_authors": [],
+				"size": 3466370,
+				"num_contigs": 41,
+				"genome_type": "draft isolate",
+				"gc_content": 0.33192,
+				"taxonomy": "Unconfirmed Organism",
+				"mean_contig_length": 84545.60975609756,
+				"external_origination_date": null,
+				"original_source_file_name": null,
+				"cds_count": 3246,
+				"feature_count": 3246,
+				"mrna_count": 0,
+				"non_coding_feature_count": 99,
+				"assembly_ref": "52407:18:1",
+				"source_id": "unknown",
+				"feature_counts": {
+					"CDS": 3246,
+					"gene": 3293,
+					"misc_feature": 3,
+					"ncRNA": 2,
+					"non_coding_features": 99,
+					"non_coding_gene": 47,
+					"protein_encoding_gene": 3246,
+					"rRNA": 5,
+					"regulatory": 1,
+					"repeat_region": 1,
+					"tRNA": 40
+				},
+				"source": "Other",
+				"warnings": ["Genome molecule_type SingleLetterAlphabet is not expected for domain Unknown.", "Unable to determine organism taxonomy"],
+				"shared_users": ["zimingy", "scanon"],
+				"creation_date": "2021-01-28T17:47:03+0000",
+				"is_public": true,
+				"copied": null,
+				"tags": ["narrative"],
+				"obj_type_version": "17.0",
+				"obj_type_module": "KBaseGenomes",
+				"index_runner_ver": "1.9.17"
+			},
+			"guid": "WS:52407/19/1",
+			"kbase_id": "52407/19/1",
+			"index_name": "genome_2",
+			"type_ver": 0,
+			"highlight": {
+				"warnings": ["<em>Genome</em> molecule_type SingleLetterAlphabet is not expected for domain Unknown."],
+				"type": ["<em>Genome</em>"]
+			}
+		}, {
+			"object_name": "GCF_002287175.1",
+			"access_group": 52407,
+			"obj_id": 21,
+			"version": 1,
+			"timestamp": 1611847515429,
+			"type": "Genome",
+			"creator": "zimingy",
+			"data": {
+				"genome_id": "GCF_002287175.1",
+				"scientific_name": "Methanobacterium bryantii",
+				"publication_titles": ["Direct Submission", "Genomic analysis of methanogenic archaea reveals a shift towards energy conservation"],
+				"publication_authors": ["Gilmore,S.P., Henske,J.K., Sexton,J.A., Solomon,K.V., Seppala,S., Yoo,J.I., Huyett,L.M., Pressman,A., Cogan,J.Z., Kivenson,V., Peng,X., Tan,Y., Valentine,D.L. and O'Malley,M.A.", "Gilmore,S.P., Henske,J.K., Sexton,J.A., Solomon,K.V., Huyett,L.M., Yoo,J., Pressman,A., Cogan,Z., Valentine,D.L., O'Malley,M.A. and Tan,Y."],
+				"size": 3466370,
+				"num_contigs": 41,
+				"genome_type": null,
+				"gc_content": 0.33192,
+				"taxonomy": "Archaea; Euryarchaeota; Methanomada group; Methanobacteria; Methanobacteriales; Methanobacteriaceae; Methanobacterium",
+				"mean_contig_length": 84545.60975609756,
+				"external_origination_date": "31-Jul-2019",
+				"original_source_file_name": "GCF_002287175.1_ASM228717v1_genomic.gbff",
+				"cds_count": 3246,
+				"feature_count": 3246,
+				"mrna_count": 0,
+				"non_coding_feature_count": 99,
+				"assembly_ref": "33192:32:1",
+				"source_id": "NZ_LMVM01000001",
+				"feature_counts": {
+					"CDS": 3246,
+					"gene": 3293,
+					"misc_feature": 3,
+					"ncRNA": 2,
+					"non_coding_features": 99,
+					"non_coding_genes": 47,
+					"protein_encoding_gene": 3246,
+					"rRNA": 5,
+					"regulatory": 1,
+					"repeat_region": 1,
+					"tRNA": 40
+				},
+				"source": "RefSeq",
+				"warnings": [],
+				"shared_users": ["zimingy", "scanon"],
+				"creation_date": "2021-01-28T20:06:09+0000",
+				"is_public": true,
+				"copied": "58624/31/20",
+				"tags": ["narrative"],
+				"obj_type_version": "17.0",
+				"obj_type_module": "KBaseGenomes",
+				"index_runner_ver": "1.9.17"
+			},
+			"guid": "WS:52407/21/1",
+			"kbase_id": "52407/21/1",
+			"index_name": "genome_2",
+			"type_ver": 0,
+			"highlight": {
+				"type": ["<em>Genome</em>"]
+			}
+		}, {
+			"object_name": "GCF_002287175.1",
+			"access_group": 58624,
+			"obj_id": 31,
+			"version": 20,
+			"timestamp": 1611847515429,
+			"type": "Genome",
+			"creator": "zimingy",
+			"data": {
+				"genome_id": "GCF_002287175.1",
+				"scientific_name": "Methanobacterium bryantii",
+				"publication_titles": ["Genomic analysis of methanogenic archaea reveals a shift towards energy conservation", "Direct Submission"],
+				"publication_authors": ["Gilmore,S.P., Henske,J.K., Sexton,J.A., Solomon,K.V., Huyett,L.M., Yoo,J., Pressman,A., Cogan,Z., Valentine,D.L., O'Malley,M.A. and Tan,Y.", "Gilmore,S.P., Henske,J.K., Sexton,J.A., Solomon,K.V., Seppala,S., Yoo,J.I., Huyett,L.M., Pressman,A., Cogan,J.Z., Kivenson,V., Peng,X., Tan,Y., Valentine,D.L. and O'Malley,M.A."],
+				"size": 3466370,
+				"num_contigs": 41,
+				"genome_type": null,
+				"gc_content": 0.33192,
+				"taxonomy": "Archaea; Euryarchaeota; Methanomada group; Methanobacteria; Methanobacteriales; Methanobacteriaceae; Methanobacterium",
+				"mean_contig_length": 84545.60975609756,
+				"external_origination_date": "31-Jul-2019",
+				"original_source_file_name": "GCF_002287175.1_ASM228717v1_genomic.gbff",
+				"cds_count": 3246,
+				"feature_count": 3246,
+				"mrna_count": 0,
+				"non_coding_feature_count": 99,
+				"assembly_ref": "33192:32:1",
+				"source_id": "NZ_LMVM01000001",
+				"feature_counts": {
+					"CDS": 3246,
+					"gene": 3293,
+					"misc_feature": 3,
+					"ncRNA": 2,
+					"non_coding_features": 99,
+					"non_coding_genes": 47,
+					"protein_encoding_gene": 3246,
+					"rRNA": 5,
+					"regulatory": 1,
+					"repeat_region": 1,
+					"tRNA": 40
+				},
+				"source": "RefSeq",
+				"warnings": [],
+				"shared_users": ["zimingy"],
+				"creation_date": "2021-01-24T20:25:34+0000",
+				"is_public": true,
+				"copied": null,
+				"tags": ["narrative"],
+				"obj_type_version": "17.0",
+				"obj_type_module": "KBaseGenomes",
+				"index_runner_ver": "1.9.17"
+			},
+			"guid": "WS:58624/31/1",
+			"kbase_id": "58624/31/1",
+			"index_name": "genome_2",
+			"type_ver": 0,
+			"highlight": {
+				"type": ["<em>Genome</em>"]
+			}
+		}, {
+			"object_name": "Narrative.1611672842083",
+			"access_group": 59134,
+			"obj_id": 1,
+			"version": 50,
+			"timestamp": 1611679881176,
+			"type": "Narrative",
+			"creator": "eapearson",
+			"data": {
+				"narrative_title": "Data Prep Feature Set Viewer Integration Test",
+				"is_narratorial": false,
+				"data_objects": [{
+					"name": "GCF_000007925.1_ASM792v1_genomic.fna_assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "prochlorococus_prokka_output.assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "prochlorococus_prokka_output",
+					"obj_type": "KBaseMetagenomes.AnnotatedMetagenomeAssembly-1.0"
+				}, {
+					"name": "Vibrio_alginolyticus",
+					"obj_type": "KBaseGenomes.Genome-14.1"
+				}, {
+					"name": "query-blastn_prochloroccus.Seq",
+					"obj_type": "KBaseSequences.SequenceSet-1.1"
+				}, {
+					"name": "KBase_derived_mygenome.gff_edited.gff_metagenome.assembly",
+					"obj_type": "KBaseGenomeAnnotations.Assembly-6.0"
+				}, {
+					"name": "KBase_derived_mygenome.gff_edited.gff_metagenome",
+					"obj_type": "KBaseMetagenomes.AnnotatedMetagenomeAssembly-1.0"
+				}, {
+					"name": "query-compost_hq_bins_blastp_output.Seq",
+					"obj_type": "KBaseSequences.SequenceSet-1.1"
+				}, {
+					"name": "compost_hq_bins_blastp_output",
+					"obj_type": "KBaseCollections.FeatureSet-4.0"
+				}, {
+					"name": "Vibrio_alginolyticus_feature_set",
+					"obj_type": "KBaseCollections.FeatureSet-4.0"
+				}, {
+					"name": "merged_feature_sets",
+					"obj_type": "KBaseCollections.FeatureSet-4.0"
+				}],
+				"owner": "eapearson",
+				"modified_at": 1611679898000,
+				"cells": [{
+					"desc": "# Welcome to the Narrative\nfrom IPython.display import IFrame\nIFrame(\"https://www.kbase.us/narrative-welcome-cell/\", width=\"100%\", height=\"300px\")",
+					"cell_type": "code_cell"
+				}, {
+					"desc": "Create AMA from imported data from Dylan\nFrom narrative https://ci.kbase.us/narrative/51911\ndownload gff+faa from CompostHQBins ama\nupload to my staging area\nimport as Metagenome GFF\n",
+					"cell_type": "markdown"
+				}, {
+					"desc": "Import GFF3/FASTA file as Annotated Metagenome Assembly from Staging Area",
+					"cell_type": "kbase_app"
+				}, {
+					"desc": "Add genome\nWe are going to have featuresets with genome, ama, and mixed genome & ama.\nJust for fun, we'll also use another marine bacterium, Vibrio alginolyticus.\n",
+					"cell_type": "markdown"
+				}, {
+					"desc": "Create feature sets\nAMA\nGenome\nSimply use buildfeatureset from genome, selecting 10 features.\n",
+					"cell_type": "markdown"
+				}, {
+					"desc": "BLASTp prot-prot Search - v2.11.0",
+					"cell_type": "kbase_app"
+				}, {
+					"desc": "Build FeatureSet from Genome",
+					"cell_type": "kbase_app"
+				}, {
+					"desc": "Merge ama and genome feature sets\nWe want a mixed feature set, \n",
+					"cell_type": "markdown"
+				}, {
+					"desc": "Merge FeatureSets - v1.0.1",
+					"cell_type": "kbase_app"
+				}],
+				"total_cells": 9,
+				"static_narrative_saved": null,
+				"static_narrative_ref": null,
+				"shared_users": ["eapearson", "kbaseuitest"],
+				"creation_date": "2021-01-26T14:54:02+0000",
+				"is_public": false,
+				"copied": null,
+				"tags": ["narrative"],
+				"obj_type_version": "4.0",
+				"obj_type_module": "KBaseNarrative",
+				"index_runner_ver": "1.9.16"
+			},
+			"guid": "WS:59134/1/1",
+			"kbase_id": "59134/1/1",
+			"index_name": "narrative_2",
+			"type_ver": 0,
+			"highlight": {
+				"cells.desc": ["Add <em>genome</em>\nWe are going to have featuresets with <em>genome</em>, ama, and mixed <em>genome</em> & ama.", "Create feature sets\nAMA\n<em>Genome</em>\nSimply use buildfeatureset from <em>genome</em>, selecting 10 features.", "Build FeatureSet from <em>Genome</em>", "Merge ama and <em>genome</em> feature sets\nWe want a mixed feature set,"],
+				"type": ["<em>Narrative</em>"]
+			}
+		}, {
+			"object_name": "KBase_derived_GCF_002287175.1.gff_genome",
+			"access_group": 52407,
+			"obj_id": 16,
+			"version": 1,
+			"timestamp": 1611519563370,
+			"type": "Genome",
+			"creator": "zimingy",
+			"data": {
+				"genome_id": "KBase_derived_GCF_002287175.1.gff_genome",
+				"scientific_name": "unknown_taxon",
+				"publication_titles": [],
+				"publication_authors": [],
+				"size": 3466370,
+				"num_contigs": 41,
+				"genome_type": "draft isolate",
+				"gc_content": 0.33192,
+				"taxonomy": "Unconfirmed Organism",
+				"mean_contig_length": 84545.60975609756,
+				"external_origination_date": null,
+				"original_source_file_name": null,
+				"cds_count": 3246,
+				"feature_count": 3246,
+				"mrna_count": 0,
+				"non_coding_feature_count": 99,
+				"assembly_ref": "52407:15:1",
+				"source_id": "unknown",
+				"feature_counts": {
+					"CDS": 3246,
+					"gene": 3293,
+					"misc_feature": 3,
+					"ncRNA": 2,
+					"non_coding_features": 99,
+					"non_coding_gene": 47,
+					"protein_encoding_gene": 3246,
+					"rRNA": 5,
+					"regulatory": 1,
+					"repeat_region": 1,
+					"tRNA": 40
+				},
+				"source": "Other",
+				"warnings": ["Genome molecule_type SingleLetterAlphabet is not expected for domain Unknown.", "Unable to determine organism taxonomy"],
+				"shared_users": ["scanon", "zimingy"],
+				"creation_date": "2021-01-24T20:19:25+0000",
+				"is_public": true,
+				"copied": null,
+				"tags": ["narrative"],
+				"obj_type_version": "17.0",
+				"obj_type_module": "KBaseGenomes",
+				"index_runner_ver": "1.9.16"
+			},
+			"guid": "WS:52407/16/1",
+			"kbase_id": "52407/16/1",
+			"index_name": "genome_2",
+			"type_ver": 0,
+			"highlight": {
+				"warnings": ["<em>Genome</em> molecule_type SingleLetterAlphabet is not expected for domain Unknown."],
+				"type": ["<em>Genome</em>"]
+			}
+		}],
+		"access_group_narrative_info": {
+			"58624": ["kbase test data", 1, 1614194641000, "zimingy", "Ziming Yang"],
+			"16325": ["QUASTtest", 1, 1614644658000, "gaprice", "<script>alert('foo')</script>"],
+			"51911": ["CI - BLAST tests on AMA", 16, 1613963071000, "dylan", "Dylan Chivian"],
+			"59134": ["Data Prep Feature Set Viewer Integration Test", 1, 1611679898000, "eapearson", "Erik A Pearson"],
+			"57559": ["Many cell types", 11, 1613410653000, "ialarmedalien", "AJ Ireland"],
+			"52407": ["KBase Test Data", 1, 1614658102000, "scanon", "Shane Canon"],
+			"59262": ["Hello", 1, 1612405747000, "eapearson", "Erik A Pearson"]
+		},
+		"access_groups_info": {
+			"58624": [58624, "zimingy:narrative_1610463857540", "zimingy", "2021-02-24T19:24:01+0000", 37, "n", "r", "unlocked", {
+				"cell_count": "1",
+				"narrative_nice_name": "kbase test data",
+				"searchtags": "narrative",
+				"is_temporary": "false",
+				"narrative": "1"
+			}],
+			"16325": [16325, "gaprice:1484955375553", "gaprice", "2021-03-02T00:24:18+0000", 17, "r", "n", "unlocked", {
+				"narrative_nice_name": "QUASTtest",
+				"searchtags": "narrative",
+				"is_temporary": "false",
+				"narrative": "1",
+				"data_palette_id": "6"
+			}],
+			"51911": [51911, "dylan:narrative_1593836875543", "dylan", "2021-02-22T03:04:31+0000", 75, "a", "n", "unlocked", {
+				"narrative_nice_name": "CI - BLAST tests on AMA",
+				"cell_count": "9",
+				"searchtags": "narrative",
+				"is_temporary": "false",
+				"narrative": "16"
+			}],
+			"59134": [59134, "eapearson:narrative_1611672842083", "eapearson", "2021-01-26T16:51:38+0000", 29, "a", "n", "unlocked", {
+				"cell_count": "1",
+				"narrative_nice_name": "Data Prep Feature Set Viewer Integration Test",
+				"searchtags": "narrative",
+				"is_temporary": "false",
+				"narrative": "1"
+			}],
+			"57559": [57559, "ialarmedalien:narrative_1607620501273", "ialarmedalien", "2021-02-15T17:37:33+0000", 18, "n", "r", "unlocked", {
+				"narrative_nice_name": "Many cell types",
+				"cell_count": "22",
+				"searchtags": "narrative",
+				"is_temporary": "false",
+				"narrative": "11"
+			}],
+			"52407": [52407, "KBaseTestData", "scanon", "2021-03-02T04:08:22+0000", 45, "n", "r", "unlocked", {
+				"cell_count": "1",
+				"narrative_nice_name": "KBase Test Data",
+				"searchtags": "narrative",
+				"is_temporary": "false",
+				"narrative": "1"
+			}],
+			"59262": [59262, "eapearson:narrative_1611962874127", "eapearson", "2021-02-04T02:29:07+0000", 7, "a", "r", "unlocked", {
+				"static_narrative_ver": "3",
+				"searchtags": "narrative",
+				"is_temporary": "false",
+				"narrative": "1",
+				"cell_count": "1",
+				"narrative_nice_name": "Hello",
+				"static_narrative_saved": "1611962934695",
+				"static_narrative": "/59262/3/"
+			}]
+		}
+	}]
+}

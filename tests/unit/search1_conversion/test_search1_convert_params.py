@@ -12,7 +12,8 @@ def test_search_objects_valid():
         'query': {'bool': {}},
         'size': 20, 'from': 0,
         'sort': [{'timestamp': {'order': 'asc'}}],
-        'public_only': False, 'private_only': False
+        'public_only': False, 'private_only': False,
+        'track_total_hits': True
     }
     query = convert_params.search_objects(params)
     assert query == expected
@@ -33,7 +34,8 @@ def test_search_objects_highlight():
         },
         'size': 20, 'from': 0,
         'sort': [{'timestamp': {'order': 'asc'}}],
-        'public_only': False, 'private_only': False
+        'public_only': False, 'private_only': False,
+        'track_total_hits': True
     }
     query = convert_params.search_objects(params)
     assert query == expected
@@ -47,7 +49,8 @@ def test_search_objects_fulltext():
         'query': {'bool': {'must': [{'match': {'agg_fields': 'xyz'}}]}},
         'size': 20, 'from': 0,
         'sort': [{'timestamp': {'order': 'asc'}}],
-        'public_only': False, 'private_only': False
+        'public_only': False, 'private_only': False,
+        'track_total_hits': True
     }
     query = convert_params.search_objects(params)
     assert query == expected
@@ -61,7 +64,8 @@ def test_search_objects_object_name():
         'query': {'bool': {'must': [{'match': {'obj_name': 'xyz'}}]}},
         'size': 20, 'from': 0,
         'sort': [{'timestamp': {'order': 'asc'}}],
-        'public_only': False, 'private_only': False
+        'public_only': False, 'private_only': False,
+        'track_total_hits': True
     }
     query = convert_params.search_objects(params)
     assert query == expected
@@ -75,7 +79,8 @@ def test_search_objects_timestamp():
         'query': {'bool': {'must': [{'range': {'timestamp': {'gte': 0, 'lte': 1}}}]}},
         'size': 20, 'from': 0,
         'sort': [{'timestamp': {'order': 'asc'}}],
-        'public_only': False, 'private_only': False
+        'public_only': False, 'private_only': False,
+        'track_total_hits': True
     }
     query = convert_params.search_objects(params)
     assert query == expected
@@ -97,7 +102,8 @@ def test_search_objects_source_tags():
         'query': {'bool': {'must': [{'term': {'tags': 'x'}}, {'term': {'tags': 'y'}}]}},
         'size': 20, 'from': 0,
         'sort': [{'timestamp': {'order': 'asc'}}],
-        'public_only': False, 'private_only': False
+        'public_only': False, 'private_only': False,
+        'track_total_hits': True
     }
     query = convert_params.search_objects(params)
     assert query == expected
@@ -111,7 +117,8 @@ def test_search_objects_source_tags_blacklist():
         'query': {'bool': {'must_not': [{'term': {'tags': 'x'}}, {'term': {'tags': 'y'}}]}},
         'size': 20, 'from': 0,
         'sort': [{'timestamp': {'order': 'asc'}}],
-        'public_only': False, 'private_only': False
+        'public_only': False, 'private_only': False,
+        'track_total_hits': True
     }
     query = convert_params.search_objects(params)
     assert query == expected
@@ -133,7 +140,8 @@ def test_search_objects_objtypes():
         'indexes': ['genome_features_2'],
         'size': 20, 'from': 0,
         'sort': [{'timestamp': {'order': 'asc'}}],
-        'public_only': False, 'private_only': False
+        'public_only': False, 'private_only': False,
+        'track_total_hits': True
     }
     query = convert_params.search_objects(params)
     assert query == expected
@@ -150,7 +158,8 @@ def test_search_objects_sorting():
         'query': {'bool': {}},
         'sort': [{'x': {'order': 'asc'}}, {'timestamp': {'order': 'desc'}}],
         'size': 20, 'from': 0,
-        'public_only': False, 'private_only': False
+        'public_only': False, 'private_only': False,
+        'track_total_hits': True
     }
     query = convert_params.search_objects(params)
     assert query == expected
@@ -186,7 +195,8 @@ def test_search_objects_lookup_in_keys():
         },
         'size': 20, 'from': 0,
         'sort': [{'timestamp': {'order': 'asc'}}],
-        'public_only': False, 'private_only': False
+        'public_only': False, 'private_only': False,
+        'track_total_hits': True
     }
     query = convert_params.search_objects(params)
     assert query == expected
@@ -201,7 +211,8 @@ def test_search_types_valid():
         'size': 0, 'from': 0,
         'aggs': {'type_count': {'terms': {'field': 'obj_type_name'}}},
         'sort': [{'timestamp': {'order': 'asc'}}],
-        'public_only': False, 'private_only': False
+        'public_only': False, 'private_only': False,
+        'track_total_hits': True
     }
     query = convert_params.search_types(params)
     assert query == expected
