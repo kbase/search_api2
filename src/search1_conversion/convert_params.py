@@ -210,8 +210,8 @@ def _get_search_params(params):
         'size': pagination.get('count', 20),
         'from': pagination.get('start', 0),
         'sort': sort,
-        'public_only': not with_private and with_public,
-        'private_only': not with_public and with_private,
+        'only_public': not with_private and with_public,
+        'only_private': not with_public and with_private,
         'track_total_hits': True
     }
     if 'GenomeFeature' in object_types:
