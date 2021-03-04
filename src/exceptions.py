@@ -43,13 +43,3 @@ class AuthError(ResponseError):
             # Fall back to the full response body
             msg = resp_text
         super().__init__(code=-32001, message=msg)
-
-
-class InvalidParamsError(ResponseError):
-
-    def __init__(self, params, message):
-        super().__init__(code=-32602, message='Invalid params')
-        self.data = {
-            'params': params,
-            'message': message
-        }
