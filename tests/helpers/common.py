@@ -30,6 +30,16 @@ def assert_jsonrpc20_result(actual, expected):
     return result
 
 
+def assert_jsonrpc20_error(actual, expected):
+    assert actual['jsonrpc'] == '2.0'
+    assert actual['id'] == expected['id']
+    assert 'result' not in actual
+    assert 'error' in actual
+    error = actual['error']
+    assert isinstance(error, dict)
+    return error
+
+
 def equal(d1, d2, path=[]):
     if isinstance(d1, dict):
         if isinstance(d2, dict):

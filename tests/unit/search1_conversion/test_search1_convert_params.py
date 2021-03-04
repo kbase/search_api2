@@ -229,3 +229,72 @@ def test_get_objects_valid():
     }
     query = convert_params.get_objects(params)
     assert query == expected
+
+
+def test_search_objects_only_public():
+    params = {
+        'match_filter': {},
+        'access_filter': {
+            'with_public': 1
+        }
+    }
+    expected = {
+        'query': {'bool': {}},
+        'size': 20, 'from': 0,
+        'sort': [{'timestamp': {'order': 'asc'}}],
+        'only_public': True, 'only_private': False,
+        'track_total_hits': True
+    }
+    query = convert_params.search_objects(params)
+    assert query == expected
+
+
+def test_search_objects_only_private():
+    params = {
+        'match_filter': {},
+        'access_filter': {
+            'with_private': 1
+        }
+    }
+    expected = {
+        'query': {'bool': {}},
+        'size': 20, 'from': 0,
+        'sort': [{'timestamp': {'order': 'asc'}}],
+        'only_public': False, 'only_private': True,
+        'track_total_hits': True
+    }
+    query = convert_params.search_objects(params)
+    assert query == expected
+
+
+def test_search_objects_private_and_public():
+    params = {
+        'match_filter': {},
+        'access_filter': {
+            'with_private': 1,
+            'with_public': 1
+        }
+    }
+    expected = {
+        'query': {'bool': {}},
+        'size': 20, 'from': 0,
+        'sort': [{'timestamp': {'order': 'asc'}}],
+        'only_public': False, 'only_private': False,
+        'track_total_hits': True
+    }
+    query = convert_params.search_objects(params)
+    assert query == expected
+
+
+def test_search_objects_private_nor_public():
+    params = {
+        'match_filter': {},
+        'access_filter': {
+            'with_private': 0,
+            'with_public': 0
+        }
+    }
+    with pytest.raises(ResponseError) as re:
+        convert_params.search_objects(params)
+    assert re.value.jsonrpc_code == -32602
+    assert re.value.message == 'May not specify no private data and no public data'
