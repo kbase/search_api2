@@ -28,8 +28,10 @@ poetry install
 
 Run the tests!
 
+This will run all the unit tests plus associated code quality evaluations.
+
 ```sh
-sh scripts/run_tests
+make test
 ```
 
 To run tests in a given directory or individual test modules:
@@ -42,18 +44,6 @@ e.g. to run all the `es_client` tests:
 
 ```sh
 WORKSPACE_URL="http://localhost:5555/ws" PYTHONPATH=. poetry run pytest -vv tests/unit/es_client
-```
-
-And to run all the unit tests plus associated code quality evaluations:
-
-```sh
-make test
-```
-
-or
-
-```sh
-sh scripts/run_tests
 ```
 
 ## Integration Testing
