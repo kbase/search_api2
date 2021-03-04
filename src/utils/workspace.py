@@ -22,10 +22,15 @@ def ws_auth(auth_token, only_public=False, only_private=False):
     }
 
     if only_public:
+        if only_private:
+            raise Exception('Only one of "only_public" or "only_private" may be set')
         params['onlyGlobal'] = 1
+        params['excludeGlobal'] = 0
     elif only_private:
+        params['onlyGlobal'] = 0
         params['excludeGlobal'] = 1
     else:
+        params['onlyGlobal'] = 0
         params['excludeGlobal'] = 0
 
     result = _req('list_workspace_ids', params, auth_token)

@@ -8,24 +8,6 @@ import json
 # For mocking workspace calls
 from unittest.mock import patch
 from src.search2_rpc import service as rpc
-# from tests.helpers import init_elasticsearch
-
-# from tests.helpers.unit_setup import (
-#     start_service,
-#     stop_service
-# )
-
-# ES_URL = 'http://localhost:9200'
-# APP_URL = 'http://localhost:5000'
-
-
-# def setup_module(module):
-#     start_service(APP_URL, 'searchapi2')
-#     init_elasticsearch()
-
-
-# def teardown_module(module):
-#     stop_service()
 
 
 def test_show_indexes(services):
@@ -39,6 +21,37 @@ def test_show_indexes(services):
         result = rpc.call(json.dumps(params), {'auth': None})
         res = json.loads(result)
         assert res['result']
+
+
+def test_show_indexes_not_found(services):
+    with patch.dict('src.utils.config.config', {'index_prefix': 'foo'}):
+        with patch('src.es_client.query.ws_auth') as mocked:
+            mocked.return_value = [0, 1]  # Public workspaces
+            params = {
+                "method": "show_indexes",
+                "jsonrpc": "2.0",
+                "id": 0,
+            }
+            result = rpc.call(json.dumps(params), {'auth': None})
+            res = json.loads(result)
+            assert len(res['result']) == 0
+
+
+def test_show_indexes_error(services):
+    with patch.dict('src.utils.config.config', {'index_prefix': '/'}):
+        with patch('src.es_client.query.ws_auth') as mocked:
+            mocked.return_value = [0, 1]  # Public workspaces
+            params = {
+                "method": "show_indexes",
+                "jsonrpc": "2.0",
+                "id": 0,
+            }
+            result = rpc.call(json.dumps(params), {'auth': None})
+            res = json.loads(result)
+            assert res['error']
+            assert res['error']['code'] == -32003
+            assert res['error']['message'] == 'Server error'
+            assert res['error']['data']['method'] == 'show_indexes'
 
 
 def test_show_config(services):
