@@ -56,7 +56,7 @@ or
 sh scripts/run_tests
 ```
 
-## Integration Tests
+## Integration Testing
 
 The integration tests run inside a Docker container. An associated ssh tunnel proxies elastic search requests into KBase. This tunnel is also run in a container. To ease the process of coordinating the startup of these containers, the are scripted in a docker-compose config file.
 
@@ -65,7 +65,7 @@ The integration tests run inside a Docker container. An associated ssh tunnel pr
 Although the integration test script will build the images if they are missing, the build can take a few minutes, which may cause the integration test script to time out. It is more reliable to simply build the containers first.
 
 ```bash
-make build-integration-test-images
+make build-integration-test-images.sh
 ```
 
 You can view the files `container.out` and `container.err` to monitor progress building the images.
@@ -133,4 +133,10 @@ tests/integration/test_integration_search_workspaces.py::test_dashboard_example 
 
 =================================================== 9 passed in 24.27s ====================================================
 (venv) erikpearson@Eriks-MBP-2 search_api2 %
+``
+
+## Using with kbase-ui
+
+```
+IP="<IP HERE>" SSHHOST="login1.berkeley.kbase.us" SSHUSER="<KBASE DEV USERNAME>" SSHPASS="<KBASE DEV PWD>" docker-compose --file tests/integration/docker-compose.yaml up
 ```
