@@ -9,7 +9,7 @@ from src.utils.config import config
 from src.exceptions import AuthError
 
 
-def ws_auth(auth_token, public_only=False, private_only=False):
+def ws_auth(auth_token, only_public=False, only_private=False):
     """
     Get a list of workspace IDs that the given username is allowed to access in
     the workspace.
@@ -21,11 +21,16 @@ def ws_auth(auth_token, public_only=False, private_only=False):
         'perm': 'r'
     }
 
-    if public_only:
+    if only_public:
+        if only_private:
+            raise Exception('Only one of "only_public" or "only_private" may be set')
         params['onlyGlobal'] = 1
-    elif private_only:
+        params['excludeGlobal'] = 0
+    elif only_private:
+        params['onlyGlobal'] = 0
         params['excludeGlobal'] = 1
     else:
+        params['onlyGlobal'] = 0
         params['excludeGlobal'] = 0
 
     result = _req('list_workspace_ids', params, auth_token)

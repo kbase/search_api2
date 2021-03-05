@@ -358,11 +358,19 @@ definitions:
 
   accessFilter:
     type: object
-    required: []
-    additionalProperties: false
-    properties:
-      with_private: {$ref: "#/definitions/sdk_boolean"}
-      with_public: {$ref: "#/definitions/sdk_boolean"}
+    allOf:
+      # This gives a more explicit reason for failing.
+      - not:
+          required: []
+          properties:
+            with_private:
+              const: 0
+            with_public:
+              const: 0
+      - required: []
+        properties:
+          with_private: {$ref: "#/definitions/sdk_boolean"}
+          with_public: {$ref: "#/definitions/sdk_boolean"}
 
   matchFilter:
     type: object

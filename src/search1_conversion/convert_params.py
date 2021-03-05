@@ -37,6 +37,7 @@ from src.utils.config import config
 from src.utils.obj_utils import get_any
 from src.exceptions import ResponseError
 
+
 # Unversioned feature index name/alias, (eg "genome_features")
 _FEATURES_UNVERSIONED = config['global']['genome_features_current_index_name']
 # Versioned feature index name (eg "genome_features_2")
@@ -202,16 +203,37 @@ def _get_search_params(params):
         sort.append({prop: {'order': order}})
     pagination = params.get('pagination', {})
     access_filter = params.get('access_filter', {})
-    with_private = bool(access_filter.get('with_private'))
-    with_public = bool(access_filter.get('with_public'))
+    with_private = access_filter.get('with_private')
+    with_public = access_filter.get('with_public')
+
+    if with_private is None and with_public is None:
+        only_public = False
+        only_private = False
+    else:
+        with_private = bool(with_private)
+        with_public = bool(with_public)
+        if with_private:
+            if with_public:
+                only_public = False
+                only_private = False
+            else:
+                only_public = False
+                only_private = True
+        elif with_public:
+            only_public = True
+            only_private = False
+        else:
+            # Error condition
+            raise ResponseError(code=-32602, message='May not specify no private data and no public data')
+
     # Get excluded index names (handles `exclude_subobjects`)
     search_params = {
         'query': query,
         'size': pagination.get('count', 20),
         'from': pagination.get('start', 0),
         'sort': sort,
-        'public_only': not with_private and with_public,
-        'private_only': not with_public and with_private,
+        'only_public': only_public,
+        'only_private': only_private,
         'track_total_hits': True
     }
     if 'GenomeFeature' in object_types:

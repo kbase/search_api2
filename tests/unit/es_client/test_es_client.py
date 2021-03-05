@@ -126,6 +126,19 @@ def test_search_unknown_index(services):
         assert str(ctx.value) == f"no such index [{full_name}]"
 
 
+def test_search_bad_query(services):
+    with patch('src.es_client.query.ws_auth') as mocked:
+        mocked.return_value = [0, 1]  # Public workspaces
+        # force a bad query by passing a nonsensical sort value.
+        params = {
+            'indexes': ['index1'],
+            'sort': 'x'
+        }
+        with pytest.raises(ElasticsearchError) as ctx:
+            search(params, {'auth': None})
+        assert str(ctx.value) == "all shards failed"
+
+
 def test_search_private_valid(services):
     with patch('src.es_client.query.ws_auth') as mocked:
         mocked.return_value = [100]  # Private workspaces this fictional user has access to

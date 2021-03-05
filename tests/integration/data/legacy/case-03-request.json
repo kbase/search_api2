@@ -1,0 +1,38 @@
+{
+	"params": [{
+		"match_filter": {
+			"full_text_in_all": "coli",
+			"exclude_subobjects": 1,
+			"source_tags": ["refdata", "noindex"],
+			"source_tags_blacklist": 1
+		},
+		"pagination": {
+			"start": 0,
+			"count": 20
+		},
+		"post_processing": {
+			"ids_only": 0,
+			"skip_info": 0,
+			"skip_keys": 0,
+			"skip_data": 0,
+			"include_highlight": 1,
+			"add_narrative_info": 1
+		},
+		"access_filter": {
+			"with_private": 1,
+			"with_public": 1
+		},
+		"sorting_rules": [{
+			"is_object_property": 0,
+			"property": "access_group_id",
+			"ascending": 0
+		}, {
+			"is_object_property": 0,
+			"property": "type",
+			"ascending": 1
+		}]
+	}],
+	"method": "KBaseSearchEngine.search_objects",
+	"version": "1.1",
+	"id": "12573638302160872"
+}
