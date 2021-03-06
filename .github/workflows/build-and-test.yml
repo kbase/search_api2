@@ -5,7 +5,7 @@ name: Build and Test Search API
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ develop, "fix-*", "feature-*" ]
 
 jobs:
   docker_build:
