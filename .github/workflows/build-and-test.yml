@@ -6,26 +6,59 @@ name: Build and Test Search API
 on:
   push:
     branches: [ develop, "fix-*", "feature-*" ]
+  release:
+    types: [published]
 
 jobs:
   docker_build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7]
+    env:
+      TAG: dev
     steps:
       - name: Check out GitHub Repo
         uses: actions/checkout@v2
+
+      # Imports many useful environment variables
+      - uses: FranzDiebold/github-env-vars-action@v2
+
+      # Unit (ish) tests
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Pip installation
+        run: python -m pip install --upgrade pip poetry
+      - name: Poetry installation
+        run: poetry install
+      - name: Create test image
+        env:
+          TAG: ${{ env.CI_ACTION_REF_NAME }}
+        run: docker-compose build
+      - name: Run tests
+        run: scripts/run_tests
+      - name: Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+          fail_ci_if_error: true
+
+      # Build and Push (if we get here)
       - name: Get current date
         id: date
         run: echo "::set-output name=date::$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
       - uses: FranzDiebold/github-env-vars-action@v2
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-      - name: Login to DockerHub
+      - name: Login to GitHub Container Registry (GHCR)
         uses: docker/login-action@v1
         with:
-          # hmm, try this.
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_TOKEN }}
+          password: ${{ secrets.GHCR_PAT }}
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
@@ -39,4 +72,4 @@ jobs:
             VCS_REF=${{ github.sha }}
             BRANCH=${{ github.ref }}
             TAG=${{ github.ref }}
-          tags: ghcr.io/${{ github.repository_owner }}/searchapi2:develop
+          tags: ghcr.io/${{ github.repository_owner }}/searchapi2:${{ env.CI_ACTION_REF_NAME }}

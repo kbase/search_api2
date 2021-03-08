@@ -6,9 +6,12 @@ version: "3.4"
 
 networks:
   kbase-dev:
+    external:
+      name: kbase-dev
 
 services:
   searchapi2:
+    image: searchapi2:${TAG:-dev}
     depends_on:
       - estunnel
     container_name: searchapi2
@@ -45,7 +48,7 @@ services:
       # IP for elasticsearch instance within the KBase network the SSHHOST resides within
       - IP
 
-      # The KBase SSHHOST to which the tunnel should connect. 
+      # The KBase SSHHOST to which the tunnel should connect.
       - SSHHOST
 
       # invented to have a form similar to SSHPASS

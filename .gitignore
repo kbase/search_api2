@@ -22,6 +22,7 @@ container.out
 
 # Development
 .vscode
+.idea
 
 # Handy place to stache temporary work, whilst keeping 
 # git unencumbered
