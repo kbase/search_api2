@@ -1,4 +1,4 @@
-name: Build and Test Search API
+name: Build, Test, Push for Releases
 
 on:
   release:
@@ -43,7 +43,6 @@ jobs:
       - name: Get current date
         id: date
         run: echo "::set-output name=date::$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-      - uses: FranzDiebold/github-env-vars-action@v2
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Login to GitHub Container Registry (GHCR)
