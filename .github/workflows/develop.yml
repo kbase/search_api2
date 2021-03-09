@@ -3,7 +3,7 @@ name: Build and Test Search API
 on:
   push:
     branches: [ develop, "fix-*", "feature-*" ]
-de
+
 jobs:
   docker_build:
     runs-on: ubuntu-latest
