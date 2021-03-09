@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- fix SCT-2947: unauthenticated search not working correctly (no ws or narr info)
+- fix SCT-2932: throws error if object has been deleted
+- fix SCT-2931: maximum reported search results was 10,000 - fixed to report actual search results with > 10K.
+- fix SCT-2930: was not honoring withPublic and withPrivate
+
+### Changed
+- fix SCT-2966: add a "build and test" workflow for GitHub Actions which builds an image, runs tests, and pushes the resulting image too GH Container Registry.
 
 ## [0.4.9] - 2020-09-11
 ### Changed
