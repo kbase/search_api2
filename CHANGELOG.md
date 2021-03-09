@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - fix SCT-2930: was not honoring withPublic and withPrivate
 
 ### Changed
-- fix SCT-2966: add a "build and test" workflow for GitHub Actions which builds an image, runs tests, and pushes the resulting image too GH Container Registry.
+- implement SCT-2966: add a "build and test" workflow for GitHub Actions which builds an image, runs tests, and pushes the resulting image too GH Container Registry.
 
 ## [0.4.9] - 2020-09-11
 ### Changed
