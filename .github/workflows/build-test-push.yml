@@ -1,8 +1,10 @@
-name: Build, Test, Push for Development Scenarios
+name: Build, Test, Push for Development Scenarios and Release
 
 on:
   push:
     branches: [ develop, "fix-*", "feature-*" ]
+  release:
+    types: [published]
 
 jobs:
   docker_build:
