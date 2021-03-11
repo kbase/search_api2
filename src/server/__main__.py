@@ -22,6 +22,8 @@ _ERR_STATUS = {
 }
 
 
+# TODO: services should not implement CORS - it should be handled
+# by the services proxy
 @app.middleware('request')
 async def cors_options(request):
     """Handle a CORS OPTIONS request."""
@@ -46,14 +48,16 @@ async def root(request):
     return sanic.response.json(result, status=status)
 
 
-@app.route('/legacy', methods=['POST', 'GET', 'OPTIONS'])
+@app.route('/legacy', methods=None)
 async def legacy(request):
     """Handle legacy-formatted requests that are intended for the previous Java api."""
+    # Manually handle these, so as not to inflame sanic into handling
+    # unhandled method errors.
+    if request.method != 'POST':
+        return sanic.response.raw(b'', status=405)
     auth = request.headers.get('Authorization')
-    body = _convert_rpc_formats(request.body)
-    result = legacy_service.call_py(body, {'auth': auth})
-    status = _get_status_code(result)
-    return sanic.response.json(result, status=status)
+    result = legacy_service.call(request.body, {'auth': auth})
+    return sanic.response.text(result)
 
 
 @app.middleware('response')
@@ -75,6 +79,8 @@ async def any_exception(request, err):
     Handle any unexpected server error.
     Theoretically, this should never be reached. JSONRPCBase will handle method
     error responses.
+    TODO: This assumes JSON-RPC 2.0 for all calls handled by this server;
+    yet the legacy api is JSON-RPC 1.1.
     """
     traceback.print_exc()
     return sanic.response.json({
