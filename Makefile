@@ -16,4 +16,3 @@ integration-tests:
 run-dev-server:
 	@echo Starting dev server...
 	sh scripts/run-dev-server.sh
-
