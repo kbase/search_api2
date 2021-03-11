@@ -80,7 +80,7 @@ def search_objects(params):
         query['highlight'] = {
             'fields': {'*': {}},
             'require_field_match': False,
-            # 'highlight_query': highlight_query
+            'highlight_query': highlight_query
         }
     return query
 
