@@ -35,8 +35,7 @@ ObjectData type:
 """
 from src.utils.config import config
 from src.utils.obj_utils import get_any
-from src.exceptions import ResponseError
-
+from jsonrpc11base.errors import InvalidParamsError
 
 # Unversioned feature index name/alias, (eg "genome_features")
 _FEATURES_UNVERSIONED = config['global']['genome_features_current_index_name']
@@ -156,7 +155,7 @@ def _get_search_params(params):
             query['bool']['must'] = query['bool'].get('must', [])
             query['bool']['must'].append({'range': {'timestamp': {'gte': min_ts, 'lte': max_ts}}})
         else:
-            raise ResponseError(code=-32602, message="Invalid timestamp range in match_filter/timestamp")
+            raise InvalidParamsError(message="Invalid timestamp range in match_filter/timestamp")
     # Handle a search on tags, which corresponds to the generic `tags` field in all indexes.
     if match_filter.get('source_tags'):
         # If source_tags_blacklist is `1`, then we are **excluding** these tags.
@@ -197,8 +196,9 @@ def _get_search_params(params):
             if prop in _SORT_PROP_MAPPING:
                 prop = _SORT_PROP_MAPPING[sort_rule['property']]
             else:
-                msg = f"Invalid non-object sorting property '{prop}'"
-                raise ResponseError(code=-32602, message=msg)
+                raise InvalidParamsError(
+                    message=f"Invalid non-object sorting property '{prop}'"
+                )
         order = 'asc' if ascending else 'desc'
         sort.append({prop: {'order': order}})
     pagination = params.get('pagination', {})
@@ -224,7 +224,9 @@ def _get_search_params(params):
             only_private = False
         else:
             # Error condition
-            raise ResponseError(code=-32602, message='May not specify no private data and no public data')
+            raise InvalidParamsError(
+                message='May not specify no private data and no public data'
+            )
 
     # Get excluded index names (handles `exclude_subobjects`)
     search_params = {

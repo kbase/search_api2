@@ -35,9 +35,9 @@ def test_get_auth_auth_fail_resp(services):
     assert result['version'] == '1.1'
     assert 'error' in result
     error = result['error']
-    assert error['code'] == -32001
+    assert error['code'] == 2000
     assert error['message'] == 'Auth error'
-    assert error['name'] == 'JSONRPCError'
+    assert error['name'] == 'APIError'
 
 
 def test_search_objects_auth_fail_resp(services):
@@ -55,9 +55,9 @@ def test_search_objects_auth_fail_resp(services):
     assert result['version'] == '1.1'
     assert 'error' in result
     error = result['error']
-    assert error['code'] == -32001
+    assert error['code'] == 2000
     assert error['message'] == 'Auth error'
-    assert error['name'] == 'JSONRPCError'
+    assert error['name'] == 'APIError'
 
 
 def test_search_types_auth_fail_resp(services):
@@ -75,9 +75,9 @@ def test_search_types_auth_fail_resp(services):
     assert result['version'] == '1.1'
     assert 'error' in result
     error = result['error']
-    assert error['code'] == -32001
+    assert error['code'] == 2000
     assert error['message'] == 'Auth error'
-    assert error['name'] == 'JSONRPCError'
+    assert error['name'] == 'APIError'
 
 
 def test_legacy_valid(services):
