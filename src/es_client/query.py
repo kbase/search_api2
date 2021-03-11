@@ -32,7 +32,10 @@ def search(params, meta):
     # workspaces which are inaccessible in the workspace,
     # but that fact is not yet updated in search, are
     # still filtered out.
-    authorized_ws_ids = ws_auth(meta['auth'], params.get('only_public', False), params.get('only_private', False))
+    authorized_ws_ids = ws_auth(
+        meta['auth'],
+        params.get('only_public', False),
+        params.get('only_private', False))
 
     query['bool']['filter'] = [
         {'terms': {'access_group': authorized_ws_ids}}
