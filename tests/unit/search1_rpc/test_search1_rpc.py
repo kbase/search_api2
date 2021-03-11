@@ -44,10 +44,9 @@ def test_get_objects_valid(services):
                   json=mock_obj_info, status=200)
     # Allow elasticsearch calls
     responses.add_passthru("http://localhost:9200/")
-    # TODO: should be version 1.1
     params = {
         "method": "KBaseSearchEngine.get_objects",
-        "jsonrpc": "2.0",
+        "version": "1.1",
         "id": 0,
         "params": [
             {
@@ -58,20 +57,65 @@ def test_get_objects_valid(services):
     }
     result = rpc.call(json.dumps(params), {'auth': None})
     res = json.loads(result)
-    # TODO: should be version 1.1
-    assert res['jsonrpc'] == '2.0'
+    assert res['version'] == '1.1'
     assert res['id'] == 0
     assert 'result' in res
     assert len(res['result']) == 1
 
 
+def ws_call(request):
+    header = {
+        'Content-Type': 'application/json'
+    }
+    auth = request.headers.get('Authorization')
+    if auth is not None and auth == 'bad_token':
+        return (500, header, json.dumps({
+            'version': '1.1',
+            'id': 'foo',
+            'error': {
+                'name': 'JSONRPCError',
+                'code': -32001,
+                'message': 'INVALID TOKEN'
+            }
+        }))
+    else:
+        return 200, header, json.dumps(mock_obj_info)
+
+
+@responses.activate
+def test_get_objects_bad_auth(services):
+    # Mock the obj info request
+    responses.add_callback(responses.POST,
+                           config['workspace_url'],
+                           callback=ws_call)
+    # Allow elasticsearch calls
+    responses.add_passthru("http://localhost:9200/")
+    params = {
+        "method": "KBaseSearchEngine.get_objects",
+        "version": "1.1",
+        "params": [
+            {
+                'guids': ['public-doc1'],
+                'post_processing': {'ids_only': 1},
+            }
+        ],
+    }
+    result = rpc.call(json.dumps(params), {'auth': 'bad_token'})
+    res = json.loads(result)
+    assert res['version'] == '1.1'
+    assert 'error' in res
+    error = res['error']
+    assert error['code'] == -32001
+    assert error['message'] == 'Auth error'
+    assert error['name'] == 'JSONRPCError'
+
+
 def test_search_objects_valid(services):
     with patch('src.es_client.query.ws_auth') as mocked:
-        # TODO: should be version 1.1
         mocked.return_value = [0, 1]  # Public workspaces
         params = {
             "method": "KBaseSearchEngine.search_objects",
-            "jsonrpc": "2.0",
+            "version": "1.1",
             "id": 0,
             "params": [{
                 'match_filter': {},
@@ -86,11 +130,10 @@ def test_search_objects_valid(services):
 
 def test_search_types_valid(services):
     with patch('src.es_client.query.ws_auth') as mocked:
-        # TODO: should be version 1.1
         mocked.return_value = [0, 1]  # Public workspaces
         params = {
             "method": "KBaseSearchEngine.search_types",
-            "jsonrpc": "2.0",
+            "version": "1.1",
             "id": "0",
             "params": [{'object_types': ['x'], 'match_filter': {}}]
         }

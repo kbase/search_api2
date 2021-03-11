@@ -1,23 +1,8 @@
 import json
 import requests
 
-# from tests.helpers import init_elasticsearch
-
-# from tests.helpers.unit_setup import (
-#     start_service,
-#     stop_service
-# )
-
-# APP_URL = 'http://localhost:5000'
-
-
-# def setup_module(module):
-#     start_service(APP_URL, 'searchapi2')
-#     init_elasticsearch()
-
-
-# def teardown_module(module):
-#     stop_service()
+# TODO: Remove this test file - it  is actually an integration test;
+# code exercised here will NOT be detected by coverage.
 
 
 def test_rpc_valid(services):
@@ -36,22 +21,63 @@ def test_rpc_valid(services):
     assert result['result']['dev']
 
 
-def test_auth_fail_resp(services):
+def test_get_auth_auth_fail_resp(services):
     resp = requests.post(
         services['app_url'] + "/legacy",
         headers={"Authorization": "xyz"},
         data=json.dumps({
-            # TODO: version 1.1
-            "jsonrpc": "2.0",
-            "id": "0",
+            "version": "1.1",
             "method": "KBaseSearchEngine.get_objects",
             "params": [{"guids": ["xyz"]}],
         })
     )
     result = resp.json()
+    assert result['version'] == '1.1'
     assert 'error' in result
-    assert result['error']['code'] == -32001
-    assert resp.status_code == 400
+    error = result['error']
+    assert error['code'] == -32001
+    assert error['message'] == 'Auth error'
+    assert error['name'] == 'JSONRPCError'
+
+
+def test_search_objects_auth_fail_resp(services):
+    resp = requests.post(
+        services['app_url'] + "/legacy",
+        headers={"Authorization": "xyz"},
+        data=json.dumps({
+            "version": "1.1",
+            "id": "0",
+            "method": "KBaseSearchEngine.search_objects",
+            "params": [{"guids": ["xyz"]}],
+        })
+    )
+    result = resp.json()
+    assert result['version'] == '1.1'
+    assert 'error' in result
+    error = result['error']
+    assert error['code'] == -32001
+    assert error['message'] == 'Auth error'
+    assert error['name'] == 'JSONRPCError'
+
+
+def test_search_types_auth_fail_resp(services):
+    resp = requests.post(
+        services['app_url'] + "/legacy",
+        headers={"Authorization": "xyz"},
+        data=json.dumps({
+            "version": "1.1",
+            "id": "0",
+            "method": "KBaseSearchEngine.search_types",
+            "params": [{"guids": ["xyz"]}],
+        })
+    )
+    result = resp.json()
+    assert result['version'] == '1.1'
+    assert 'error' in result
+    error = result['error']
+    assert error['code'] == -32001
+    assert error['message'] == 'Auth error'
+    assert error['name'] == 'JSONRPCError'
 
 
 def test_legacy_valid(services):
@@ -59,8 +85,7 @@ def test_legacy_valid(services):
     resp = requests.post(
         services['app_url'] + '/legacy',
         data=json.dumps({
-            # TODO: version 1.1
-            "jsonrpc": "2.0",
+            "version": "1.1",
             "id": 0,
             "method": "KBaseSearchEngine.get_objects",
             "params": [{
@@ -71,8 +96,7 @@ def test_legacy_valid(services):
     assert resp.status_code == 200
     result = resp.json()
     assert result['id'] == 0
-    # TODO: version 1.1
-    assert result['jsonrpc'] == '2.0'
+    assert result['version'] == '1.1'
     assert 'result' in result
     assert len(result['result']) == 1
 
@@ -91,13 +115,19 @@ def test_rpc_invalid(services):
 # disfavors GET
 # Also, KBase clients should not be encouraged to think that GET
 # is acceptable.
-def test_legacy_invalid(services):
+def test_legacy_invalid_method(services):
     """Test a basic empty request to /legacy"""
     resp = requests.get(services['app_url'] + '/legacy')
-    # TODO: should be a 405 - method not allowed
-    result = resp.json()
-    assert 'error' in result
-    assert result['error']['code'] == -32600  # Invalid params
+    assert resp.status_code == 405
+    resp = requests.delete(services['app_url'] + '/legacy')
+    assert resp.status_code == 405
+    resp = requests.patch(services['app_url'] + '/legacy')
+    assert resp.status_code == 405
+    resp = requests.head(services['app_url'] + '/legacy')
+    assert resp.status_code == 405
+    resp = requests.put(services['app_url'] + '/legacy')
+    assert resp.status_code == 405
+
 
 # TODO: actually, I don't think CORS should be set in the service itself,
 # rather in the proxy.
@@ -138,8 +168,7 @@ def test_legacy_rpc_conversion(services):
     )
     result = resp.json()
     assert result['id'] == 0
-    # TODO: should be version 1.1
-    assert result['jsonrpc'] == '2.0'
+    assert result['version'] == '1.1'
     assert len(result['result']) == 1
 
 
@@ -158,8 +187,5 @@ def test_sloppy_rpc_conversion(services):
         })
     )
     result = resp.json()
-    # TODO: if no reply sent, should not return?
-    assert 'id' in result
-    # TODO: should be version 1.1
-    assert result['jsonrpc'] == '2.0'
+    assert result['version'] == '1.1'
     assert len(result['result']) == 1
