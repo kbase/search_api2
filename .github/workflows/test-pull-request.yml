@@ -4,8 +4,6 @@
 name: Run tests
 
 on:
-  push:
-    branches: [ develop, master ]
   pull_request:
     branches: [ "*" ]
 
@@ -35,4 +33,3 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: ./coverage.xml
         fail_ci_if_error: true
-

@@ -6,6 +6,7 @@ services:
 
   # For running the python consumers
   web:
+    image: searchapi2:${TAG:-dev}
     build:
       context: .
     depends_on:
