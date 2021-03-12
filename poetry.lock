@@ -218,22 +218,22 @@ format_nongpl = ["idna", "jsonpointer (>1.13)", "webcolors", "rfc3986-validator 
 
 [[package]]
 name = "kbase-jsonrpc11base"
-version = "0.1.3"
+version = "0.1.6"
 description = "Simple JSON-RPC 1.1 service without transport layer"
 category = "main"
 optional = false
-python-versions = "^3.6"
+python-versions = "^3.7"
 develop = false
 
 [package.dependencies]
-jsonschema = "^3.2.0"
-pyyaml = "^5.3.1"
+jsonschema = "3.2.0"
+pyyaml = "5.4.1"
 
 [package.source]
 type = "git"
 url = "https://github.com/kbaseIncubator/kbase-jsonrpc11base"
-reference = "v0.1.3"
-resolved_reference = "c65905384d53c55a3f406603e896f7c745e3e8b7"
+reference = "v0.1.6"
+resolved_reference = "5d59ca6b1e1e0f09ec0faab922380e9ce53014d9"
 
 [[package]]
 name = "kbase-jsonrpcbase"
@@ -588,7 +588,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "56d48fe8de9b143bf7c5e416fda18c51e25b3a53e6c44719a54e42bca2a78882"
+content-hash = "ceca37a35537ab53e3e25016eb6b3433a42175801695d94088406151d28641b5"
 
 [metadata.files]
 aiofiles = [

@@ -33,6 +33,6 @@
 		}]
 	}],
 	"method": "KBaseSearchEngine.search_objects",
-	"jsonrpc": "2.0",
+	"version": "1.1",
 	"id": "5092263263143479"
 }

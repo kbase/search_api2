@@ -28,12 +28,13 @@ description = ServiceDescription(
     version='1.0'
 )
 
-SCHEMA_DIR = os.path.join(os.path.dirname(__file__), 'data/schema')
+SCHEMA_DIR = os.path.join(os.path.dirname(__file__), 'schemas')
 
 service = JSONRPCService(
     description=description,
-    schema_dir=None,
-    validate_result=False
+    schema_dir=SCHEMA_DIR,
+    validate_params=True,
+    validate_result=True
 )
 
 

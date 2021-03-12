@@ -5,8 +5,8 @@ import pytest
 from src.utils.logger import logger
 
 from tests.helpers.common import (
-    assert_jsonrpc20_result,
-    assert_jsonrpc20_error
+    assert_jsonrpc11_result,
+    assert_jsonrpc11_error
 )
 
 
@@ -32,8 +32,7 @@ def test_search_objects_many_results(service):
         data=json.dumps(request_data),
     )
     data = resp.json()
-    #  TODO: should be version 1.1 (aka jsonrpc 1.1)
-    [result] = assert_jsonrpc20_result(data, response_data)
+    [result] = assert_jsonrpc11_result(data, response_data)
 
     assert result['total'] > 10000
 
@@ -42,8 +41,7 @@ def assert_counts(service, with_private, with_public, expected_count):
     resp = make_call(service, with_private, with_public)
     response_data = load_data_file('case-03-response.json')
     data = resp.json()
-    #  TODO: should be version 1.1 (aka jsonrpc 1.1)
-    [result] = assert_jsonrpc20_result(data, response_data)
+    [result] = assert_jsonrpc11_result(data, response_data)
     assert result['total'] == expected_count
 
 
@@ -68,8 +66,7 @@ def get_error(service, with_private, with_public):
     resp = make_call(service, with_private, with_public)
     data = resp.json()
     response_data = load_data_file('case-03-response.json')
-    #  TODO: should be version 1.1 (aka jsonrpc 1.1)
-    return assert_jsonrpc20_error(data, response_data)
+    return assert_jsonrpc11_error(data, response_data)
 
 
 def get_count(service, with_private, with_public):
@@ -78,8 +75,7 @@ def get_count(service, with_private, with_public):
     response_data = load_data_file('case-03-response.json')
 
     data = resp.json()
-    #  TODO: should be version 1.1 (aka jsonrpc 1.1)
-    [result] = assert_jsonrpc20_result(data, response_data)
+    [result] = assert_jsonrpc11_result(data, response_data)
 
     return result['total']
 
@@ -104,7 +100,6 @@ def test_search_objects_neither_private_nor_public(service):
     error = get_error(service, 0, 0)
     assert error['code'] == -32602
     assert error['message'] == 'Invalid params'
-    assert error['data']['path'] == [0, 'access_filter']
 
 
 # A safer but less precise method.

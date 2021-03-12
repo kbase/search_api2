@@ -1,6 +1,6 @@
 {
 	"id": "0008033925138730691",
-	"jsonrpc": "2.0",
+	"version": "1.1",
 	"result": [{
 		"pagination": {
 			"start": 0,

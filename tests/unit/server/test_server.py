@@ -48,7 +48,7 @@ def test_search_objects_auth_fail_resp(services):
             "version": "1.1",
             "id": "0",
             "method": "KBaseSearchEngine.search_objects",
-            "params": [{"guids": ["xyz"]}],
+            "params": [{"match_filter": {}}],
         })
     )
     result = resp.json()
@@ -68,7 +68,7 @@ def test_search_types_auth_fail_resp(services):
             "version": "1.1",
             "id": "0",
             "method": "KBaseSearchEngine.search_types",
-            "params": [{"guids": ["xyz"]}],
+            "params": [{"match_filter": {}}],
         })
     )
     result = resp.json()
@@ -168,24 +168,5 @@ def test_legacy_rpc_conversion(services):
     )
     result = resp.json()
     assert result['id'] == 0
-    assert result['version'] == '1.1'
-    assert len(result['result']) == 1
-
-
-# TODO: why accept non-compliant requests?
-def test_sloppy_rpc_conversion(services):
-    """
-    Test that a Sloppy-RPC request is still handled ok
-    """
-    resp = requests.post(
-        services['app_url'] + '/legacy',
-        data=json.dumps({
-            "method": "KBaseSearchEngine.get_objects",
-            "params": [{
-                "guids": ['xyz']
-            }]
-        })
-    )
-    result = resp.json()
     assert result['version'] == '1.1'
     assert len(result['result']) == 1
