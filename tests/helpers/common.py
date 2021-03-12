@@ -39,6 +39,7 @@ def assert_jsonrpc20_error(actual, expected):
     assert isinstance(error, dict)
     return error
 
+
 def assert_jsonrpc11_result(actual, expected):
     assert actual['version'] == '1.1'
     if 'id' in actual:
