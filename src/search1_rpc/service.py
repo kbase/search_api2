@@ -22,9 +22,9 @@ from src.utils.logger import logger
 from src.search1_rpc.errors import trap_error
 
 description = ServiceDescription(
-    'Example Database Service',
-    'https://github.com/kbase/kbase-jsonrpc11base/examples/database',
-    summary='An example JSON-RPC 1.1 service implementing a simple database',
+    'The KBase Legacy Search API',
+    'https://github.com/kbase/search_api2/src/search1_rpc/schemas',
+    summary='This is the legacy search interface to the KBase search  service',
     version='1.0'
 )
 
