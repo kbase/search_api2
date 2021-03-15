@@ -139,24 +139,35 @@ def _get_search_params(params):
     match_filter = params.get('match_filter', {})
     # Base query object for ES. Will get mutated and expanded below.
     # query = {'bool': {'must': [], 'must_not': [], 'should': []}}  # type: dict
-    query = {'bool': {}}  # type: dict
+    query = {'bool': {
+        'must': [],
+        'filter': {
+            'bool': {}
+        }
+    }}  # type: dict
+
+    # Provides for full text search
     if match_filter.get('full_text_in_all'):
         # Match full text for any field in the objects
-        query['bool']['must'] = []
         query['bool']['must'].append({'match': {'agg_fields': match_filter['full_text_in_all']}})
+
+    # Search by object name, precisely, so more of a filter.
     if match_filter.get('object_name'):
-        query['bool']['must'] = query['bool'].get('must', [])
         query['bool']['must'].append({'match': {'obj_name': str(match_filter['object_name'])}})
+
+    # Search by timestamp range
     if match_filter.get('timestamp') is not None:
         ts = match_filter['timestamp']
         min_ts = ts.get('min_date')
         max_ts = ts.get('max_date')
         if min_ts is not None and max_ts is not None and min_ts < max_ts:
-            query['bool']['must'] = query['bool'].get('must', [])
             query['bool']['must'].append({'range': {'timestamp': {'gte': min_ts, 'lte': max_ts}}})
         else:
             raise InvalidParamsError(message="Invalid timestamp range in match_filter/timestamp")
+
     # Handle a search on tags, which corresponds to the generic `tags` field in all indexes.
+    # search_tags is populated on a workspace to indicate the type of workspace. Currently
+    # supported are "narrative", "refseq", and "noindex"
     if match_filter.get('source_tags'):
         # If source_tags_blacklist is `1`, then we are **excluding** these tags.
         blacklist_tags = bool(match_filter.get('source_tags_blacklist'))
@@ -166,46 +177,26 @@ def _get_search_params(params):
         if blacklist_tags:
             query['bool']['must_not'] = tag_query
         else:
-            query['bool']['must'] = query['bool'].get('must', [])
             query['bool']['must'] += tag_query
+
     # Handle match_filter/lookupInKeys
     query = _handle_lookup_in_keys(match_filter, query)
+
     # Handle filtering by object type
     object_types = params.get('object_types', [])
     if object_types:
         # For this fake type, we search on the specific index instead (see lower down).
         type_blacklist = ['GenomeFeature']
-        query['bool']['should'] = [
+        query['bool']['filter']['bool']['should'] = [
             {'term': {'obj_type_name': obj_type}}
             for obj_type in object_types
             if obj_type not in type_blacklist
         ]
-    # Handle sorting options
-    if 'sorting_rules' not in params:
-        params['sorting_rules'] = [{
-          "property": "timestamp",
-          "is_object_property": 0,
-          "ascending": 1
-        }]
-    sort = []  # type: list
-    for sort_rule in params['sorting_rules']:
-        prop = sort_rule.get('property')
-        is_obj_prop = sort_rule.get('is_object_property', True)
-        ascending = sort_rule.get('ascending', True)
-        if not is_obj_prop:
-            if prop in _SORT_PROP_MAPPING:
-                prop = _SORT_PROP_MAPPING[sort_rule['property']]
-            else:
-                raise InvalidParamsError(
-                    message=f"Invalid non-object sorting property '{prop}'"
-                )
-        order = 'asc' if ascending else 'desc'
-        sort.append({prop: {'order': order}})
-    pagination = params.get('pagination', {})
+
+    # Translate with_private and with_public to only_private and only_public.
     access_filter = params.get('access_filter', {})
     with_private = access_filter.get('with_private')
     with_public = access_filter.get('with_public')
-
     if with_private is None and with_public is None:
         only_public = False
         only_private = False
@@ -228,6 +219,40 @@ def _get_search_params(params):
                 message='May not specify no private data and no public data'
             )
 
+    # Handle sorting options
+    if 'sorting_rules' not in params:
+        params['sorting_rules'] = [{
+          "property": "timestamp",
+          "is_object_property": 0,
+          "ascending": 1
+        }]
+    sort = []  # type: list
+    for sort_rule in params['sorting_rules']:
+        prop = sort_rule.get('property')
+        is_obj_prop = sort_rule.get('is_object_property', True)
+        ascending = sort_rule.get('ascending', True)
+        if not is_obj_prop:
+            if prop in _SORT_PROP_MAPPING:
+                prop = _SORT_PROP_MAPPING[sort_rule['property']]
+            else:
+                raise InvalidParamsError(
+                    message=f"Invalid non-object sorting property '{prop}'"
+                )
+        order = 'asc' if ascending else 'desc'
+        sort.append({prop: {'order': order}})
+
+    pagination = params.get('pagination', {})
+
+    # remove unused elements from query
+    if len(query['bool']['filter']['bool']) == 0:
+        del query['bool']['filter']['bool']
+
+    if len(query['bool']['filter']) == 0:
+        del query['bool']['filter']
+
+    if len(query['bool']['must']) == 0:
+        del query['bool']['must']
+
     # Get excluded index names (handles `exclude_subobjects`)
     search_params = {
         'query': query,
@@ -238,8 +263,10 @@ def _get_search_params(params):
         'only_private': only_private,
         'track_total_hits': True
     }
+
     if 'GenomeFeature' in object_types:
         search_params['indexes'] = [_GENOME_FEATURES_IDX_NAME]
+
     return search_params
 
 
@@ -274,6 +301,5 @@ def _handle_lookup_in_keys(match_filter, query):
             if range_max is not None:
                 query_clause['range'][key]['lte'] = range_max
         if query_clause:
-            query['bool']['must'] = query['bool'].get('must', [])
             query['bool']['must'].append(query_clause)
     return query
