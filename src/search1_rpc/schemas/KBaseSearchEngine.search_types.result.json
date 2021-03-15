@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "array",
+  "minItems": 1,
+  "maxItems": 1,
+  "items": {
+    "title": "Legacy Search Types Method",
+    "type": "object",
+    "required": [
+      "type_to_count",
+      "search_time"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "type_to_count": {
+        "$ref": "types.json#/definitions/typeCounts"
+      },
+      "search_time": {
+        "type": "integer"
+      }
+    }
+  }
+}

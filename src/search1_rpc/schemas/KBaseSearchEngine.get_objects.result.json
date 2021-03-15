@@ -1,0 +1,43 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"type": "array",
+	"minItems": 1,
+	"maxItems": 1,
+	"items": {
+		"type": "object",
+		"required": [
+			"objects",
+			"search_time"
+		],
+		"additionalProperties": false,
+		"properties": {
+			"objects": {
+				"type": "array",
+				"items": {
+					"$ref": "types.json#/definitions/searchResultHit"
+				}
+			},
+			"search_time": {
+				"type": "integer"
+			},
+			"access_groups_info": {
+				"type": "object",
+				"additionalProperties": false,
+				"patternProperties": {
+					"^[1-9][0-9]*$": {
+						"$ref": "types.json#/definitions/workspaceInfo"
+					}
+				}
+			},
+			"access_group_narrative_info": {
+				"type": "object",
+				"additionalProperties": false,
+				"patternProperties": {
+					"^[1-9][0-9]*$": {
+						"$ref": "types.json#/definitions/narrativeInfo"
+					}
+				}
+			}
+		}
+	}
+}

@@ -1,7 +1,7 @@
 import pytest
 
 from src.search1_conversion import convert_params
-from src.exceptions import ResponseError
+from jsonrpc11base.errors import InvalidParamsError
 
 
 def test_search_objects_valid():
@@ -30,6 +30,8 @@ def test_search_objects_highlight():
         'query': {'bool': {'must': [{'match': {'agg_fields': 'x'}}]}},
         'highlight': {
             'fields': {'*': {}},
+            'highlight_query': {'bool': {'must': [{'match': {'agg_fields': {'operator': 'AND',
+                                                                            'query': 'x'}}}]}},
             'require_field_match': False,
         },
         'size': 20, 'from': 0,
@@ -88,7 +90,7 @@ def test_search_objects_timestamp():
 
 
 def test_search_objects_timestamp_invalid():
-    with pytest.raises(ResponseError):
+    with pytest.raises(InvalidParamsError):
         params = {
             'match_filter': {'timestamp': {'min_date': 0, 'max_date': 0}}
         }
@@ -167,7 +169,7 @@ def test_search_objects_sorting():
 
 
 def test_search_objects_sorting_invalid_prop():
-    with pytest.raises(ResponseError):
+    with pytest.raises(InvalidParamsError):
         params = {
             'sorting_rules': [
                 {'property': 'x', 'is_object_property': False, 'ascending': False},
@@ -294,7 +296,8 @@ def test_search_objects_private_nor_public():
             'with_public': 0
         }
     }
-    with pytest.raises(ResponseError) as re:
+    with pytest.raises(InvalidParamsError) as re:
         convert_params.search_objects(params)
-    assert re.value.jsonrpc_code == -32602
-    assert re.value.message == 'May not specify no private data and no public data'
+    assert re.value.code == -32602
+    assert re.value.message == 'Invalid params'
+    assert re.value.error['message'] == 'May not specify no private data and no public data'

@@ -17,7 +17,7 @@ from tests.integration.legacy_data import (
     search_request6,
 )
 from tests.helpers.common import (
-    assert_jsonrpc20_result,
+    assert_jsonrpc11_result,
     equal
 )
 
@@ -36,7 +36,7 @@ def test_search_example1(service):
         data=json.dumps(search_request1),
     )
     data = resp.json()
-    assert data['jsonrpc'] == search_response1['jsonrpc']
+    assert data['version'] == search_response1['version']
     assert data['id'] == search_response1['id']
     assert len(data['result']) == 1
     res = data['result'][0]
@@ -54,7 +54,7 @@ def test_search_example2(service):
         data=json.dumps(search_request2),
     )
     data = resp.json()
-    assert data['jsonrpc'] == search_response2['jsonrpc']
+    assert data['version'] == search_response2['version']
     assert data['id'] == search_response2['id']
     assert len(data['result']) == 1
     res = data['result'][0]
@@ -70,7 +70,7 @@ def test_search_example3(service):
         data=json.dumps(search_request3),
     )
     data = resp.json()
-    assert data['jsonrpc'] == search_response3['jsonrpc']
+    assert data['version'] == search_response3['version']
     assert data['id'] == search_response3['id']
     assert len(data['result']) == 1
     res = data['result'][0]
@@ -91,7 +91,7 @@ def test_search_example4(service):
         data=json.dumps(search_request4),
     )
     data = resp.json()
-    assert data['jsonrpc'] == search_response4['jsonrpc']
+    assert data['version'] == search_response4['version']
     assert data['id'] == search_response4['id']
     assert len(data['result']) == 1
     expected_res = search_response4['result'][0]
@@ -112,7 +112,7 @@ def test_search_example5(service):
         data=json.dumps(search_request5),
     )
     data = resp.json()
-    assert data['jsonrpc'] == search_response5['jsonrpc']
+    assert data['version'] == search_response5['version']
     assert data['id'] == search_response5['id']
     assert len(data['result']) == 1
     expected_res = search_response5['result'][0]
@@ -138,8 +138,7 @@ def test_search_example6(service):
         data=json.dumps(search_request6),
     )
     data = resp.json()
-    #  TODO: should be version 1.1 (aka jsonrpc 1.1)
-    assert data['jsonrpc'] == '2.0'
+    assert data['version'] == '1.1'
     assert data['id'] == search_request6['id']
     assert len(data['result']) == 1
     res = data['result'][0]
@@ -172,8 +171,7 @@ def test_search_case1(service):
         data=json.dumps(request_data),
     )
     data = resp.json()
-    #  TODO: should be version 1.1 (aka jsonrpc 1.1)
-    assert_jsonrpc20_result(data, response_data)
+    assert_jsonrpc11_result(data, response_data)
     [is_equal, path] = equal(data, response_data)
     assert is_equal, path
 
@@ -190,8 +188,7 @@ def test_search_case1_no_auth(service):
         data=json.dumps(request_data),
     )
     data = resp.json()
-    #  TODO: should be version 1.1 (aka jsonrpc 1.1)
-    assert_jsonrpc20_result(data, response_data)
+    assert_jsonrpc11_result(data, response_data)
     [is_equal, path] = equal(data, response_data)
     assert is_equal, path
 

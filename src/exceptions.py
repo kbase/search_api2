@@ -10,7 +10,7 @@ class ResponseError(Exception):
 
 class UnknownType(ResponseError):
 
-    def __init__(self, message):
+    def __init__(self, message) -> object:
         super().__init__(code=-32005, message=message)
 
 
@@ -30,6 +30,8 @@ class UnknownIndex(ResponseError):
 class UserProfileError(ResponseError):
 
     def __init__(self, url, resp_text):
+        self.url = url
+        self.resp_text = resp_text
         msg = f"User profile service error:\nResponse: {resp_text}\nURL: {url}"
         super().__init__(code=-32004, message=msg)
 

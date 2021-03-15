@@ -3,7 +3,7 @@
 search_request1 = {
     "id": "xyz",
     "method": "KBaseSearchEngine.search_objects",
-    "jsonrpc": "2.0",
+    "version": "1.1",
     "params": [{
         "access_filter": {
             "with_private": 0,
@@ -31,7 +31,7 @@ search_request1 = {
 
 search_response1 = {
     "id": "xyz",
-    "jsonrpc": "2.0",
+    "version": "1.1",
     "result": [{
         "pagination": {
             "start": 0,
@@ -50,7 +50,7 @@ search_response1 = {
 
 # Method call to get type counts
 search_request2 = {
-    "jsonrpc": "2.0",
+    "version": "1.1",
     "method": "KBaseSearchEngine.search_types",
     "id": "6959719268936883",
     "params": [{
@@ -69,7 +69,7 @@ search_request2 = {
 
 search_response2 = {
     "id": "6959719268936883",
-    "jsonrpc": "2.0",
+    "version": "1.1",
     "result": [{
         "type_to_count": {
             "Narrative": 13,
@@ -118,12 +118,12 @@ search_request3 = {
             "property": "type"
         }]
     }],
-    "jsonrpc": "2.0"
+    "version": "1.1"
 }
 
 search_response3 = {
     "id": "xyz",
-    "jsonrpc": "2.0",
+    "version": "1.1",
     "result": [{
         "pagination": {"start": 0, "count": 20},
         "sorting_rules": [{
@@ -171,11 +171,11 @@ search_request4 = {
             "skip_keys": 1
         }
     }],
-    "jsonrpc": "2.0"
+    "version": "1.1"
 }
 
 search_response4 = {
-    "jsonrpc": "2.0",
+    "version": "1.1",
     "id": "17499051636214047",
     "result": [{
         "pagination": {
@@ -238,11 +238,11 @@ search_request5 = {
             "property": "id"
         }]
     }],
-    "jsonrpc": "2.0"
+    "version": "1.1"
 }
 
 search_response5 = {
-  "jsonrpc": "2.0",
+  "version": "1.1",
   "id": "2328138435664152",
   "result": [{
     "pagination": {
@@ -352,6 +352,6 @@ search_request6 = {
         }]
     }],
     "method": "KBaseSearchEngine.search_objects",
-    "jsonrpc": "2.0",
+    "version": "1.1",
     "id": "4564119057768642"
 }

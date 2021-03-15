@@ -11,22 +11,30 @@ These methods are a composition of:
     - es_client.search
     - search1_conversion.convert_result
 """
-import jsonrpcbase
+
 import time
-
-from src.es_client import search
+import os
+from jsonrpc11base import JSONRPCService
+from jsonrpc11base.service_description import ServiceDescription
+from src.es_client.query import search
 from src.search1_conversion import convert_params, convert_result
-from src.utils.config import config
 from src.utils.logger import logger
+from src.search1_rpc.errors import trap_error
 
-service = jsonrpcbase.JSONRPCService(
-    info={
-        'title': 'Search API (legacy endpoints)',
-        'description': 'Search endpoints for the legacy API',
-        'version': config['app_version'],
-    },
-    schema='legacy-schema.yaml',
-    development=config['dev'],
+description = ServiceDescription(
+    'The KBase Legacy Search API',
+    'https://github.com/kbase/search_api2/src/search1_rpc/schemas',
+    summary='This is the legacy search interface to the KBase search  service',
+    version='1.0'
+)
+
+SCHEMA_DIR = os.path.join(os.path.dirname(__file__), 'schemas')
+
+service = JSONRPCService(
+    description=description,
+    schema_dir=SCHEMA_DIR,
+    validate_params=True,
+    validate_result=True
 )
 
 
@@ -36,9 +44,10 @@ def get_objects(params, meta):
         params = params[0]
     start = time.time()
     query = convert_params.get_objects(params)
-    result = convert_result.get_objects(params, search(query, meta), meta)
+    search_result = trap_error(lambda: search(query, meta))
+    result = convert_result.get_objects(params, search_result, meta)
     logger.debug(f'Finished get_objects in {time.time() - start}s')
-    # KBase convention is to return result in a singleton list
+    # KBase convention is to return result in a list
     return [result]
 
 
@@ -48,9 +57,10 @@ def search_objects(params, meta):
         params = params[0]
     start = time.time()
     query = convert_params.search_objects(params)
-    result = convert_result.search_objects(params, search(query, meta), meta)
+    search_result = trap_error(lambda: search(query, meta))
+    result = convert_result.search_objects(params, search_result, meta)
     logger.debug(f'Finished search_objects in {time.time() - start}s')
-    # KBase convention is to return result in a singleton list
+    # KBase convention is to return result in a list
     return [result]
 
 
@@ -60,9 +70,10 @@ def search_types(params, meta):
         params = params[0]
     start = time.time()
     query = convert_params.search_types(params)
-    result = convert_result.search_types(params, search(query, meta), meta)
+    search_result = trap_error(lambda: search(query, meta))
+    result = convert_result.search_types(params, search_result, meta)
     logger.debug(f'Finished search_types in {time.time() - start}s')
-    # KBase convention is to return result in a singleton list
+    # KBase convention is to return result in a list
     return [result]
 
 
