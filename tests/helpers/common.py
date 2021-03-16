@@ -48,7 +48,8 @@ def assert_jsonrpc11_result(actual, expected):
     result = actual['result']
     assert isinstance(result,  list)
     assert 'error' not in actual
-    return result
+    assert len(result) == 1
+    return result[0]
 
 
 def assert_jsonrpc11_error(actual, expected):
