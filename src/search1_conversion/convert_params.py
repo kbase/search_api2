@@ -149,11 +149,23 @@ def _get_search_params(params):
     # Provides for full text search
     if match_filter.get('full_text_in_all'):
         # Match full text for any field in the objects
-        query['bool']['must'].append({'match': {'agg_fields': match_filter['full_text_in_all']}})
+        terms = match_filter.get('full_text_in_all')
+        query['bool']['must'].append({
+            'match': {
+                'agg_fields': {
+                    'query': terms,
+                    'operator': 'AND'
+                }
+            }
+        })
 
     # Search by object name, precisely, so more of a filter.
     if match_filter.get('object_name'):
-        query['bool']['must'].append({'match': {'obj_name': str(match_filter['object_name'])}})
+        query['bool']['must'].append({
+            'match': {
+                'obj_name': str(match_filter['object_name'])
+            }
+        })
 
     # Search by timestamp range
     if match_filter.get('timestamp') is not None:
@@ -161,7 +173,11 @@ def _get_search_params(params):
         min_ts = ts.get('min_date')
         max_ts = ts.get('max_date')
         if min_ts is not None and max_ts is not None and min_ts < max_ts:
-            query['bool']['must'].append({'range': {'timestamp': {'gte': min_ts, 'lte': max_ts}}})
+            query['bool']['must'].append({
+                'range': {
+                    'timestamp': {'gte': min_ts, 'lte': max_ts}
+                }
+            })
         else:
             raise InvalidParamsError(message="Invalid timestamp range in match_filter/timestamp")
 
