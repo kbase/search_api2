@@ -15,6 +15,7 @@ from tests.integration.legacy_data import (
     search_request5,
     search_response5,
     search_request6,
+    search_request_7
 )
 from tests.helpers.common import (
     assert_jsonrpc11_result,
@@ -111,12 +112,8 @@ def test_search_example5(service):
         url=url,
         data=json.dumps(search_request5),
     )
-    data = resp.json()
-    assert data['version'] == search_response5['version']
-    assert data['id'] == search_response5['id']
-    assert len(data['result']) == 1
+    res = assert_jsonrpc11_result(resp.json(), search_request5)
     expected_res = search_response5['result'][0]
-    res = data['result'][0]
     assert set(res.keys()) == set(expected_res.keys())
     assert res['pagination'] == expected_res['pagination']
     assert res['sorting_rules'] == expected_res['sorting_rules']
@@ -137,21 +134,33 @@ def test_search_example6(service):
         headers={'Authorization': os.environ['WS_TOKEN']},
         data=json.dumps(search_request6),
     )
-    data = resp.json()
-    assert data['version'] == '1.1'
-    assert data['id'] == search_request6['id']
-    assert len(data['result']) == 1
-    res = data['result'][0]
+    res = assert_jsonrpc11_result(resp.json(), search_request6)
     assert len(res['objects']) > 0
     for obj in res['objects']:
         assert len(obj['highlight']) > 0
 
-#
+
+def test_search_example_7(service):
+    """Test multiple terms"""
+    url = service['app_url'] + '/legacy'
+
+    if 'WS_TOKEN' not in os.environ:
+        pytest.skip('Token required for this test')
+
+    rpc = search_request_7['rpc']
+
+    for case in  search_request_7['cases']:
+        rpc['params'][0]['match_filter']['full_text_in_all'] = case['full_text_in_all']
+        resp = requests.post(
+            url=url,
+            headers={'Authorization': os.environ['WS_TOKEN']},
+            data=json.dumps(rpc),
+        )
+        res = assert_jsonrpc11_result(resp.json(), rpc)
+        assert res['total'] == case['total']
 
 # This is a normal data-search usage, which returns the
 # workspace info and narrative info, for public data.
-
-
 # Simulates search from data-search with a search term, only public data
 
 

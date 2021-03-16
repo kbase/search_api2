@@ -27,11 +27,32 @@ def test_search_objects_highlight():
         }
     }
     expected = {
-        'query': {'bool': {'must': [{'match': {'agg_fields': 'x'}}]}},
+        'query': {
+            'bool': {
+                'must': [{
+                    'match': {
+                        'agg_fields': {
+                            'query': 'x',
+                            'operator': 'AND'
+                        }
+                    }
+                }]
+            }
+        },
         'highlight': {
             'fields': {'*': {}},
-            'highlight_query': {'bool': {'must': [{'match': {'agg_fields': {'operator': 'AND',
-                                                                            'query': 'x'}}}]}},
+            'highlight_query': {
+                'bool': {
+                    'must': [{
+                        'match': {
+                            'agg_fields': {
+                                'query': 'x',
+                                'operator': 'AND'
+                            }
+                        }
+                    }]
+                }
+            },
             'require_field_match': False,
         },
         'size': 20, 'from': 0,
@@ -48,7 +69,18 @@ def test_search_objects_fulltext():
         'match_filter': {'full_text_in_all': 'xyz'},
     }
     expected = {
-        'query': {'bool': {'must': [{'match': {'agg_fields': 'xyz'}}]}},
+        'query': {
+            'bool': {
+                'must': [{
+                    'match': {
+                        'agg_fields': {
+                            'query': 'xyz',
+                            'operator': 'AND'
+                        }
+                    }
+                }]
+            }
+        },
         'size': 20, 'from': 0,
         'sort': [{'timestamp': {'order': 'asc'}}],
         'only_public': False,

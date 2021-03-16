@@ -355,3 +355,49 @@ search_request6 = {
     "version": "1.1",
     "id": "4564119057768642"
 }
+
+# Make sure adding additional terms results in narrowing the search.
+# A request to get a total count on refdata for a search query
+
+# Test multiple terms
+search_request_7 = {
+    'rpc': {
+        "id": "xyz",
+        "method": "KBaseSearchEngine.search_objects",
+        "version": "1.1",
+        "params": [{
+            "access_filter": {
+                "with_private": 0,
+                "with_public": 1
+            },
+            "match_filter": {
+                "exclude_subobjects": 1,
+                "full_text_in_all": "coli",
+                "source_tags": ["refdata"],
+                "source_tags_blacklist": 0
+            },
+            "pagination": {
+                "count": 0,
+                "start": 0
+            },
+            "post_processing": {
+                "ids_only": 1,
+                "include_highlight": 1,
+                "skip_data": 1,
+                "skip_info": 1,
+                "skip_keys": 1
+            }
+        }]
+    },
+    'cases': [{
+        'full_text_in_all': 'Prochlorococcus marinus',
+        'total': 11
+    },  {
+        'full_text_in_all': 'Prochlorococcus',
+        'total': 18
+    }, {
+        'full_text_in_all': 'marinus',
+        'total': 12
+    }]
+}
+
