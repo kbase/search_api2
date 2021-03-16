@@ -134,10 +134,14 @@ def test_search_objects_objtypes():
     expected = {
         'query': {
             'bool': {
-                'should': [
-                    {'term': {'obj_type_name': 'x'}},
-                    {'term': {'obj_type_name': 'y'}}
-                ]
+                'filter': {
+                    'bool': {
+                        'should': [
+                            {'term': {'obj_type_name': 'x'}},
+                            {'term': {'obj_type_name': 'y'}}
+                        ]
+                    }
+                }
             }
         },
         'indexes': ['genome_features_2'],
