@@ -149,7 +149,7 @@ def test_search_example_7(service):
 
     rpc = search_request_7['rpc']
 
-    for case in  search_request_7['cases']:
+    for case in search_request_7['cases']:
         rpc['params'][0]['match_filter']['full_text_in_all'] = case['full_text_in_all']
         resp = requests.post(
             url=url,
