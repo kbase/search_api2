@@ -128,5 +128,5 @@ tests/integration/test_integration_search_workspaces.py::test_dashboard_example 
 ## Using with kbase-ui
 
 ```
-IP="<IP HERE>" SSHHOST="login1.berkeley.kbase.us" SSHUSER="<KBASE DEV USERNAME>" SSHPASS="<KBASE DEV PWD>" docker-compose --file tests/integration/docker-compose.yaml up
+IP="<IP HERE>" SSHHOST="login1.berkeley.kbase.us" SSHUSER="<KBASE DEV USERNAME>" SSHPASS="<KBASE DEV PWD>" make run-dev-server
 ```

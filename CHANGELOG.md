@@ -6,10 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Fixed
-- fix SCT-2947: unauthenticated search not working correctly (no ws or narr info)
-- fix SCT-2932: throws error if object has been deleted
+- fix SCT-2930: not honoring withPublic and withPrivate
 - fix SCT-2931: maximum reported search results was 10,000 - fixed to report actual search results with > 10K.
-- fix SCT-2930: was not honoring withPublic and withPrivate
+- fix SCT-2932: throws error if object has been deleted
+- fix SCT-2933, SCT-2956: Searchapi2 legacy endpoint uses jsonrpc 2.0 not 1.1
+- fix SCT-2937: searchapi2/legacy search_objects should be tolerant of inaccessible workspaces
+- fix SCT-2947: unauthenticated search not working correctly (no ws or narr info)
+- fix SCT-2969: not honoring object_types
+- fix SCT-2970: not narrowing search with additional terms
 
 ### Changed
 - implement SCT-2966: add a "build and test" workflow for GitHub Actions which builds an image, runs tests, and pushes the resulting image too GH Container Registry.

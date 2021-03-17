@@ -31,17 +31,14 @@ def test_search_objects_many_results(service):
         headers={'Authorization': os.environ['WS_TOKEN']},
         data=json.dumps(request_data),
     )
-    data = resp.json()
-    [result] = assert_jsonrpc11_result(data, response_data)
-
+    result = assert_jsonrpc11_result(resp.json(), response_data)
     assert result['total'] > 10000
 
 
 def assert_counts(service, with_private, with_public, expected_count):
     resp = make_call(service, with_private, with_public)
     response_data = load_data_file('case-03-response.json')
-    data = resp.json()
-    [result] = assert_jsonrpc11_result(data, response_data)
+    result = assert_jsonrpc11_result(resp.json(), response_data)
     assert result['total'] == expected_count
 
 
@@ -71,12 +68,8 @@ def get_error(service, with_private, with_public):
 
 def get_count(service, with_private, with_public):
     resp = make_call(service, with_private, with_public)
-
     response_data = load_data_file('case-03-response.json')
-
-    data = resp.json()
-    [result] = assert_jsonrpc11_result(data, response_data)
-
+    result = assert_jsonrpc11_result(resp.json(), response_data)
     return result['total']
 
 #
