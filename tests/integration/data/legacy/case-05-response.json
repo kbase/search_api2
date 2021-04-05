@@ -1,0 +1,14 @@
+{
+    "id": "6959719268936883",
+    "version": "1.1",
+    "result": [{
+        "type_to_count": {
+            "Narrative": 13,
+            "Taxon": 3318,
+            "Tree": 3,
+            "Genome": 3174,
+            "Workspace": 1
+        },
+        "search_time": 1506
+    }]
+}

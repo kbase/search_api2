@@ -78,15 +78,15 @@ def get_count(service, with_private, with_public):
 
 
 def test_search_objects_private_and_public(service):
-    assert_counts(service, 1, 1, 8)
+    assert_counts(service, 1, 1, 12)
 
 
 def test_search_objects_private(service):
-    assert_counts(service, 1, 0, 2)
+    assert_counts(service, 1, 0, 5)
 
 
 def test_search_objects_public(service):
-    assert_counts(service, 0, 1, 6)
+    assert_counts(service, 0, 1, 9)
 
 
 def test_search_objects_neither_private_nor_public(service):

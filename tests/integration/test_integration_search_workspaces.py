@@ -43,8 +43,7 @@ def test_dashboard_example(service):
         "params": {
             "filters": {
                 "fields": [
-                  {"field": "is_temporary", "term": False},
-                  {"field": "creator", "term": "jayrbolton"}
+                  {"field": "creator", "term": "kbaseuitest"}
                 ],
                 "operator": "AND"
             },

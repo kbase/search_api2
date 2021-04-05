@@ -7,7 +7,7 @@ The integration tests run inside a Docker container. An associated ssh tunnel pr
 Although the integration test script will build the images if they are missing, the build can take a few minutes, which may cause the integration test script to time out. It is more reliable to simply build the containers first.
 
 ```bash
-make build-integration-test-images.sh
+make build-integration-test-images
 ```
 
 You can view the files `container.out` and `container.err` to monitor progress building the images.
@@ -23,6 +23,11 @@ export SHHOST="<KBASE SSH HOST>"
 export SSHUSER="<DEV ACCOUNT USERNAME>"
 export SSHPASS="<DEV ACCOUNT PASSWORD>"
 ```
+
+> Note: For now the "test user" is `kbaseuitest`. As a kbase-ui dev for the password or a token.
+
+> TODO: We should establish a `searchtest` user, use it to create some narratives with data for indexing, and use that account for integration testing. 
+
 
 Running the tests is as simple as:
 

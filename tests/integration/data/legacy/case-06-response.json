@@ -1,0 +1,20 @@
+{
+    "id": "xyz",
+    "version": "1.1",
+    "result": [{
+        "pagination": {"start": 0, "count": 20},
+        "sorting_rules": [{
+            "property": "access_group_id",
+            "is_object_property": 0,
+            "ascending": 0
+        }, {
+            "property": "type",
+            "is_object_property": 0,
+            "ascending": 1
+        }],
+        "objects": [],
+        "total": 6509,
+        "search_time": 1918,
+        "access_group_narrative_info": {}
+    }]
+}

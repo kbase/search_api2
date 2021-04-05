@@ -1,0 +1,18 @@
+{
+    "id": "xyz",
+    "version": "1.1",
+    "result": [{
+        "pagination": {
+            "start": 0,
+            "count": 0
+        },
+        "sorting_rules": [{
+            "property": "timestamp",
+            "is_object_property": 0,
+            "ascending": 1
+        }],
+        "objects": [],
+        "total": 15039,
+        "search_time": 1848
+    }]
+}
