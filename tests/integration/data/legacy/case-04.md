@@ -1,1 +1,0 @@
-# A request to get a total count on refdata for a search query
