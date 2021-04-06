@@ -8,4 +8,3 @@ def test_search_types(service):
     res = do_rpc(url, request_data, response_data)
     assert res['search_time'] > 0
     assert res['type_to_count']  # TODO match more closely when things are more indexed
-
