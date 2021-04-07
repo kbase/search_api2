@@ -1,0 +1,1 @@
+Basic ecoli search example with all metadata

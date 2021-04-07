@@ -1,0 +1,18 @@
+{
+    "version": "1.1",
+    "id": "17499051636214047",
+    "result": [{
+        "pagination": {
+          "start": 0,
+          "count": 0
+        },
+        "sorting_rules": [{
+            "property": "timestamp",
+            "is_object_property": 0,
+            "ascending": 1
+        }],
+        "objects": [],
+        "total": 94222799,
+        "search_time": 355
+    }]
+}

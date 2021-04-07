@@ -1,7 +1,7 @@
 {
 	"params": [{
 		"match_filter": {
-			"full_text_in_all": "coli",
+			"full_text_in_all": "Prochlorococcus",
 			"exclude_subobjects": 1,
 			"source_tags": ["refdata", "noindex"],
 			"source_tags_blacklist": 1

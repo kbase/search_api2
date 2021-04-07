@@ -2,8 +2,11 @@ import subprocess
 import signal
 from src.utils.wait_for_service import wait_for_service
 from src.utils.logger import logger
+import json
+import os
+import requests
 from . import common
-
+from .common import assert_jsonrpc11_result, equal
 
 container_process = None
 container_out = None
@@ -52,3 +55,41 @@ def stop_service():
 
     if container_out is not None:
         container_out.close()
+
+
+def load_data_file(method, name):
+    """Load the json test data file with the given name from ./data/legacy """
+    file_path = os.path.join(os.path.dirname(__file__), '../integration/data/legacy', method, name)
+    logger.info(f'loading data file from "{file_path}"')
+    with open(file_path) as f:
+        return json.load(f)
+
+
+def do_rpc(url, request_data, response_data):
+    """Send the given jsonrpc request, do basic jsonrpc 1.1 compliance check."""
+    resp = requests.post(
+        url=url,
+        headers={'Authorization': os.environ['WS_TOKEN']},
+        data=json.dumps(request_data),
+    )
+    return assert_jsonrpc11_result(resp.json(), response_data)
+
+
+def assert_equal_results(actual_result, expected_result):
+    """Asserts that the actual results match expected; omits non-deterministic fields"""
+    for key in ['pagination', 'sorting_rules', 'total', 'objects']:
+        assert equal(actual_result[key], expected_result[key])
+
+    # Optional keys (may be enabled, or not)
+    # We check if the specified keys are expected, and matching,
+    # or present, and expected.
+
+    for key in ['access_group_narrative_info', 'access_group_narrative_info']:
+        # here we check only if it is in our expected result.
+        if key in expected_result:
+            assert equal(actual_result[key], expected_result[key])
+
+    for key in ['access_group_narrative_info', 'access_group_narrative_info']:
+        # but here we check if is in the actual result.
+        if key in actual_result:
+            assert equal(actual_result[key], expected_result[key])
