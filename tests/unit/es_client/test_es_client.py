@@ -119,7 +119,7 @@ def test_search_unknown_index(services):
     with patch('src.es_client.query.ws_auth') as mocked:
         mocked.return_value = [0, 1]  # Public workspaces
         idx_name = 'xyz'
-        full_name = config['index_prefix'] + '_' + idx_name
+        full_name = config['index_prefix'] + config['prefix_delimiter'] + idx_name
         params = {'indexes': [idx_name]}
         with pytest.raises(UnknownIndex) as ctx:
             search(params, {'auth': None})

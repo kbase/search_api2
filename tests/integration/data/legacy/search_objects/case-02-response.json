@@ -1,6 +1,6 @@
 {
 	"id": "0008033925138730691",
-	"version": "1.1",
+	"version":  "1.1",
 	"result": [{
 		"pagination": {
 			"start": 0,
@@ -15,11 +15,11 @@
 		"search_time": 2445,
 		"objects": [{
 			"object_name": "Narrative.1594582422207",
-			"access_group": 52407,
-			"obj_id": 1,
-			"version": 65,
+			"workspace_id":  52407,
+			"object_id": 1,
+			"workspace_version": 65,
 			"timestamp": 1614657640817,
-			"type": "Narrative",
+			"workspace_type_name":  "Narrative",
 			"creator": "zimingy",
 			"data": {
 				"narrative_title": "KBase Test Data",
@@ -145,18 +145,18 @@
 			"guid": "WS:52407/1/1",
 			"kbase_id": "52407/1/1",
 			"index_name": "narrative_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"cells.desc": ["Import GFF3/FASTA file as <em>Genome</em> from Staging Area", "Name: KBasederivedGCF002287175.1.gbffgenome (GenomeFileUtil)\nThis is a <em>genome</em> data set.", "Import GenBank File as <em>Genome</em> from Staging Area", "Name: KBasederived16pairedtrimMEGAHIT.contigs.fagenome.gff_genome(AessemblyUtil)\nThis is a <em>genome</em> data"],
-				"type": ["<em>Narrative</em>"]
+				"workspace_type_name":  ["<em>Narrative</em>"]
 			}
 		}, {
 			"object_name": "metagenome_badabing",
-			"access_group": 52407,
-			"obj_id": 41,
-			"version": 1,
+			"workspace_id":  52407,
+			"object_id":  41,
+			"workspace_version": 1,
 			"timestamp": 1614655779259,
-			"type": "Genome",
+			"workspace_type_name":  "Genome",
 			"creator": "zimingy",
 			"data": {
 				"genome_id": "metagenome_badabing",
@@ -200,18 +200,18 @@
 			"guid": "WS:52407/41/1",
 			"kbase_id": "52407/41/1",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"warnings": ["<em>Genome</em> molecule_type SingleLetterAlphabet is not expected for domain Unknown.", "SUSPECT: This <em>genome</em> has 131854 genes that needed to be spoofed for existing parentless CDS."],
-				"type": ["<em>Genome</em>"]
+				"workspace_type_name":  ["<em>Genome</em>"]
 			}
 		}, {
 			"object_name": "Narrative.1484955375553",
-			"access_group": 16325,
-			"obj_id": 1,
-			"version": 30,
+			"workspace_id":  16325,
+			"object_id":  1,
+			"workspace_version": 30,
 			"timestamp": 1614644544954,
-			"type": "Narrative",
+			"workspace_type_name":  "Narrative",
 			"creator": "gaprice",
 			"data": {
 				"narrative_title": "QUASTtest",
@@ -256,18 +256,18 @@
 			"guid": "WS:16325/1/1",
 			"kbase_id": "16325/1/1",
 			"index_name": "narrative_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"cells.desc": ["QUAST - Quality Assessment Tool for <em>Genome</em> Assemblies"],
-				"type": ["<em>Narrative</em>"]
+				"workspace_type_name":  ["<em>Narrative</em>"]
 			}
 		}, {
 			"object_name": "Narrative.1587165662023",
-			"access_group": 51911,
-			"obj_id": 16,
-			"version": 50,
+			"workspace_id":  51911,
+			"object_id":  16,
+			"workspace_version": 50,
 			"timestamp": 1613962939430,
-			"type": "Narrative",
+			"workspace_type_name":  "Narrative",
 			"creator": "dylan",
 			"data": {
 				"narrative_title": "CI - BLAST tests on AMA",
@@ -450,18 +450,18 @@
 			"guid": "WS:51911/16/1",
 			"kbase_id": "51911/16/1",
 			"index_name": "narrative_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"cells.desc": ["Batch Create <em>Genome</em> Set - v1.2.0"],
-				"type": ["<em>Narrative</em>"]
+				"workspace_type_name":  ["<em>Narrative</em>"]
 			}
 		}, {
 			"object_name": "Narrative.1605571868207",
-			"access_group": 57559,
-			"obj_id": 11,
-			"version": 107,
+			"workspace_id":  57559,
+			"object_id":  11,
+			"workspace_version": 107,
 			"timestamp": 1613410653476,
-			"type": "Narrative",
+			"workspace_type_name":  "Narrative",
 			"creator": "ialarmedalien",
 			"data": {
 				"narrative_title": "Many cell types",
@@ -575,18 +575,18 @@
 			"guid": "WS:57559/11/1",
 			"kbase_id": "57559/11/1",
 			"index_name": "narrative_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"cells.desc": ["Assess <em>Genome</em> Quality with CheckM - v1.0.8"],
-				"type": ["<em>Narrative</em>"]
+				"workspace_type_name":  ["<em>Narrative</em>"]
 			}
 		}, {
 			"object_name": "Narrative.1610463857540",
-			"access_group": 58624,
-			"obj_id": 1,
-			"version": 44,
+			"workspace_id":  58624,
+			"object_id":  1,
+			"workspace_version": 44,
 			"timestamp": 1612897762108,
-			"type": "Narrative",
+			"workspace_type_name":  "Narrative",
 			"creator": "zimingy",
 			"data": {
 				"narrative_title": "kbase test data",
@@ -679,18 +679,18 @@
 			"guid": "WS:58624/1/1",
 			"kbase_id": "58624/1/1",
 			"index_name": "narrative_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"cells.desc": ["Import GFF3/FASTA file as <em>Genome</em> from Staging Area"],
-				"type": ["<em>Narrative</em>"]
+				"workspace_type_name":  ["<em>Narrative</em>"]
 			}
 		}, {
 			"object_name": "Rhodobacter_sphaeroides_2.4.1_KBase.RAST",
-			"access_group": 59262,
-			"obj_id": 4,
-			"version": 1,
+			"workspace_id":  59262,
+			"object_id":  4,
+			"workspace_version": 1,
 			"timestamp": 1611981183498,
-			"type": "Genome",
+			"workspace_type_name":  "Genome",
 			"creator": "eapearson",
 			"data": {
 				"non_coding_feature_count": 67,
@@ -731,18 +731,18 @@
 			"guid": "WS:59262/4/1",
 			"kbase_id": "59262/4/1",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"warnings": ["<em>Genome</em> molecule_type Unknown is not expected for domain Bacteria."],
-				"type": ["<em>Genome</em>"]
+				"workspace_type_name":  ["<em>Genome</em>"]
 			}
 		}, {
 			"object_name": "KBase_derived_GCF_002287175.1.gbff_genome",
-			"access_group": 52407,
-			"obj_id": 29,
-			"version": 1,
+			"workspace_id":  52407,
+			"object_id":  29,
+			"workspace_version": 1,
 			"timestamp": 1611940994702,
-			"type": "Genome",
+			"workspace_type_name":  "Genome",
 			"creator": "zimingy",
 			"data": {
 				"genome_id": "KBase_derived_GCF_002287175.1.gbff_genome",
@@ -790,17 +790,17 @@
 			"guid": "WS:52407/29/1",
 			"kbase_id": "52407/29/1",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
-				"type": ["<em>Genome</em>"]
+				"workspace_type_name":  ["<em>Genome</em>"]
 			}
 		}, {
 			"object_name": "GCF_002287175.1_ASM228717v1_genomic.gbff_genome_2",
-			"access_group": 52407,
-			"obj_id": 26,
-			"version": 1,
+			"workspace_id":  52407,
+			"object_id":  26,
+			"workspace_version": 1,
 			"timestamp": 1611933804041,
-			"type": "Genome",
+			"workspace_type_name":  "Genome",
 			"creator": "zimingy",
 			"data": {
 				"genome_id": "GCF_002287175.1_ASM228717v1_genomic.gbff_genome_2",
@@ -848,17 +848,17 @@
 			"guid": "WS:52407/26/1",
 			"kbase_id": "52407/26/1",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
-				"type": ["<em>Genome</em>"]
+				"workspace_type_name":  ["<em>Genome</em>"]
 			}
 		}, {
 			"object_name": "GCF_002287175.1_ASM228717v1_genomic.gbff_genome",
-			"access_group": 52407,
-			"obj_id": 23,
-			"version": 1,
+			"workspace_id":  52407,
+			"object_id":  23,
+			"workspace_version": 1,
 			"timestamp": 1611933097634,
-			"type": "Genome",
+			"workspace_type_name":  "Genome",
 			"creator": "zimingy",
 			"data": {
 				"genome_id": "GCF_002287175.1_ASM228717v1_genomic.gbff_genome",
@@ -906,17 +906,17 @@
 			"guid": "WS:52407/23/1",
 			"kbase_id": "52407/23/1",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
-				"type": ["<em>Genome</em>"]
+				"workspace_type_name":  ["<em>Genome</em>"]
 			}
 		}, {
 			"object_name": "GCF_002287175.1_assembly.fa_genome",
-			"access_group": 52407,
-			"obj_id": 19,
-			"version": 1,
+			"workspace_id":  52407,
+			"object_id":  19,
+			"workspace_version": 1,
 			"timestamp": 1611856021670,
-			"type": "Genome",
+			"workspace_type_name":  "Genome",
 			"creator": "zimingy",
 			"data": {
 				"genome_id": "GCF_002287175.1_assembly.fa_genome",
@@ -964,18 +964,18 @@
 			"guid": "WS:52407/19/1",
 			"kbase_id": "52407/19/1",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"warnings": ["<em>Genome</em> molecule_type SingleLetterAlphabet is not expected for domain Unknown."],
-				"type": ["<em>Genome</em>"]
+				"workspace_type_name":  ["<em>Genome</em>"]
 			}
 		}, {
 			"object_name": "GCF_002287175.1",
-			"access_group": 52407,
-			"obj_id": 21,
-			"version": 1,
+			"workspace_id":  52407,
+			"object_id":  21,
+			"workspace_version": 1,
 			"timestamp": 1611847515429,
-			"type": "Genome",
+			"workspace_type_name":  "Genome",
 			"creator": "zimingy",
 			"data": {
 				"genome_id": "GCF_002287175.1",
@@ -1023,17 +1023,17 @@
 			"guid": "WS:52407/21/1",
 			"kbase_id": "52407/21/1",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
-				"type": ["<em>Genome</em>"]
+				"workspace_type_name":  ["<em>Genome</em>"]
 			}
 		}, {
 			"object_name": "GCF_002287175.1",
-			"access_group": 58624,
-			"obj_id": 31,
-			"version": 20,
+			"workspace_id":  58624,
+			"object_id":  31,
+			"workspace_version": 20,
 			"timestamp": 1611847515429,
-			"type": "Genome",
+			"workspace_type_name":  "Genome",
 			"creator": "zimingy",
 			"data": {
 				"genome_id": "GCF_002287175.1",
@@ -1081,17 +1081,17 @@
 			"guid": "WS:58624/31/1",
 			"kbase_id": "58624/31/1",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
-				"type": ["<em>Genome</em>"]
+				"workspace_type_name":  ["<em>Genome</em>"]
 			}
 		}, {
 			"object_name": "Narrative.1611672842083",
-			"access_group": 59134,
-			"obj_id": 1,
-			"version": 50,
+			"workspace_id":  59134,
+			"object_id":  1,
+			"workspace_version": 50,
 			"timestamp": 1611679881176,
-			"type": "Narrative",
+			"workspace_type_name":  "Narrative",
 			"creator": "eapearson",
 			"data": {
 				"narrative_title": "Data Prep Feature Set Viewer Integration Test",
@@ -1175,18 +1175,18 @@
 			"guid": "WS:59134/1/1",
 			"kbase_id": "59134/1/1",
 			"index_name": "narrative_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"cells.desc": ["Add <em>genome</em>\nWe are going to have featuresets with <em>genome</em>, ama, and mixed <em>genome</em> & ama.", "Create feature sets\nAMA\n<em>Genome</em>\nSimply use buildfeatureset from <em>genome</em>, selecting 10 features.", "Build FeatureSet from <em>Genome</em>", "Merge ama and <em>genome</em> feature sets\nWe want a mixed feature set,"],
-				"type": ["<em>Narrative</em>"]
+				"workspace_type_name":  ["<em>Narrative</em>"]
 			}
 		}, {
 			"object_name": "KBase_derived_GCF_002287175.1.gff_genome",
-			"access_group": 52407,
-			"obj_id": 16,
-			"version": 1,
+			"workspace_id":  52407,
+			"object_id":  16,
+			"workspace_version": 1,
 			"timestamp": 1611519563370,
-			"type": "Genome",
+			"workspace_type_name":  "Genome",
 			"creator": "zimingy",
 			"data": {
 				"genome_id": "KBase_derived_GCF_002287175.1.gff_genome",
@@ -1234,10 +1234,10 @@
 			"guid": "WS:52407/16/1",
 			"kbase_id": "52407/16/1",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"warnings": ["<em>Genome</em> molecule_type SingleLetterAlphabet is not expected for domain Unknown."],
-				"type": ["<em>Genome</em>"]
+				"workspace_type_name":  ["<em>Genome</em>"]
 			}
 		}],
 		"access_group_narrative_info": {

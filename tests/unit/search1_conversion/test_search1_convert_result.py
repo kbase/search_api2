@@ -177,11 +177,11 @@ def test_get_object_data_from_search_results_feature():
         'hits': [{
             'highlight': {'name': '<em>name1</em>'},
             'doc': {
-                'access_group': 1,
+                'workspace_id': 1,
                 'creator': 'username',
-                'obj_id': 2,
-                'obj_name': 'object2',
-                'version': 1,
+                'object_id': 2,
+                'object_name': 'object2',
+                'object_version': 1,
                 'obj_type_name': 'Module.Type-1.0',
                 'timestamp': 0,
                 'name': 'name1',
@@ -192,11 +192,10 @@ def test_get_object_data_from_search_results_feature():
         }]
     }
     post_processing = {
-
     }
     result = convert_result._get_object_data_from_search_results(results, post_processing)
     assert isinstance(result, list)
     [obj_data] = result
     assert isinstance(obj_data, dict)
-    assert 'type' in obj_data
-    assert obj_data['type'] == 'GenomeFeature'
+    assert 'workspace_type_name' in obj_data
+    assert obj_data['workspace_type_name'] == 'GenomeFeature'

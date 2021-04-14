@@ -260,7 +260,7 @@ def test_search_types_valid():
 
 def test_get_objects_valid():
     params = {
-        'guids': ['x', 'y']
+        'ids': ['x', 'y']
     }
     expected = {
         'query': {'terms': {'_id': ['x', 'y']}}

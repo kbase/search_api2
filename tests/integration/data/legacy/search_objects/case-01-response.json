@@ -1,5 +1,5 @@
 {
-	"version": "1.1",
+	"object_version": "1.1",
 	"result": [{
 		"pagination": {
 			"start": 0,
@@ -18,11 +18,11 @@
 		"search_time": 793,
 		"objects": [{
 			"object_name": "ecoli_2contigs_orig",
-			"access_group": 45320,
-			"obj_id": 4,
-			"version": 4,
+			"workspace_id": 45320,
+			"object_id": 4,
+			"object_version": 4,
 			"timestamp": 1574124911386,
-			"type": "Genome",
+			"workspace_type_name": "Genome",
 			"creator": "jayrbolton",
 			"data": {
 				"genome_id": "ecoli_2contigs_orig",
@@ -69,21 +69,21 @@
 				"obj_type_module": "KBaseGenomes",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:45320/4/1",
+			"id": "WS::45320:4",
 			"kbase_id": "45320/4/1",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"genome_id": ["<em>ecoli_2contigs_orig</em>"],
 				"object_name": ["<em>ecoli_2contigs_orig</em>"]
 			}
 		}, {
 			"object_name": "Narrative.1574286995467",
-			"access_group": 45320,
-			"obj_id": 1,
-			"version": 13,
+			"workspace_id": 45320,
+			"object_id": 1,
+			"object_version": 13,
 			"timestamp": 1586801969406,
-			"type": "Narrative",
+			"workspace_type_name": "Narrative",
 			"creator": "jayrbolton",
 			"data": {
 				"narrative_title": "Refdata import",
@@ -143,20 +143,20 @@
 				"obj_type_module": "KBaseNarrative",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:45320/1/1",
+			"id": "WS::45320:1",
 			"kbase_id": "45320/1/1",
 			"index_name": "narrative_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"data_objects.name": ["<em>ecoli_2contigs_orig</em>"]
 			}
 		}, {
 			"object_name": "ecoli_2contigs_orig",
-			"access_group": 33192,
-			"obj_id": 36,
-			"version": 1,
+			"workspace_id": 33192,
+			"object_id": 36,
+			"object_version": 1,
 			"timestamp": 1574185738033,
-			"type": "Genome",
+			"workspace_type_name": "Genome",
 			"creator": "jayrbolton",
 			"data": {
 				"genome_id": "ecoli_2contigs_orig",
@@ -203,21 +203,21 @@
 				"obj_type_module": "KBaseGenomes",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:33192/36/1",
+			"id": "WS::33192:36",
 			"kbase_id": "33192/36/1",
-			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_name": "genome",
+			"index_version": 2,
 			"highlight": {
 				"genome_id": ["<em>ecoli_2contigs_orig</em>"],
 				"object_name": ["<em>ecoli_2contigs_orig</em>"]
 			}
 		}, {
 			"object_name": "Narrative.1528306445083",
-			"access_group": 33192,
-			"obj_id": 1,
-			"version": 57,
+			"workspace_id": 33192,
+			"object_id": 1,
+			"object_version": 57,
 			"timestamp": 1597187547970,
-			"type": "Narrative",
+			"workspace_type_name": "Narrative",
 			"creator": "jayrbolton",
 			"data": {
 				"narrative_title": "Test fiesta",
@@ -295,10 +295,10 @@
 				"obj_type_module": "KBaseNarrative",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:33192/1/1",
+			"id": "WS::33192:1",
 			"kbase_id": "33192/1/1",
 			"index_name": "narrative_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"data_objects.name": ["<em>ecoli_2contigs_orig</em>"]
 			}

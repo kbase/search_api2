@@ -1,5 +1,5 @@
 {
-	"version": "1.1",
+	"version":  "1.1",
 	"result": [{
 		"pagination": {
 			"count": 20,
@@ -26,11 +26,11 @@
 		"search_time": 1764,
 		"objects": [{
 			"object_name": "GCF_000001735.4",
-			"access_group": 15792,
-			"obj_id": 235089,
-			"version": 2,
+			"workspace_id": 15792,
+			"object_id":  235089,
+			"workspace_version": 2,
 			"timestamp": 1593555698230,
-			"type": "Genome",
+			"workspace_type_name": "Genome",
 			"creator": "jayrbolton",
 			"data": {
 				"id": "AT2G22260",
@@ -77,15 +77,15 @@
 			"guid": "WS:15792/235089/1",
 			"kbase_id": "15792/235089/1",
 			"index_name": "genome_features_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {}
 		}, {
 			"object_name": "GCF_000001735.4",
-			"access_group": 15792,
-			"obj_id": 235089,
-			"version": 2,
+			"workspace_id":  15792,
+			"object_id":  235089,
+			"workspace_version": 2,
 			"timestamp": 1593555698230,
-			"type": "Genome",
+			"workspace_type_name":  "Genome",
 			"creator": "jayrbolton",
 			"data": {
 				"id": "AT2G22260_CDS_1",
@@ -124,15 +124,15 @@
 			"guid": "WS:15792/235089/1",
 			"kbase_id": "15792/235089/1",
 			"index_name": "genome_features_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {}
 		}, {
 			"object_name": "GCF_000001735.4",
-			"access_group": 15792,
-			"obj_id": 235089,
-			"version": 2,
+			"workspace_id":  15792,
+			"object_id":  235089,
+			"workspace_version": 2,
 			"timestamp": 1593555698230,
-			"type": "Genome",
+			"workspace_type_name":  "Genome",
 			"creator": "jayrbolton",
 			"data": {
 				"id": "AT2G22260_CDS_2",
@@ -171,15 +171,15 @@
 			"guid": "WS:15792/235089/1",
 			"kbase_id": "15792/235089/1",
 			"index_name": "genome_features_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {}
 		}, {
 			"object_name": "GCF_000001735.4",
-			"access_group": 15792,
-			"obj_id": 235089,
-			"version": 2,
+			"workspace_id":  15792,
+			"object_id":  235089,
+			"workspace_version": 2,
 			"timestamp": 1593555698230,
-			"type": "Genome",
+			"workspace_type_name":  "Genome",
 			"creator": "jayrbolton",
 			"data": {
 				"id": "AT2G22260_CDS_3",
@@ -218,15 +218,15 @@
 			"guid": "WS:15792/235089/1",
 			"kbase_id": "15792/235089/1",
 			"index_name": "genome_features_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {}
 		}, {
 			"object_name": "GCF_000001735.4",
-			"access_group": 15792,
-			"obj_id": 235089,
-			"version": 2,
+			"workspace_id":  15792,
+			"object_id":  235089,
+			"workspace_version": 2,
 			"timestamp": 1593555698230,
-			"type": "Genome",
+			"workspace_type_name":  "Genome",
 			"creator": "jayrbolton",
 			"data": {
 				"id": "AT2G22260_CDS_4",
@@ -265,15 +265,15 @@
 			"guid": "WS:15792/235089/1",
 			"kbase_id": "15792/235089/1",
 			"index_name": "genome_features_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {}
 		}, {
 			"object_name": "GCF_000001735.4",
-			"access_group": 15792,
-			"obj_id": 235089,
-			"version": 2,
+			"workspace_id":  15792,
+			"object_id":  235089,
+			"workspace_version": 2,
 			"timestamp": 1593555698230,
-			"type": "Genome",
+			"workspace_type_name":  "Genome",
 			"creator": "jayrbolton",
 			"data": {
 				"id": "AT2G22260_CDS_5",
@@ -312,15 +312,15 @@
 			"guid": "WS:15792/235089/1",
 			"kbase_id": "15792/235089/1",
 			"index_name": "genome_features_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {}
 		}, {
 			"object_name": "GCF_000001735.4",
-			"access_group": 15792,
-			"obj_id": 235089,
-			"version": 2,
+			"workspace_id":  15792,
+			"object_id":  235089,
+			"workspace_version": 2,
 			"timestamp": 1593555698230,
-			"type": "Genome",
+			"workspace_type_name":  "Genome",
 			"creator": "jayrbolton",
 			"data": {
 				"id": "AT2G22260_CDS_6",
@@ -359,15 +359,15 @@
 			"guid": "WS:15792/235089/1",
 			"kbase_id": "15792/235089/1",
 			"index_name": "genome_features_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {}
 		}, {
 			"object_name": "GCF_000001735.4",
-			"access_group": 15792,
-			"obj_id": 235089,
-			"version": 2,
+			"workspace_id":  15792,
+			"object_id":  235089,
+			"workspace_version": 2,
 			"timestamp": 1593555698230,
-			"type": "Genome",
+			"workspace_type_name":  "Genome",
 			"creator": "jayrbolton",
 			"data": {
 				"id": "AT2G22260_CDS_7",
@@ -406,15 +406,15 @@
 			"guid": "WS:15792/235089/1",
 			"kbase_id": "15792/235089/1",
 			"index_name": "genome_features_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {}
 		}, {
 			"object_name": "GCF_000001735.4",
-			"access_group": 15792,
-			"obj_id": 235089,
-			"version": 2,
+			"workspace_id":  15792,
+			"object_id":  235089,
+			"workspace_version": 2,
 			"timestamp": 1593555698230,
-			"type": "Genome",
+			"workspace_type_name":  "Genome",
 			"creator": "jayrbolton",
 			"data": {
 				"id": "AT2G22260_CDS_8",
@@ -453,15 +453,15 @@
 			"guid": "WS:15792/235089/1",
 			"kbase_id": "15792/235089/1",
 			"index_name": "genome_features_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {}
 		}, {
 			"object_name": "GCF_000001735.4",
-			"access_group": 15792,
-			"obj_id": 235089,
-			"version": 2,
+			"workspace_id":  15792,
+			"object_id":  235089,
+			"workspace_version": 2,
 			"timestamp": 1593555698230,
-			"type": "Genome",
+			"workspace_type_name":  "Genome",
 			"creator": "jayrbolton",
 			"data": {
 				"id": "AT2G22260_CDS_9",
@@ -500,15 +500,15 @@
 			"guid": "WS:15792/235089/1",
 			"kbase_id": "15792/235089/1",
 			"index_name": "genome_features_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {}
 		}, {
 			"object_name": "GCF_000001735.4",
-			"access_group": 15792,
-			"obj_id": 235089,
-			"version": 2,
+			"workspace_id":  15792,
+			"object_id":  235089,
+			"workspace_version": 2,
 			"timestamp": 1593555698230,
-			"type": "Genome",
+			"workspace_type_name":  "Genome",
 			"creator": "jayrbolton",
 			"data": {
 				"id": "AT2G22260_mRNA_1",
@@ -547,15 +547,15 @@
 			"guid": "WS:15792/235089/1",
 			"kbase_id": "15792/235089/1",
 			"index_name": "genome_features_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {}
 		}, {
 			"object_name": "GCF_000001735.4",
-			"access_group": 15792,
-			"obj_id": 235089,
-			"version": 2,
+			"workspace_id":  15792,
+			"object_id":  235089,
+			"workspace_version": 2,
 			"timestamp": 1593555698230,
-			"type": "Genome",
+			"workspace_type_name":  "Genome",
 			"creator": "jayrbolton",
 			"data": {
 				"id": "AT2G22260_mRNA_2",
@@ -594,15 +594,15 @@
 			"guid": "WS:15792/235089/1",
 			"kbase_id": "15792/235089/1",
 			"index_name": "genome_features_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {}
 		}, {
 			"object_name": "GCF_000001735.4",
-			"access_group": 15792,
-			"obj_id": 235089,
-			"version": 2,
+			"workspace_id":  15792,
+			"object_id":  235089,
+			"workspace_version": 2,
 			"timestamp": 1593555698230,
-			"type": "Genome",
+			"workspace_type_name":  "Genome",
 			"creator": "jayrbolton",
 			"data": {
 				"id": "AT2G22260_mRNA_3",
@@ -641,15 +641,15 @@
 			"guid": "WS:15792/235089/1",
 			"kbase_id": "15792/235089/1",
 			"index_name": "genome_features_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {}
 		}, {
 			"object_name": "GCF_000001735.4",
-			"access_group": 15792,
-			"obj_id": 235089,
-			"version": 2,
+			"workspace_id":  15792,
+			"object_id":  235089,
+			"workspace_version": 2,
 			"timestamp": 1593555698230,
-			"type": "Genome",
+			"workspace_type_name":  "Genome",
 			"creator": "jayrbolton",
 			"data": {
 				"id": "AT2G22260_mRNA_4",
@@ -688,15 +688,15 @@
 			"guid": "WS:15792/235089/1",
 			"kbase_id": "15792/235089/1",
 			"index_name": "genome_features_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {}
 		}, {
 			"object_name": "GCF_000001735.4",
-			"access_group": 15792,
-			"obj_id": 235089,
-			"version": 2,
+			"workspace_id":  15792,
+			"object_id":  235089,
+			"workspace_version": 2,
 			"timestamp": 1593555698230,
-			"type": "Genome",
+			"workspace_type_name":  "Genome",
 			"creator": "jayrbolton",
 			"data": {
 				"id": "AT2G22260_mRNA_5",
@@ -735,15 +735,15 @@
 			"guid": "WS:15792/235089/1",
 			"kbase_id": "15792/235089/1",
 			"index_name": "genome_features_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {}
 		}, {
 			"object_name": "GCF_000001735.4",
-			"access_group": 15792,
-			"obj_id": 235089,
-			"version": 2,
+			"workspace_id":  15792,
+			"object_id":  235089,
+			"workspace_version": 2,
 			"timestamp": 1593555698230,
-			"type": "Genome",
+			"workspace_type_name":  "Genome",
 			"creator": "jayrbolton",
 			"data": {
 				"id": "AT2G22260_mRNA_6",
@@ -782,15 +782,15 @@
 			"guid": "WS:15792/235089/1",
 			"kbase_id": "15792/235089/1",
 			"index_name": "genome_features_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {}
 		}, {
 			"object_name": "GCF_000001735.4",
-			"access_group": 15792,
-			"obj_id": 235089,
-			"version": 2,
+			"workspace_id":  15792,
+			"object_id":  235089,
+			"workspace_version": 2,
 			"timestamp": 1593555698230,
-			"type": "Genome",
+			"workspace_type_name":  "Genome",
 			"creator": "jayrbolton",
 			"data": {
 				"id": "AT2G22260_mRNA_7",
@@ -829,15 +829,15 @@
 			"guid": "WS:15792/235089/1",
 			"kbase_id": "15792/235089/1",
 			"index_name": "genome_features_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {}
 		}, {
 			"object_name": "GCF_000001735.4",
-			"access_group": 15792,
-			"obj_id": 235089,
-			"version": 2,
+			"workspace_id":  15792,
+			"object_id":  235089,
+			"workspace_version": 2,
 			"timestamp": 1593555698230,
-			"type": "Genome",
+			"workspace_type_name":  "Genome",
 			"creator": "jayrbolton",
 			"data": {
 				"id": "AT2G22260_mRNA_8",
@@ -876,15 +876,15 @@
 			"guid": "WS:15792/235089/1",
 			"kbase_id": "15792/235089/1",
 			"index_name": "genome_features_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {}
 		}, {
 			"object_name": "GCF_000001735.4",
-			"access_group": 15792,
-			"obj_id": 235089,
-			"version": 2,
+			"workspace_id":  15792,
+			"object_id":  235089,
+			"workspace_version": 2,
 			"timestamp": 1593555698230,
-			"type": "Genome",
+			"workspace_type_name":  "Genome",
 			"creator": "jayrbolton",
 			"data": {
 				"id": "AT2G22260_mRNA_9",
@@ -923,15 +923,15 @@
 			"guid": "WS:15792/235089/1",
 			"kbase_id": "15792/235089/1",
 			"index_name": "genome_features_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {}
 		}, {
 			"object_name": "GCF_000001735.4",
-			"access_group": 15792,
-			"obj_id": 235089,
-			"version": 2,
+			"workspace_id":  15792,
+			"object_id":  235089,
+			"workspace_version": 2,
 			"timestamp": 1593555698230,
-			"type": "Genome",
+			"workspace_type_name":  "Genome",
 			"creator": "jayrbolton",
 			"data": {
 				"id": "AT3G51790",
@@ -970,7 +970,7 @@
 			"guid": "WS:15792/235089/1",
 			"kbase_id": "15792/235089/1",
 			"index_name": "genome_features_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {}
 		}],
 		"access_groups_info": {

@@ -1,5 +1,5 @@
 {
-	"version": "1.1",
+	"object_version": "1.1",
 	"result": [{
 		"pagination": {
 			"start": 0,
@@ -18,11 +18,11 @@
 		"search_time": 1544,
 		"objects": [{
 			"object_name": "GCF_000759885.1",
-			"access_group": 56638,
-			"obj_id": 2,
-			"version": 1,
+			"workspace_id": 56638,
+			"object_id": 2,
+			"object_version": 1,
 			"timestamp": 1531222570501,
-			"type": "Genome",
+			"workspace_type_name": "Genome",
 			"creator": "kbasedata",
 			"data": {
 				"genome_id": "GCF_000759885.1",
@@ -65,10 +65,8 @@
 				"obj_type_module": "KBaseGenomes",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:56638/2/1",
-			"kbase_id": "56638/2/1",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"publication_titles": ["Genomes of diverse isolates of the marine cyanobacterium <em>Prochlorococcus</em>"],
 				"scientific_name": ["<em>Prochlorococcus</em> marinus str. GP2"],
@@ -76,11 +74,11 @@
 			}
 		}, {
 			"object_name": "Narrative.1605747150690",
-			"access_group": 56638,
-			"obj_id": 1,
-			"version": 13,
+			"workspace_id": 56638,
+			"object_id": 1,
+			"object_version": 13,
 			"timestamp": 1605765178549,
-			"type": "Narrative",
+			"workspace_type_name": "Narrative",
 			"creator": "kbaseuitest",
 			"data": {
 				"narrative_title": "Test Narrative for FeatureSet Integration Test",
@@ -131,20 +129,18 @@
 				"obj_type_module": "KBaseNarrative",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:56638/1/1",
-			"kbase_id": "56638/1/1",
 			"index_name": "narrative_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"cells.desc": ["the welcome cell\nImport 2 genomes\nin this case, I copied, from RefSeq refdata:\n\nAcetobacter ascendens\n<em>Prochlorococcus</em>", "features from each genome for the feature set\nname the feature set for Acetobacter \"featureset1\", for <em>Prochlorococcus</em>"]
 			}
 		}, {
 			"object_name": "Prochlorococcus_marinus",
-			"access_group": 53745,
-			"obj_id": 2,
-			"version": 1,
+			"workspace_id": 53745,
+			"object_id": 2,
+			"object_version": 1,
 			"timestamp": 1485796830804,
-			"type": "Genome",
+			"workspace_type_name": "Genome",
 			"creator": "qzhang",
 			"data": {
 				"genome_id": "GCF_001180265.1",
@@ -177,21 +173,19 @@
 				"obj_type_module": "KBaseGenomes",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:53745/2/1",
-			"kbase_id": "53745/2/1",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"scientific_name": ["<em>Prochlorococcus</em> marinus"],
 				"taxonomy": ["Terrabacteria group; Cyanobacteria/Melainabacteria group; Cyanobacteria; Synechococcales; Prochloraceae; <em>Prochlorococcus</em>"]
 			}
 		}, {
 			"object_name": "Prochlorococcus_marinus",
-			"access_group": 53744,
-			"obj_id": 4,
-			"version": 1,
+			"workspace_id": 53744,
+			"object_id": 4,
+			"object_version": 1,
 			"timestamp": 1485796830804,
-			"type": "Genome",
+			"workspace_type_name": "Genome",
 			"creator": "qzhang",
 			"data": {
 				"genome_id": "GCF_001180265.1",
@@ -224,21 +218,20 @@
 				"obj_type_module": "KBaseGenomes",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:53744/4/1",
-			"kbase_id": "53744/4/1",
+			"id": "WS::53744:4",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"scientific_name": ["<em>Prochlorococcus</em> marinus"],
 				"taxonomy": ["Terrabacteria group; Cyanobacteria/Melainabacteria group; Cyanobacteria; Synechococcales; Prochloraceae; <em>Prochlorococcus</em>"]
 			}
 		}, {
 			"object_name": "prokka_ouput_1",
-			"access_group": 47458,
-			"obj_id": 7,
-			"version": 1,
+			"workspace_id": 47458,
+			"object_id": 7,
+			"object_version": 1,
 			"timestamp": 1585919913126,
-			"type": "Genome",
+			"workspace_type_name": "Genome",
 			"creator": "kbaseuitest",
 			"data": {
 				"genome_id": "GCF_000015645.1",
@@ -279,10 +272,9 @@
 				"obj_type_module": "KBaseGenomes",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:47458/7/1",
-			"kbase_id": "47458/7/1",
+			"id": "WS::47458:7",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"publication_titles": ["Patterns and implications of gene gain and loss in the evolution of <em>Prochlorococcus</em>"],
 				"scientific_name": ["<em>Prochlorococcus</em> marinus str. AS9601"],
@@ -290,11 +282,11 @@
 			}
 		}, {
 			"object_name": "Prochlorococcus_marinus_str._AS9601",
-			"access_group": 47458,
-			"obj_id": 6,
-			"version": 1,
+			"workspace_id": 47458,
+			"object_id": 6,
+			"object_version": 1,
 			"timestamp": 1485794271879,
-			"type": "Genome",
+			"workspace_type_name": "Genome",
 			"creator": "qzhang",
 			"data": {
 				"genome_id": "GCF_000015645.1",
@@ -327,10 +319,9 @@
 				"obj_type_module": "KBaseGenomes",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:47458/6/1",
-			"kbase_id": "47458/6/1",
+			"id": "WS::47458:6",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"publication_titles": ["Patterns and implications of gene gain and loss in the evolution of <em>Prochlorococcus</em>"],
 				"scientific_name": ["<em>Prochlorococcus</em> marinus str. AS9601"],
@@ -338,11 +329,11 @@
 			}
 		}, {
 			"object_name": "Prochlorococcus_marinus",
-			"access_group": 44697,
-			"obj_id": 2,
-			"version": 1,
+			"workspace_id": 44697,
+			"object_id": 2,
+			"object_version": 1,
 			"timestamp": 1485796717279,
-			"type": "Genome",
+			"workspace_type_name": "Genome",
 			"creator": "qzhang",
 			"data": {
 				"genome_id": "GCF_001180245.1",
@@ -375,21 +366,20 @@
 				"obj_type_module": "KBaseGenomes",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:44697/2/1",
-			"kbase_id": "44697/2/1",
+			"id": "WS::44697:2",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"scientific_name": ["<em>Prochlorococcus</em> marinus"],
 				"taxonomy": ["Terrabacteria group; Cyanobacteria/Melainabacteria group; Cyanobacteria; Synechococcales; Prochloraceae; <em>Prochlorococcus</em>"]
 			}
 		}, {
 			"object_name": "Prochlorococcus_marinus",
-			"access_group": 35753,
-			"obj_id": 2,
-			"version": 1,
+			"workspace_id": 35753,
+			"object_id": 2,
+			"object_version": 1,
 			"timestamp": 1485796717279,
-			"type": "Genome",
+			"workspace_type_name": "Genome",
 			"creator": "qzhang",
 			"data": {
 				"genome_id": "GCF_001180245.1",
@@ -422,25 +412,24 @@
 				"obj_type_module": "KBaseGenomes",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:35753/2/1",
-			"kbase_id": "35753/2/1",
+			"id": "WS::35753:2",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"scientific_name": ["<em>Prochlorococcus</em> marinus"],
 				"taxonomy": ["Terrabacteria group; Cyanobacteria/Melainabacteria group; Cyanobacteria; Synechococcales; Prochloraceae; <em>Prochlorococcus</em>"]
 			}
 		}, {
 			"object_name": "out_tree_1",
-			"access_group": 35753,
-			"obj_id": 3,
-			"version": 1,
+			"workspace_id": 35753,
+			"object_id": 3,
+			"object_version": 1,
 			"timestamp": 1534549148045,
-			"type": "Tree",
+			"workspace_type_name": "Tree",
 			"creator": "eapearson",
 			"data": {
 				"tree_name": null,
-				"type": "SpeciesTree",
+				"workspace_type_name": "SpeciesTree",
 				"labels": [{
 					"node_id": "GCF_000007925.1",
 					"label": "Prochlorococcus marinus subsp. marinus str. CCMP1375 (GCF_000007925.1)"
@@ -514,20 +503,19 @@
 				"obj_type_module": "KBaseTrees",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:35753/3/1",
-			"kbase_id": "35753/3/1",
+			"id": "WS::35753:3",
 			"index_name": "tree_1",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"labels.label": ["<em>Prochlorococcus</em> marinus str. MIT 9313 (GCF_000011485.1)", "<em>Prochlorococcus</em> marinus str. NATL2A (GCF_000012465.1)", "<em>Prochlorococcus</em> marinus str. AS9601 (GCF_000015645.1)", "<em>Prochlorococcus</em> sp. MIT 0601 (GCF_000760175.1)", "<em>Prochlorococcus</em> sp. MIT 0603 (GCF_000760215.1)"]
 			}
 		}, {
 			"object_name": "Prochlorococcus_marinus_2",
-			"access_group": 35011,
-			"obj_id": 4,
-			"version": 1,
+			"workspace_id": 35011,
+			"object_id": 4,
+			"object_version": 1,
 			"timestamp": 1531226116626,
-			"type": "Genome",
+			"workspace_type_name": "Genome",
 			"creator": "kbasedata",
 			"data": {
 				"genome_id": "GCF_001180305.1",
@@ -570,21 +558,20 @@
 				"obj_type_module": "KBaseGenomes",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:35011/4/1",
-			"kbase_id": "35011/4/1",
+			"id": "WS::35011:4",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"scientific_name": ["<em>Prochlorococcus</em> marinus"],
 				"taxonomy": ["Terrabacteria group; Cyanobacteria/Melainabacteria group; Cyanobacteria; Synechococcales; Prochloraceae; <em>Prochlorococcus</em>"]
 			}
 		}, {
 			"object_name": "Prochlorococcus_marinus",
-			"access_group": 35011,
-			"obj_id": 2,
-			"version": 1,
+			"workspace_id": 35011,
+			"object_id": 2,
+			"object_version": 1,
 			"timestamp": 1485796717279,
-			"type": "Genome",
+			"workspace_type_name": "Genome",
 			"creator": "qzhang",
 			"data": {
 				"genome_id": "GCF_001180245.1",
@@ -617,21 +604,20 @@
 				"obj_type_module": "KBaseGenomes",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:35011/2/1",
-			"kbase_id": "35011/2/1",
+			"id": "WS::35011:2",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"scientific_name": ["<em>Prochlorococcus</em> marinus"],
 				"taxonomy": ["Terrabacteria group; Cyanobacteria/Melainabacteria group; Cyanobacteria; Synechococcales; Prochloraceae; <em>Prochlorococcus</em>"]
 			}
 		}, {
 			"object_name": "Prochlorococcus_marinus_1",
-			"access_group": 35011,
-			"obj_id": 3,
-			"version": 1,
+			"workspace_id": 35011,
+			"object_id": 3,
+			"object_version": 1,
 			"timestamp": 1485797107623,
-			"type": "Genome",
+			"workspace_type_name": "Genome",
 			"creator": "qzhang",
 			"data": {
 				"genome_id": "GCF_001180325.1",
@@ -664,10 +650,9 @@
 				"obj_type_module": "KBaseGenomes",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:35011/3/1",
-			"kbase_id": "35011/3/1",
+			"id": "WS::35011:3",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"scientific_name": ["<em>Prochlorococcus</em> marinus"],
 				"taxonomy": ["Terrabacteria group; Cyanobacteria/Melainabacteria group; Cyanobacteria; Synechococcales; Prochloraceae; <em>Prochlorococcus</em>"]
