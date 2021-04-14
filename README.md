@@ -80,7 +80,7 @@ Show the names of all indexes, and show what aliases stand for what indexes.
 
 ### <url>/legacy
 
-A JSON-RPC 2.0 API that mimics the legacy Java server, [found here](https://github.com/kbase/KBaseSearchEngin://github.com/kbase/KBaseSearchEngine). Refer to the `src/search1_rpc/schemas` file for a reference on the method parameter types.
+A JSON-RPC 1.1 API that mimics the legacy Java server, [found here](https://github.com/kbase/KBaseSearchEngin://github.com/kbase/KBaseSearchEngine). Refer to the `src/search1_rpc/schemas` file for a reference on the method parameter types.
 
 ## Development
 
