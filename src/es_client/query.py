@@ -25,13 +25,9 @@ def search(params, meta):
     # The query object, which we build up in steps below
     query = {'bool': {}}  # type: dict
 
-    # if not params.get('only_public') and meta['auth']:
-
-    # Fetch the workspace IDs that the user can read
-    # Used for access control and also to ensure that
-    # workspaces which are inaccessible in the workspace,
-    # but that fact is not yet updated in search, are
-    # still filtered out.
+    # Fetch the workspace IDs that the user can read.
+    # Used for access control and also to ensure that workspaces which are
+    # inaccessible, but have not yet been updated in search, are still filtered out.
     authorized_ws_ids = ws_auth(
         meta['auth'],
         params.get('only_public', False),
@@ -52,6 +48,11 @@ def search(params, meta):
     # Make a query request to elasticsearch
     url = config['elasticsearch_url'] + '/' + index_name_str + '/_search'
 
+    # TODO: address the performance settings below:
+    # - 3m for timeout is seems excessive, and many other elements of the
+    #   search process may have 1m timeouts; perhaps default to a lower limit, and
+    #   allow a parameter to set the timeout to an arbitrary value
+    # - the "allow_expensive_queries" setting has been disabled, why?
     options = {
         'query': query,
         'size': 0 if params.get('count') else params.get('size', 10),
