@@ -6,11 +6,11 @@
 	"items": {
 		"type": "object",
 		"required": [
-			"guids"
+			"ids"
 		],
 		"additionalProperties": false,
 		"properties": {
-			"guids": {
+			"ids": {
 				"type": "array",
 				"items": {
 					"type": "string"

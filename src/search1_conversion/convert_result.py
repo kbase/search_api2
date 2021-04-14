@@ -1,17 +1,19 @@
-import re
 from src.utils.config import config
 from src.utils.formatting import iso8601_to_epoch
 from src.utils.user_profiles import get_user_profiles
 from src.utils.workspace import get_workspace_info
+import logging
+
+logger = logging.getLogger('search2')
 
 # Mappings from search2 document fields to search1 fields:
 _KEY_MAPPING = {
     'obj_name': 'object_name',
-    'access_group': 'access_group',
-    'obj_id': 'obj_id',
-    'version': 'version',
+    'access_group': 'workspace_id',
+    'obj_id': 'object_id',
+    'version': 'object_version',
     'timestamp': 'timestamp',
-    'obj_type_name': 'type',
+    'obj_type_name': 'workspace_type_name',
     'creator': 'creator'
 }
 
@@ -194,20 +196,22 @@ def _get_object_data_from_search_results(search_results, post_processing):
         for (search2_key, search1_key) in _KEY_MAPPING.items():
             obj[search1_key] = doc.get(search2_key)
         # The nested 'data' is all object-specific, so exclude all global keys
+        # TODO: what if an object index happens to use a key that overlaps with
+        # global keys? Shouldn't they be completely independent?
         obj_data = {key: doc[key] for key in doc if key not in _KEY_MAPPING}
         if post_processing.get('skip_data') != 1:
             obj['data'] = obj_data
-        obj['guid'] = _get_guid_from_doc(hit)
-        obj['kbase_id'] = obj['guid'].strip('WS:')
-        idx_pieces = hit['index'].split(config['prefix_delimiter'])
+
+        obj['id'] = hit['id']
+
+        # Extracts the index name.
+        idx_pieces = hit['index'].split(config['suffix_delimiter'])
         idx_name = idx_pieces[0]
         idx_ver = int(idx_pieces[1] or 0) if len(idx_pieces) == 2 else 0
 
         obj['index_name'] = idx_name
-        obj['type_ver'] = idx_ver
-        # For the UI, make the type field "GenomeFeature" instead of "Genome".
-        if 'genome_feature_type' in doc:
-            obj['type'] = 'GenomeFeature'
+        obj['index_version'] = idx_ver
+
         # Set defaults for required fields in objects/data
         # Set some more top-level data manually that we use in the UI
         if post_processing.get('include_highlight') == 1:
@@ -217,27 +221,12 @@ def _get_object_data_from_search_results(search_results, post_processing):
                 transformed_highlight[_KEY_MAPPING.get(key, key)] = value
             obj['highlight'] = transformed_highlight
         # Always set object_name as a string type
+        # TODO: how can this ever be missing?
         obj['object_name'] = obj.get('object_name') or ''
-        obj['type'] = obj.get('type') or ''
+        obj['workspace_type_name'] = obj.get('workspace_type_name') or ''
+        # For the UI, make the type field "GenomeFeature" instead of "Genome".
+        # TODO: the handling of sub-objects needs to be redesigned.
+        if 'genome_feature_type' in doc:
+            obj['workspace_type_name'] = 'GenomeFeature'
         object_data.append(obj)
     return object_data
-
-
-def _get_guid_from_doc(doc):
-    """
-    Convert from our guid format 'WS::1:2:3' into the legacy format 'WS:1/2/3'
-    """
-    # TODO this only works on the WS namespace should take into account the
-    #      namespace name
-    # Remove the first namespace
-    _id = doc['id'].replace('WS::', '')
-    # Remove any secondary namespace
-    _id = re.sub(r'::..::.+', '', _id)
-    # Replace colon delimiters with slashes
-    _id = _id.replace(':', '/')
-    # Add a single-colon delimited workspace namespace
-    _id = 'WS:' + _id
-    # Append the object version
-    ver = str(doc.get('obj_type_version', 1))
-    _id = _id + '/' + ver
-    return _id

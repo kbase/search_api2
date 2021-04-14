@@ -119,7 +119,7 @@ def get_objects(params):
     Convert params from the "get_objects" RPC method into an Elasticsearch query.
     Retrieve a list of objects based on their upas.
     params:
-        guids - list of string - KBase IDs (upas) to fetch
+        ids - list of string - KBase IDs (upas) to fetch
         post_processing - object of post-query filters (see PostProcessing def at top of this module)
     output:
         objects - list of ObjectData - see the ObjectData type description in the module docstring above.
@@ -128,7 +128,7 @@ def get_objects(params):
             Information about the workspaces in which the objects in the
             results reside. This data only applies to workspace objects.
     """
-    query = {'query': {'terms': {'_id': params['guids']}}}
+    query = {'query': {'terms': {'_id': params['ids']}}}
     return query
 
 

@@ -50,6 +50,10 @@ def show_config(params, meta):
     """
     Display publicly readable configuration settings for this server.
     Be sure to add new entries here explicitly so that nothing is shown unintentionally.
+
+    Hidden keys:
+    - index_prefix_delimiter: should always be "."; should never be overridden
+    - index_suffix_delimiter: should always be "_"; should never be overridden
     """
     exposed_keys = ['dev', 'elasticsearch_url', 'workspace_url', 'index_prefix',
                     'global', 'workers', 'user_profile_url']
