@@ -30,8 +30,11 @@
 				"object_id",
 				"object_version",
 				"object_name",
+				"workspace_type_module",
 				"workspace_type_name",
-				"timestamp",
+				"workspace_type_version",
+				"modified_at",
+				"created_at",
 				"creator",
 				"index_name",
 				"index_version",
@@ -53,10 +56,19 @@
 				"object_name": {
 					"type": "string"
 				},
+				"workspace_type_module": {
+					"type": "string"
+				},
 				"workspace_type_name": {
 					"type": "string"
 				},
-				"timestamp": {
+				"workspace_type_version": {
+					"type": "string"
+				},
+				"modified_at": {
+					"type": "integer"
+				},
+				"created_at": {
 					"type": "integer"
 				},
 				"creator": {
