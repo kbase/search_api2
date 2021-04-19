@@ -1,0 +1,167 @@
+{
+  "count": 2,
+  "hits": [
+    {
+      "index": "genome_2",
+      "id": "WS::56638:2",
+      "doc": {
+        "genome_id": "GCF_000759885.1",
+        "scientific_name": "Prochlorococcus marinus str. GP2",
+        "publication_titles": [
+          "Genomes of diverse isolates of the marine cyanobacterium Prochlorococcus",
+          "Direct Submission"
+        ],
+        "publication_authors": [
+          "Biller,S., Berube,P., Thompson,J., Kelly,L., Roggensack,S., Awad,L., Roache-Johnson,K., Ding,H., Giovannoni,S.J., Moore,L.R. and Chisholm,S.W.",
+          "Biller,S.J., Berube,P.M., Berta-Thompson,J.W., Kelly,L., Roggensack,S.E., Awad,L., Roache-Johnson,K.H., Ding,H., Giovannoni,S.J., Rocap,G., Moore,L.R. and Chisholm,S.W."
+        ],
+        "size": 1624310,
+        "num_contigs": 11,
+        "genome_type": null,
+        "gc_content": 0.31164,
+        "taxonomy": "cellular organisms; Bacteria; Terrabacteria group; Cyanobacteria/Melainabacteria group; Cyanobacteria; Synechococcales; Prochloraceae; Prochlorococcus; Prochlorococcus marinus",
+        "mean_contig_length": 147664.54545454544,
+        "external_origination_date": "11-Apr-2017",
+        "original_source_file_name": "GCF_000759885.1_ASM75988v1_genomic.gbff",
+        "cds_count": 1760,
+        "feature_count": 1760,
+        "mrna_count": 0,
+        "non_coding_feature_count": 89,
+        "assembly_ref": "15792:64027:2",
+        "source_id": "NZ_JNAH01000001",
+        "feature_counts": {
+          "CDS": 1760,
+          "gene": 1804,
+          "ncRNA": 3,
+          "non-protein_encoding_gene": 44,
+          "protein_encoding_gene": 1760,
+          "rRNA": 3,
+          "regulatory": 1,
+          "tRNA": 37,
+          "tmRNA": 1
+        },
+        "source": "RefSeq",
+        "warnings": [
+          "SUSPECT: CDS EU91_RS03000_CDS_1 has a length of 974 which is not consistent with the length of the translation included (323 amino acids)."
+        ],
+        "creator": "kbasedata",
+        "access_group": 56638,
+        "obj_name": "GCF_000759885.1",
+        "shared_users": [
+          "kbaseuitest"
+        ],
+        "timestamp": 1531222570501,
+        "creation_date": "2020-11-19T01:07:33+0000",
+        "is_public": true,
+        "version": 1,
+        "obj_id": 2,
+        "copied": "15792/64028/2",
+        "tags": [
+          "narrative"
+        ],
+        "obj_type_version": "14.2",
+        "obj_type_module": "KBaseGenomes",
+        "obj_type_name": "Genome",
+        "index_runner_ver": "1.9.17"
+      },
+      "highlight": {
+        "publication_titles": [
+          "Genomes of diverse isolates of the marine cyanobacterium <em>Prochlorococcus</em>"
+        ],
+        "scientific_name": [
+          "<em>Prochlorococcus</em> <em>marinus</em> <em>str</em>. <em>GP2</em>"
+        ],
+        "taxonomy": [
+          "Terrabacteria group; Cyanobacteria/Melainabacteria group; Cyanobacteria; Synechococcales; Prochloraceae; <em>Prochlorococcus</em>",
+          "; <em>Prochlorococcus</em> <em>marinus</em>"
+        ]
+      }
+    },
+    {
+      "index": "narrative_2",
+      "id": "WS::56638:1",
+      "doc": {
+        "narrative_title": "Test Narrative for FeatureSet Integration Test",
+        "is_narratorial": false,
+        "data_objects": [
+          {
+            "name": "GCF_000759885.1",
+            "obj_type": "KBaseGenomes.Genome-14.2"
+          },
+          {
+            "name": "GCF_001766235.1",
+            "obj_type": "KBaseGenomes.Genome-17.0"
+          },
+          {
+            "name": "featureset2",
+            "obj_type": "KBaseCollections.FeatureSet-4.0"
+          },
+          {
+            "name": "featureset1",
+            "obj_type": "KBaseCollections.FeatureSet-4.0"
+          },
+          {
+            "name": "mergedfeatureset",
+            "obj_type": "KBaseCollections.FeatureSet-4.0"
+          }
+        ],
+        "owner": "kbaseuitest",
+        "modified_at": 1605765178000,
+        "cells": [
+          {
+            "desc": "Test Narrative for FeatureSet Integration Test.\nTo reproduce:\n\nremove add a markdown cell (this one!), remove the welcome cell\nImport 2 genomes\nin this case, I copied, from RefSeq refdata:\n\nAcetobacter ascendens\nProchlorococcus marinus str. GP2\n\nat the time of writing, the public data search for refseq is broken, so I copied into this narrative from their landing pages\ncreate a FeatureSet for each Genome, using Build FeatureSet from Genome\n\nchoose the first 3 features from each genome for the feature set\nname the feature set for Acetobacter \"featureset1\", for Prochlorococcus \"featureset2\"\n\ncreate another FeatureSet combining these two using \"Merge FeatureSets\"\nin the Description parameter add the text \"merged feature set\", or whatever text you like (it will need to match the integration test.)\nin \"Output FeatureSet Name\" name it \"mergedfeatureset\"\ninsert the merged feature set object into the narrative as the last cell; it should be the 6th cell.\nfinally make the narrative public.\n\n",
+            "cell_type": "markdown"
+          },
+          {
+            "desc": "Build FeatureSet from Genome",
+            "cell_type": "kbase_app"
+          },
+          {
+            "desc": "Merge FeatureSets - v1.0.1",
+            "cell_type": "kbase_app"
+          },
+          {
+            "desc": "kbaseReportView",
+            "cell_type": "widget"
+          },
+          {
+            "desc": "mergedfeatureset",
+            "cell_type": "data"
+          }
+        ],
+        "creator": "kbaseuitest",
+        "total_cells": 6,
+        "static_narrative_saved": null,
+        "static_narrative_ref": null,
+        "access_group": 56638,
+        "obj_name": "Narrative.1605747150690",
+        "shared_users": [
+          "kbaseuitest"
+        ],
+        "timestamp": 1605765178549,
+        "creation_date": "2020-11-19T00:52:30+0000",
+        "is_public": true,
+        "version": 13,
+        "obj_id": 1,
+        "copied": null,
+        "tags": [
+          "narrative"
+        ],
+        "obj_type_version": "4.0",
+        "obj_type_module": "KBaseNarrative",
+        "obj_type_name": "Narrative",
+        "index_runner_ver": "1.9.17"
+      },
+      "highlight": {
+        "cells.desc": [
+          "the welcome cell\nImport 2 genomes\nin this case, I copied, from RefSeq refdata:\n\nAcetobacter ascendens\n<em>Prochlorococcus</em>",
+          "<em>marinus</em> <em>str</em>.",
+          "<em>GP2</em>\n\nat the time of writing, the public data search for refseq is broken, so I copied into this narrative",
+          "features from each genome for the feature set\nname the feature set for Acetobacter \"featureset1\", for <em>Prochlorococcus</em>"
+        ]
+      }
+    }
+  ],
+  "search_time": 103122,
+  "aggregations": {}
+}

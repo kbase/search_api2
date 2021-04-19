@@ -1,0 +1,21 @@
+{
+  "count": 2,
+  "hits": [],
+  "search_time": 2815,
+  "aggregations": {
+    "type_count": {
+      "count_err_upper_bound": 0,
+      "count_other_docs": 0,
+      "counts": [
+        {
+          "key": "Genome",
+          "count": 1
+        },
+        {
+          "key": "Narrative",
+          "count": 1
+        }
+      ]
+    }
+  }
+}

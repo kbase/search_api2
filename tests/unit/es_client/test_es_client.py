@@ -62,8 +62,8 @@ def test_search_aggs_valid(services):
         result = search(params, {'auth': None})
         assert result['count'] == 4
         assert result['aggregations']['count_by_index']['counts'] == [
-            {'key': 'test_index1', 'count': 2},
-            {'key': 'test_index2', 'count': 2},
+            {'key': 'test.index1', 'count': 2},
+            {'key': 'test.index2', 'count': 2},
         ]
 
 
