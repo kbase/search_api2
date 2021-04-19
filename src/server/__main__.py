@@ -57,7 +57,9 @@ async def legacy(request):
         return sanic.response.raw(b'', status=405)
     auth = request.headers.get('Authorization')
     result = legacy_service.call(request.body, {'auth': auth})
-    return sanic.response.text(result)
+    return sanic.response.raw(
+        bytes(result, 'utf-8'),
+        headers={'content-type': 'application/json'})
 
 
 @app.middleware('response')
