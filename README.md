@@ -31,6 +31,9 @@ The [search configuration file](https://github.com/kbase/index_runner_spec/blob/
 * `-32003` - Elasticsearch response error
 * `-32004` - User profile service response error
 * `-32005` - Unknown workspace type
+* `-32006` - Access group missing
+* `-32007` - User profile missing
+
 
 ### `<url>/rpc`
 
