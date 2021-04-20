@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.0] - 2021-03-05
+## [1.0.0] - 2021-04-20
 ### Fixed
 - fix SCT-2930: not honoring withPublic and withPrivate
 - fix SCT-2931: maximum reported search results was 10,000 - fixed to report actual search results with > 10K.
@@ -16,9 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - fix SCT-2947: unauthenticated search not working correctly (no ws or narr info)
 - fix SCT-2969: not honoring object_types
 - fix SCT-2970: not narrowing search with additional terms
+- fix SCT-3001: Data-search ui  / Searchapi2 legacy endpoint generates incorrect object landing page links
+- fix SCT-3002: Searchpi2 legacy endpoint returns incorrect index and index version
 
 ### Added
-- implement SCT-2966: add a "build and test" workflow for GitHub Actions which builds an image, runs tests, and pushes the resulting image too GH Container Registry.
+- implement SCT-2966: add a "build and test" workflow for GitHub Actions which builds an image, runs tests, and pushes the resulting image to GH Container Registry.
 
 ## [0.4.9] - 2020-09-11
 ### Changed
