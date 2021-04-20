@@ -7,7 +7,7 @@ The integration tests run inside a Docker container. An associated ssh tunnel pr
 Although the integration test script will build the images if they are missing, the build can take a few minutes, which may cause the integration test script to time out. It is more reliable to simply build the containers first.
 
 ```bash
-make build-integration-test-images
+make build-dev-images
 ```
 
 You can view the files `container.out` and `container.err` to monitor progress building the images.

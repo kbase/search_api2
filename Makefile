@@ -4,7 +4,7 @@
 test:
 	sh scripts/run_tests
 
-build-integration-test-images:
+build-dev-images:
 	@echo Building integration test images...
 	sh scripts/build-integration-test-images.sh
 	@echo Integration test images built
