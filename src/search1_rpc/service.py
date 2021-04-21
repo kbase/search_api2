@@ -73,7 +73,7 @@ def search_types(params, meta):
     start = time.time()
     query = convert_params.search_types(params)
     search_result = trap_error(lambda: search(query, meta))
-    result = convert_result.search_types(params, search_result, meta)
+    result = convert_result.search_types(search_result)
     logger.debug(f'Finished search_types in {time.time() - start}s')
     return [result]
 

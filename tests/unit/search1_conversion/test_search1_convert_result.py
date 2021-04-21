@@ -65,7 +65,7 @@ class Search1ConversionTest(unittest.TestCase):
 
         # Not that converting search_types does not require any
         # params or context.
-        final = convert_result.search_types({}, test_es_search_results, {})
+        final = convert_result.search_types(test_es_search_results)
 
         self.assertEqual(final['type_to_count'], test_expected['type_to_count'])
 

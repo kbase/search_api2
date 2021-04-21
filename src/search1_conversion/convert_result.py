@@ -69,7 +69,7 @@ def search_objects(params: dict, results: dict, ctx: dict):
     return ret
 
 
-def search_types(_params, results, _ctx):
+def search_types(results: dict):
     """
     Convert Elasticsearch results into RPC results conforming to the
     "search_types" method.
