@@ -3,12 +3,22 @@ import signal
 from src.utils.wait_for_service import wait_for_service
 from src.utils.logger import logger
 from . import common
+import json
+import os
 
 
 container_process = None
 container_out = None
 container_err = None
 stop_timeout = 30
+
+
+def load_data_file(name):
+    """Load the json test data file with the given name from ./data/legacy """
+    file_path = os.path.join(os.path.dirname(__file__), '../unit/data', name)
+    logger.info(f'loading data file from "{file_path}"')
+    with open(file_path) as f:
+        return json.load(f)
 
 
 def start_service(wait_for_url, wait_for_name):

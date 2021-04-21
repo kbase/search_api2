@@ -53,7 +53,7 @@ def test_get_objects_valid(services):
         "id": 0,
         "params": [
             {
-                'guids': ['public-doc1'],
+                'ids': ['public-doc1'],
                 'post_processing': {'ids_only': 1},
             }
         ],
@@ -98,7 +98,7 @@ def test_get_objects_bad_auth(services):
         "version": "1.1",
         "params": [
             {
-                'guids': ['public-doc1'],
+                'ids': ['public-doc1'],
                 'post_processing': {'ids_only': 1},
             }
         ],

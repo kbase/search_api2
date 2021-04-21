@@ -33,14 +33,9 @@ ObjectData type:
           entirety. Longer fields are shown as snippets preceded or followed by
           "...".
 """
-from src.utils.config import config
+
 from src.utils.obj_utils import get_any
 from jsonrpc11base.errors import InvalidParamsError
-
-# Unversioned feature index name/alias, (eg "genome_features")
-_FEATURES_UNVERSIONED = config['global']['genome_features_current_index_name']
-# Versioned feature index name (eg "genome_features_2")
-_GENOME_FEATURES_IDX_NAME = config['global']['latest_versions'][_FEATURES_UNVERSIONED]
 
 # Mapping of special sorting properties names from the Java API to search2 key names
 _SORT_PROP_MAPPING = {
@@ -99,7 +94,6 @@ def search_types(params):
             with_all_history - ignored
     output:
         type_to_count - dict where keys are type names and vals are counts
-        search_time - int - total time performing search
     This method constructs the same search parameters as `search_objects`, but
     aggregates results based on `obj_type_name`.
     """
@@ -119,17 +113,12 @@ def get_objects(params):
     Convert params from the "get_objects" RPC method into an Elasticsearch query.
     Retrieve a list of objects based on their upas.
     params:
-        guids - list of string - KBase IDs (upas) to fetch
-        post_processing - object of post-query filters (see PostProcessing def at top of this module)
+        ids - list of string - Search document ids to fetch; ids are in a specific
+        format for object indexes: "WS::<wsid>:<objid>"
     output:
-        objects - list of ObjectData - see the ObjectData type description in the module docstring above.
-        search_time - int - time it took to perform the search on ES
-        access_group_narrative_info - dict of {access_group_id: narrative_info} -
-            Information about the workspaces in which the objects in the
-            results reside. This data only applies to workspace objects.
+        query - elasticsearch query for document ids specified in the params argument
     """
-    query = {'query': {'terms': {'_id': params['guids']}}}
-    return query
+    return {'query': {'terms': {'_id': params['ids']}}}
 
 
 def _get_search_params(params):
@@ -179,10 +168,13 @@ def _get_search_params(params):
                 }
             })
         else:
-            raise InvalidParamsError(message="Invalid timestamp range in match_filter/timestamp")
+            raise InvalidParamsError(
+                message="Invalid timestamp range in match_filter/timestamp")
 
-    # Handle a search on tags, which corresponds to the generic `tags` field in all indexes.
-    # search_tags is populated on a workspace to indicate the type of workspace. Currently
+    # Handle a search on tags, which corresponds to the generic `tags` field in all
+    # indexes.
+    # search_tags is populated on a workspace to indicate the type of workspace.
+    # Currently
     # supported are "narrative", "refseq", and "noindex"
     if match_filter.get('source_tags'):
         # If source_tags_blacklist is `1`, then we are **excluding** these tags.
@@ -202,11 +194,9 @@ def _get_search_params(params):
     object_types = params.get('object_types', [])
     if object_types:
         # For this fake type, we search on the specific index instead (see lower down).
-        type_blacklist = ['GenomeFeature']
         query['bool']['filter']['bool']['should'] = [
             {'term': {'obj_type_name': obj_type}}
             for obj_type in object_types
-            if obj_type not in type_blacklist
         ]
 
     # Translate with_private and with_public to only_private and only_public.
@@ -238,9 +228,9 @@ def _get_search_params(params):
     # Handle sorting options
     if 'sorting_rules' not in params:
         params['sorting_rules'] = [{
-          "property": "timestamp",
-          "is_object_property": 0,
-          "ascending": 1
+            "property": "timestamp",
+            "is_object_property": 0,
+            "ascending": 1
         }]
     sort = []  # type: list
     for sort_rule in params['sorting_rules']:
@@ -280,20 +270,19 @@ def _get_search_params(params):
         'track_total_hits': True
     }
 
-    if 'GenomeFeature' in object_types:
-        search_params['indexes'] = [_GENOME_FEATURES_IDX_NAME]
-
     return search_params
 
 
 def _handle_lookup_in_keys(match_filter, query):
     """
     Handle the match_filter/lookup_in_keys option from the legacy API.
-    This allows the user to pass a number of field names and term or range values for filtering.
+    This allows the user to pass a number of field names and term or range values for
+    filtering.
     """
     if not match_filter.get('lookup_in_keys'):
         return query
-    # This will be a dict where each key is a field name and each val is a MatchValue type
+    # This will be a dict where each key is a field name and each val is a MatchValue
+    # type
     lookup_in_keys = match_filter['lookup_in_keys']
     for (key, match_value) in lookup_in_keys.items():
         # match_value will be a dict with one of these keys set:

@@ -4,7 +4,7 @@
 # Parameterized by:
 # IP - the ip address of the ES node machine
 # SSHUSER - the dev's username for ssh
-# SSHPASS - the dev's passowrd
+# SSHPASS - the dev's password
 
 sshpass -e ssh \
     -4 \

@@ -28,7 +28,7 @@ def test_get_auth_auth_fail_resp(services):
         data=json.dumps({
             "version": "1.1",
             "method": "KBaseSearchEngine.get_objects",
-            "params": [{"guids": ["xyz"]}],
+            "params": [{"ids": ["xyz"]}],
         })
     )
     result = resp.json()
@@ -89,7 +89,7 @@ def test_legacy_valid(services):
             "id": 0,
             "method": "KBaseSearchEngine.get_objects",
             "params": [{
-                "guids": ['xyz']
+                "ids": ['xyz']
             }]
         })
     )
@@ -162,7 +162,7 @@ def test_legacy_rpc_conversion(services):
             "id": 0,
             "method": "KBaseSearchEngine.get_objects",
             "params": [{
-                "guids": ['xyz']
+                "ids": ['xyz']
             }]
         })
     )

@@ -1,5 +1,5 @@
 """
-JSON-RPC 2.0 service for the legacy API
+JSON-RPC 1.1 service for the legacy API
 
 All methods follow this workflow:
     - convert RPC params into Elasticsearch query
@@ -10,6 +10,11 @@ These methods are a composition of:
     - search1_conversion.convert_params
     - es_client.search
     - search1_conversion.convert_result
+
+Note that the methods implement KBase's convention for JSON-RPC 1.1,
+in which the request `params` are an array of one element, usually containing
+an object, each property of which is considered a `param`, and in which the
+results are also wrapped in an array of one element.
 """
 
 import time
@@ -21,6 +26,7 @@ from src.search1_conversion import convert_params, convert_result
 from src.utils.logger import logger
 from src.search1_rpc.errors import trap_error
 
+# A JSON-RPC 1.1 service description
 description = ServiceDescription(
     'The KBase Legacy Search API',
     'https://github.com/kbase/search_api2/src/search1_rpc/schemas',
@@ -47,12 +53,10 @@ def get_objects(params, meta):
     search_result = trap_error(lambda: search(query, meta))
     result = convert_result.get_objects(params, search_result, meta)
     logger.debug(f'Finished get_objects in {time.time() - start}s')
-    # KBase convention is to return result in a list
     return [result]
 
 
 def search_objects(params, meta):
-    # KBase convention is to wrap params in an array
     if isinstance(params, list) and len(params) == 1:
         params = params[0]
     start = time.time()
@@ -60,20 +64,17 @@ def search_objects(params, meta):
     search_result = trap_error(lambda: search(query, meta))
     result = convert_result.search_objects(params, search_result, meta)
     logger.debug(f'Finished search_objects in {time.time() - start}s')
-    # KBase convention is to return result in a list
     return [result]
 
 
 def search_types(params, meta):
-    # KBase convention is to wrap params in an array
     if isinstance(params, list) and len(params) == 1:
         params = params[0]
     start = time.time()
     query = convert_params.search_types(params)
     search_result = trap_error(lambda: search(query, meta))
-    result = convert_result.search_types(params, search_result, meta)
+    result = convert_result.search_types(search_result)
     logger.debug(f'Finished search_types in {time.time() - start}s')
-    # KBase convention is to return result in a list
     return [result]
 
 

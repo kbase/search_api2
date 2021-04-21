@@ -33,28 +33,6 @@ def test_search_example3(service):
     assert len(res['objects']) > 0
 
 
-def test_search_example4(service):
-    """Genome features count with no data"""
-    request_data = load_data_file('search_objects', 'case-07-request.json')
-    response_data = load_data_file('search_objects', 'case-07-response.json')
-    url = service['app_url'] + '/legacy'
-    res = do_rpc(url, request_data, response_data)
-    assert res['total'] > 0
-    assert res['search_time'] > 0
-
-
-def test_search_example5(service):
-    """Genome features search with results"""
-    request_data = load_data_file('search_objects', 'case-08-request.json')
-    response_data = load_data_file('search_objects', 'case-08-response.json')
-    url = service['app_url'] + '/legacy'
-    res = do_rpc(url, request_data, response_data)
-    assert_equal_results(res, response_data['result'][0])
-    assert len(res['objects']) > 0
-    assert res['total'] > 0
-    assert res['search_time'] > 0
-
-
 def test_search_objects_private(service):
     """Search over private data"""
     if 'WS_TOKEN' not in os.environ:

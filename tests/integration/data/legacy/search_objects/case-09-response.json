@@ -1,5 +1,5 @@
 {
-	"version": "1.1",
+	"object_version": "1.1",
 	"result": [{
 		"pagination": {
 			"start": 0,
@@ -11,18 +11,19 @@
 			"ascending": 0
 		}, {
 			"is_object_property": 0,
-			"property": "type",
+			"property": "workspace_type",
 			"ascending": 1
 		}],
 		"total": 115,
 		"search_time": 784,
 		"objects": [{
+			"id": "WS::52489:1",
 			"object_name": "Narrative.1594758723895",
-			"access_group": 52489,
-			"obj_id": 1,
-			"version": 23,
+			"workspace_id": 52489,
+			"object_id": 1,
+			"object_version": 23,
 			"timestamp": 1609804811154,
-			"type": "Narrative",
+			"workspace_type_name": "Narrative",
 			"creator": "eapearson",
 			"data": {
 				"narrative_title": "Taxonomy Landing Page Testing",
@@ -61,20 +62,19 @@
 				"obj_type_module": "KBaseNarrative",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:52489/1/1",
-			"kbase_id": "52489/1/1",
 			"index_name": "narrative_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"cells.desc": ["NCBI\nnamespace: ncbi_taxonomy\nExample for Escherichia <em>coli</em>:\nhttps://ci.kbase.us#taxonomy/taxon/ncbi_taxonomy", "GTDB\nnamespace: gtdb\nExample for Escherichia <em>coli</em>:\nhttps://ci.kbase.us#taxonomy/taxon/gtdb/GBGCA900481195.1", "RDP\nnamespace: rdb_taxonomy\nExample for Escherichia <em>coli</em>; PK3; X80731:\nhttps://ci.kbase.us#taxonomy/taxon", "SILVA\nnamespace: silva_taxonomy\nExample for Escherichia <em>coli</em>; PK3; X80731:\nhttps://ci.kbase.us#taxonomy"]
 			}
 		}, {
+			"id": "WS::50631:3",
 			"object_name": "GCF_000005845.2_ASM584v2_genomic.gbff_genome",
-			"access_group": 50631,
-			"obj_id": 3,
-			"version": 1,
+			"workspace_id": 50631,
+			"object_id": 3,
+			"object_version": 1,
 			"timestamp": 1573161872922,
-			"type": "Genome",
+			"workspace_type_name": "Genome",
 			"creator": "bsadkhin",
 			"data": {
 				"genome_id": "GCF_000005845.2_ASM584v2_genomic.gbff_genome",
@@ -120,22 +120,21 @@
 				"obj_type_module": "KBaseGenomes",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:50631/3/1",
-			"kbase_id": "50631/3/1",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"publication_titles": ["Escherichia <em>coli</em> K-12 MG1655 yqiK-rfaE intergenic region, genomic sequence correction", "Escherichia <em>coli</em> K-12: a cooperatively developed annotation snapshot--2005", "Workshop on Annotation of Escherichia <em>coli</em> K-12", "The complete genome sequence of Escherichia <em>coli</em> K-12", "ASAP: Escherichia <em>coli</em> K-12 strain MG1655 version m56"],
 				"scientific_name": ["Escherichia <em>coli</em> str. K-12 substr. MG1655"],
 				"taxonomy": ["Proteobacteria; Gammaproteobacteria; Enterobacterales; Enterobacteriaceae; Escherichia; Escherichia <em>coli</em>", "; Escherichia <em>coli</em> K-12"]
 			}
 		}, {
+			"id": "WS::48753:1",
 			"object_name": "Narrative.1585596681448",
-			"access_group": 48753,
-			"obj_id": 1,
-			"version": 7,
+			"workspace_id": 48753,
+			"object_id": 1,
+			"object_version": 7,
 			"timestamp": 1586539905964,
-			"type": "Narrative",
+			"workspace_type_name": "Narrative",
 			"creator": "eapearson",
 			"data": {
 				"narrative_title": "RE landing page sample links",
@@ -174,20 +173,19 @@
 				"obj_type_module": "KBaseNarrative",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:48753/1/1",
-			"kbase_id": "48753/1/1",
 			"index_name": "narrative_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"cells.desc": ["Taxonomy Landing Pages\nThe ubiquitous E. <em>coli</em>...", "identifier for the specific item to be viewed; the form of the id depends on the collection,e.g. 562 is E. <em>coli</em>", "search to find taxonomic entities:\njson\n{\n    \"params\": [{\n        \"ns\": \"gtdb\",\n        \"search_text\": \"<em>coli</em>", "GB_GCA_900481195.1\",\n                    \"last_version\": \"r89\",\n                    \"name\": \"Escherichia <em>coli</em>", "RS_GCF_002548945.1\",\n                    \"last_version\": \"r89\",\n                    \"name\": \"Escherichia <em>coli</em>"]
 			}
 		}, {
+			"id": "WS::45320:4",
 			"object_name": "ecoli_2contigs_orig",
-			"access_group": 45320,
-			"obj_id": 4,
-			"version": 4,
+			"workspace_id": 45320,
+			"object_id": 4,
+			"object_version": 4,
 			"timestamp": 1574124911386,
-			"type": "Genome",
+			"workspace_type_name": "Genome",
 			"creator": "jayrbolton",
 			"data": {
 				"genome_id": "ecoli_2contigs_orig",
@@ -234,10 +232,9 @@
 				"obj_type_module": "KBaseGenomes",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:45320/4/1",
 			"kbase_id": "45320/4/1",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"publication_titles": ["A manual approach to accurate translation start site annotation: an E. <em>coli</em> K-12 case study", "The complete genome sequence of Escherichia <em>coli</em> K-12", "Escherichia <em>coli</em> K-12: a cooperatively developed annotation snapshot--2005", "Workshop on Annotation of Escherichia <em>coli</em> K-12", "ASAP: Escherichia <em>coli</em> K-12 strain MG1655 version m56"],
 				"scientific_name": ["Escherichia <em>coli</em> str. K-12 substr. MG1655"],
@@ -245,11 +242,11 @@
 			}
 		}, {
 			"object_name": "small_genbank__test_batch_sub_dir_1",
-			"access_group": 45320,
-			"obj_id": 5,
-			"version": 1,
+			"workspace_id": 45320,
+			"object_id": 5,
+			"object_version": 1,
 			"timestamp": 1549683737483,
-			"type": "Genome",
+			"workspace_type_name": "Genome",
 			"creator": "tgu2",
 			"data": {
 				"genome_id": "small_genbank__test_batch_sub_dir_1",
@@ -295,10 +292,9 @@
 				"obj_type_module": "KBaseGenomes",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:45320/5/1",
-			"kbase_id": "45320/5/1",
+			"id": "WS::45320:5",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"publication_titles": ["A manual approach to accurate translation start site annotation: an E. <em>coli</em> K-12 case study", "The complete genome sequence of Escherichia <em>coli</em> K-12", "Escherichia <em>coli</em> K-12: a cooperatively developed annotation snapshot--2005", "Workshop on Annotation of Escherichia <em>coli</em> K-12", "ASAP: Escherichia <em>coli</em> K-12 strain MG1655 version m56"],
 				"scientific_name": ["Escherichia <em>coli</em> str. K-12 substr. MG1655"],
@@ -306,11 +302,11 @@
 			}
 		}, {
 			"object_name": "GCF_000005845.2_ASM584v2_genomic.gbff_genome",
-			"access_group": 44783,
-			"obj_id": 3,
-			"version": 1,
+			"workspace_id": 44783,
+			"object_id": 3,
+			"object_version": 1,
 			"timestamp": 1573159884255,
-			"type": "Genome",
+			"workspace_type_name": "Genome",
 			"creator": "bsadkhin",
 			"data": {
 				"genome_id": "GCF_000005845.2_ASM584v2_genomic.gbff_genome",
@@ -356,10 +352,9 @@
 				"obj_type_module": "KBaseGenomes",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:44783/3/1",
-			"kbase_id": "44783/3/1",
+			"id": "WS::44783:3",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"publication_titles": ["The complete genome sequence of Escherichia <em>coli</em> K-12", "Workshop on Annotation of Escherichia <em>coli</em> K-12", "ASAP: Escherichia <em>coli</em> K-12 strain MG1655 version m56", "Highly accurate genome sequences of Escherichia <em>coli</em> K-12 strains MG1655 and W3110", "Escherichia <em>coli</em> K-12: a cooperatively developed annotation snapshot--2005"],
 				"scientific_name": ["Escherichia <em>coli</em> str. K-12 substr. MG1655"],
@@ -367,11 +362,11 @@
 			}
 		}, {
 			"object_name": "Escherichia_coli",
-			"access_group": 44697,
-			"obj_id": 3,
-			"version": 1,
+			"workspace_id": 44697,
+			"object_id": 3,
+			"object_version": 1,
 			"timestamp": 1527549837859,
-			"type": "Genome",
+			"workspace_type_name": "Genome",
 			"creator": "qzhang",
 			"data": {
 				"genome_id": "GCF_002163935.1",
@@ -415,20 +410,19 @@
 				"obj_type_module": "KBaseGenomes",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:44697/3/1",
-			"kbase_id": "44697/3/1",
+			"id": "WS::44697:3",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"scientific_name": ["Escherichia <em>coli</em>"]
 			}
 		}, {
 			"object_name": "Ecoli_go_term",
-			"access_group": 44640,
-			"obj_id": 9,
-			"version": 1,
+			"workspace_id": 44640,
+			"object_id": 9,
+			"object_version": 1,
 			"timestamp": 1572897735244,
-			"type": "Genome",
+			"workspace_type_name": "Genome",
 			"creator": "luj",
 			"data": {
 				"genome_id": "Ecoli_go_term",
@@ -474,10 +468,9 @@
 				"obj_type_module": "KBaseGenomes",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:44640/9/1",
-			"kbase_id": "44640/9/1",
+			"id": "WS::44640:9",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"publication_titles": ["ASAP: Escherichia <em>coli</em> K-12 strain MG1655 version m56", "Workshop on Annotation of Escherichia <em>coli</em> K-12", "Escherichia <em>coli</em> K-12: a cooperatively developed annotation snapshot--2005", "Highly accurate genome sequences of Escherichia <em>coli</em> K-12 strains MG1655 and W3110", "The complete genome sequence of Escherichia <em>coli</em> K-12"],
 				"scientific_name": ["Escherichia <em>coli</em> str. K-12 substr. MG1655"],
@@ -485,11 +478,11 @@
 			}
 		}, {
 			"object_name": "Ecoli_go_term2",
-			"access_group": 44640,
-			"obj_id": 12,
-			"version": 1,
+			"workspace_id": 44640,
+			"object_id": 12,
+			"object_version": 1,
 			"timestamp": 1573105778886,
-			"type": "Genome",
+			"workspace_type_name": "Genome",
 			"creator": "bsadkhin",
 			"data": {
 				"genome_id": "Ecoli_go_term2",
@@ -535,10 +528,9 @@
 				"obj_type_module": "KBaseGenomes",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:44640/12/1",
-			"kbase_id": "44640/12/1",
+			"id": "WS::44640:12",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"publication_titles": ["ASAP: Escherichia <em>coli</em> K-12 strain MG1655 version m56", "Workshop on Annotation of Escherichia <em>coli</em> K-12", "Escherichia <em>coli</em> K-12: a cooperatively developed annotation snapshot--2005", "Highly accurate genome sequences of Escherichia <em>coli</em> K-12 strains MG1655 and W3110", "The complete genome sequence of Escherichia <em>coli</em> K-12"],
 				"scientific_name": ["Escherichia <em>coli</em> str. K-12 substr. MG1655"],
@@ -546,11 +538,11 @@
 			}
 		}, {
 			"object_name": "Ecoli_go",
-			"access_group": 44640,
-			"obj_id": 3,
-			"version": 1,
+			"workspace_id": 44640,
+			"object_id": 3,
+			"object_version": 1,
 			"timestamp": 1572672656546,
-			"type": "Genome",
+			"workspace_type_name": "Genome",
 			"creator": "bsadkhin",
 			"data": {
 				"genome_id": "Ecoli_go",
@@ -596,10 +588,9 @@
 				"obj_type_module": "KBaseGenomes",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:44640/3/1",
-			"kbase_id": "44640/3/1",
+			"id": "WS::44640:3",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"publication_titles": ["ASAP: Escherichia <em>coli</em> K-12 strain MG1655 version m56", "Workshop on Annotation of Escherichia <em>coli</em> K-12", "Escherichia <em>coli</em> K-12: a cooperatively developed annotation snapshot--2005", "Highly accurate genome sequences of Escherichia <em>coli</em> K-12 strains MG1655 and W3110", "The complete genome sequence of Escherichia <em>coli</em> K-12"],
 				"scientific_name": ["Escherichia <em>coli</em> str. K-12 substr. MG1655"],
@@ -607,11 +598,11 @@
 			}
 		}, {
 			"object_name": "Narrative.1569012281066",
-			"access_group": 44150,
-			"obj_id": 1,
-			"version": 15,
+			"workspace_id": 44150,
+			"object_id": 1,
+			"object_version": 15,
 			"timestamp": 1582215852059,
-			"type": "Narrative",
+			"workspace_type_name": "Narrative",
 			"creator": "eapearson",
 			"data": {
 				"narrative_title": "Relation Engine (RE) Landing Page Demo",
@@ -653,20 +644,19 @@
 				"obj_type_module": "KBaseNarrative",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:44150/1/1",
-			"kbase_id": "44150/1/1",
+			"id": "WS::44150:1",
 			"index_name": "narrative_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"cells.desc": ["The E. <em>coli</em> in the data panel to is actually linked from the \"E. <em>coli</em>\" taxon landing page you can get", "Genome Landing Page\n\nE. <em>coli</em> refdata\nThis link leads to a Genome landing page which shows the lineage"]
 			}
 		}, {
 			"object_name": "GCF_000005845.2",
-			"access_group": 42557,
-			"obj_id": 2,
-			"version": 1,
+			"workspace_id": 42557,
+			"object_id": 2,
+			"object_version": 1,
 			"timestamp": 1484680259109,
-			"type": "Genome",
+			"workspace_type_name": "Genome",
 			"creator": "qzhang",
 			"data": {
 				"genome_id": "GCF_000005845.2",
@@ -699,10 +689,9 @@
 				"obj_type_module": "KBaseGenomes",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:42557/2/1",
-			"kbase_id": "42557/2/1",
+			"id": "WS::42557:2",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"publication_titles": ["Escherichia <em>coli</em> K-12: a cooperatively developed annotation snapshot--2005", "Highly accurate genome sequences of Escherichia <em>coli</em> K-12 strains MG1655 and W3110", "Workshop on Annotation of Escherichia <em>coli</em> K-12", "ASAP: Escherichia <em>coli</em> K-12 strain MG1655 version m56", "The complete genome sequence of Escherichia <em>coli</em> K-12"],
 				"scientific_name": ["Escherichia <em>coli</em> str. K-12 substr. MG1655"],
@@ -710,11 +699,11 @@
 			}
 		}, {
 			"object_name": "GCF_000005845.2.RAST",
-			"access_group": 42557,
-			"obj_id": 3,
-			"version": 1,
+			"workspace_id": 42557,
+			"object_id": 3,
+			"object_version": 1,
 			"timestamp": 1556576383612,
-			"type": "Genome",
+			"workspace_type_name": "Genome",
 			"creator": "filipeliu",
 			"data": {
 				"genome_id": "GCF_000005845.2.RAST",
@@ -752,10 +741,9 @@
 				"obj_type_module": "KBaseGenomes",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:42557/3/1",
-			"kbase_id": "42557/3/1",
+			"id": "WS::42557:3",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"publication_titles": ["Escherichia <em>coli</em> K-12: a cooperatively developed annotation snapshot--2005", "Highly accurate genome sequences of Escherichia <em>coli</em> K-12 strains MG1655 and W3110", "Workshop on Annotation of Escherichia <em>coli</em> K-12", "ASAP: Escherichia <em>coli</em> K-12 strain MG1655 version m56", "The complete genome sequence of Escherichia <em>coli</em> K-12"],
 				"scientific_name": ["Escherichia <em>coli</em> str. K-12 substr. MG1655"],
@@ -763,11 +751,11 @@
 			}
 		}, {
 			"object_name": "GCF_000005845.2_ASM584v2_genomic.gbff_genome",
-			"access_group": 39819,
-			"obj_id": 2,
-			"version": 6,
+			"workspace_id": 39819,
+			"object_id": 2,
+			"object_version": 6,
 			"timestamp": 1548276078101,
-			"type": "Genome",
+			"workspace_type_name": "Genome",
 			"creator": "jjeffryes",
 			"data": {
 				"genome_id": "GCF_000005845.2_ASM584v2_genomic.gbff_genome",
@@ -813,10 +801,9 @@
 				"obj_type_module": "KBaseGenomes",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:39819/2/1",
-			"kbase_id": "39819/2/1",
+			"id": "WS::39819:2",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"publication_titles": ["Escherichia <em>coli</em> K-12 MG1655 yqiK-rfaE intergenic region, genomic sequence correction", "Escherichia <em>coli</em> K-12: a cooperatively developed annotation snapshot--2005", "ASAP: Escherichia <em>coli</em> K-12 strain MG1655 version m56", "Workshop on Annotation of Escherichia <em>coli</em> K-12", "The complete genome sequence of Escherichia <em>coli</em> K-12"],
 				"scientific_name": ["Escherichia <em>coli</em> str. K-12 substr. MG1655"],
@@ -824,11 +811,11 @@
 			}
 		}, {
 			"object_name": "GCF_000005845.2_ASM584v2_genomic.gbff_genome",
-			"access_group": 39218,
-			"obj_id": 3,
-			"version": 1,
+			"workspace_id": 39218,
+			"object_id": 3,
+			"object_version": 1,
 			"timestamp": 1547241468826,
-			"type": "Genome",
+			"workspace_type_name": "Genome",
 			"creator": "jjeffryes",
 			"data": {
 				"genome_id": "GCF_000005845.2_ASM584v2_genomic.gbff_genome",
@@ -874,10 +861,9 @@
 				"obj_type_module": "KBaseGenomes",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:39218/3/1",
-			"kbase_id": "39218/3/1",
+			"id": "WS::39218:3",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"publication_titles": ["ASAP: Escherichia <em>coli</em> K-12 strain MG1655 version m56", "Workshop on Annotation of Escherichia <em>coli</em> K-12", "Escherichia <em>coli</em> K-12: a cooperatively developed annotation snapshot--2005", "Highly accurate genome sequences of Escherichia <em>coli</em> K-12 strains MG1655 and W3110", "The complete genome sequence of Escherichia <em>coli</em> K-12"],
 				"scientific_name": ["Escherichia <em>coli</em> str. K-12 substr. MG1655"],
@@ -885,11 +871,11 @@
 			}
 		}, {
 			"object_name": "Prokka_genome",
-			"access_group": 37649,
-			"obj_id": 3,
-			"version": 1,
+			"workspace_id": 37649,
+			"object_id": 3,
+			"object_version": 1,
 			"timestamp": 1543271602030,
-			"type": "Genome",
+			"workspace_type_name": "Genome",
 			"creator": "jjeffryes",
 			"data": {
 				"genome_id": "GCF_000005845.2_ASM584v2_genomic",
@@ -935,22 +921,22 @@
 				"obj_type_module": "KBaseGenomes",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:37649/3/1",
-			"kbase_id": "37649/3/1",
+			"id": "WS::37649:3",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"publication_titles": ["ASAP: Escherichia <em>coli</em> K-12 strain MG1655 version m56", "Highly accurate genome sequences of Escherichia <em>coli</em> K-12 strains MG1655 and W3110", "The complete genome sequence of Escherichia <em>coli</em> K-12", "Workshop on Annotation of Escherichia <em>coli</em> K-12", "Escherichia <em>coli</em> K-12: a cooperatively developed annotation snapshot--2005"],
 				"scientific_name": ["Escherichia <em>coli</em> str. K-12 substr. MG1655"],
 				"taxonomy": ["Proteobacteria; Gammaproteobacteria; Enterobacterales; Enterobacteriaceae; Escherichia; Escherichia <em>coli</em>", "; Escherichia <em>coli</em> K-12"]
 			}
 		}, {
+			"id": "WS::37649:2",
 			"object_name": "GCF_000005845.2_ASM584v2_genomic",
-			"access_group": 37649,
-			"obj_id": 2,
-			"version": 1,
+			"workspace_id": 37649,
+			"object_id": 2,
+			"object_version": 1,
 			"timestamp": 1522766145529,
-			"type": "Genome",
+			"workspace_type_name": "Genome",
 			"creator": "jjeffryes",
 			"data": {
 				"genome_id": "GCF_000005845.2_ASM584v2_genomic",
@@ -996,22 +982,21 @@
 				"obj_type_module": "KBaseGenomes",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:37649/2/1",
-			"kbase_id": "37649/2/1",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"publication_titles": ["ASAP: Escherichia <em>coli</em> K-12 strain MG1655 version m56", "Highly accurate genome sequences of Escherichia <em>coli</em> K-12 strains MG1655 and W3110", "The complete genome sequence of Escherichia <em>coli</em> K-12", "Workshop on Annotation of Escherichia <em>coli</em> K-12", "Escherichia <em>coli</em> K-12: a cooperatively developed annotation snapshot--2005"],
 				"scientific_name": ["Escherichia <em>coli</em> str. K-12 substr. MG1655"],
 				"taxonomy": ["Proteobacteria; Gammaproteobacteria; Enterobacterales; Enterobacteriaceae; Escherichia; Escherichia <em>coli</em>", "; Escherichia <em>coli</em> K-12"]
 			}
 		}, {
+			"id": "WS::37649:5",
 			"object_name": "Rast_genome",
-			"access_group": 37649,
-			"obj_id": 5,
-			"version": 1,
+			"workspace_id": 37649,
+			"object_id": 5,
+			"object_version": 1,
 			"timestamp": 1543294049109,
-			"type": "Genome",
+			"workspace_type_name": "Genome",
 			"creator": "jjeffryes",
 			"data": {
 				"genome_id": "Rast_genome",
@@ -1050,22 +1035,21 @@
 				"obj_type_module": "KBaseGenomes",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:37649/5/1",
-			"kbase_id": "37649/5/1",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"publication_titles": ["ASAP: Escherichia <em>coli</em> K-12 strain MG1655 version m56", "Highly accurate genome sequences of Escherichia <em>coli</em> K-12 strains MG1655 and W3110", "The complete genome sequence of Escherichia <em>coli</em> K-12", "Workshop on Annotation of Escherichia <em>coli</em> K-12", "Escherichia <em>coli</em> K-12: a cooperatively developed annotation snapshot--2005"],
 				"scientific_name": ["Escherichia <em>coli</em> str. K-12 substr. MG1655"],
 				"taxonomy": ["Proteobacteria; Gammaproteobacteria; Enterobacterales; Enterobacteriaceae; Escherichia; Escherichia <em>coli</em>", "; Escherichia <em>coli</em> K-12"]
 			}
 		}, {
+			"id": "WS::33192:21",
 			"object_name": "Ecoli_go_term",
-			"access_group": 33192,
-			"obj_id": 21,
-			"version": 1,
+			"workspace_id": 33192,
+			"object_id": 21,
+			"object_version": 1,
 			"timestamp": 1572897735244,
-			"type": "Genome",
+			"workspace_type_name": "Genome",
 			"creator": "luj",
 			"data": {
 				"genome_id": "Ecoli_go_term",
@@ -1111,22 +1095,21 @@
 				"obj_type_module": "KBaseGenomes",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:33192/21/1",
-			"kbase_id": "33192/21/1",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"publication_titles": ["ASAP: Escherichia <em>coli</em> K-12 strain MG1655 version m56", "Workshop on Annotation of Escherichia <em>coli</em> K-12", "Escherichia <em>coli</em> K-12: a cooperatively developed annotation snapshot--2005", "Highly accurate genome sequences of Escherichia <em>coli</em> K-12 strains MG1655 and W3110", "The complete genome sequence of Escherichia <em>coli</em> K-12"],
 				"scientific_name": ["Escherichia <em>coli</em> str. K-12 substr. MG1655"],
 				"taxonomy": ["Proteobacteria; Gammaproteobacteria; Enterobacterales; Enterobacteriaceae; Escherichia; Escherichia <em>coli</em>", "; Escherichia <em>coli</em> K-12"]
 			}
 		}, {
+			"id": "WS::33192:34",
 			"object_name": "GCF_004368345.1",
-			"access_group": 33192,
-			"obj_id": 34,
-			"version": 2,
+			"workspace_id": 33192,
+			"object_id": 34,
+			"object_version": 2,
 			"timestamp": 1578704620951,
-			"type": "Genome",
+			"workspace_type_name": "Genome",
 			"creator": "jayrbolton",
 			"data": {
 				"genome_id": "GCF_004368345.1",
@@ -1171,10 +1154,8 @@
 				"obj_type_module": "KBaseGenomes",
 				"index_runner_ver": "1.9.17"
 			},
-			"guid": "WS:33192/34/1",
-			"kbase_id": "33192/34/1",
 			"index_name": "genome_2",
-			"type_ver": 0,
+			"index_version": 0,
 			"highlight": {
 				"scientific_name": ["Campylobacter <em>coli</em>"]
 			}

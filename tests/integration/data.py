@@ -272,7 +272,7 @@ search_response5 = {
       "object_name": "kb|g.2231",
       "timestamp": 1453530416321,
       "type": "GenomeFeature",
-      "type_ver": 1,
+      "index_version": 1,
       "creator": "kbasetest",
       "mod": "KBase Search",
       "parent_data": {

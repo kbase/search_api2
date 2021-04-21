@@ -1,0 +1,14 @@
+{
+  "ids": [
+    "WS::56638:2",
+    "WS::56638:1"
+  ],
+  "post_processing": {
+    "ids_only": 0,
+    "skip_info": 0,
+    "skip_keys": 0,
+    "skip_data": 0,
+    "include_highlight": 1,
+    "add_narrative_info": 1
+  }
+}

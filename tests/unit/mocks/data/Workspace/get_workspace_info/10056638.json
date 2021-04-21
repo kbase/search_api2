@@ -1,0 +1,17 @@
+[
+  56638,
+  "kbaseuitest:narrative_1605747150690",
+  "kbaseuitestx",
+  "2020-11-19T05:52:58+0000",
+  9,
+  "a",
+  "r",
+  "unlocked",
+  {
+    "cell_count": "1",
+    "narrative_nice_name": "Test Narrative for FeatureSet Integration Test",
+    "searchtags": "narrative",
+    "is_temporary": "false",
+    "narrative": "1"
+  }
+]

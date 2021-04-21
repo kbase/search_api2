@@ -1,0 +1,22 @@
+{
+  "infos": [
+    [
+      2,
+      "GCF_000759885.1",
+      "KBaseGenomes.Genome-14.2",
+      "2020-11-19T01:07:33+0000",
+      1,
+      "kbaseuitest",
+      56638,
+      "kbaseuitest:narrative_1605747150690",
+      "eb43f0b7ced19611f02b9dd1599fce05",
+      5845963,
+      null
+    ]
+  ],
+  "paths": [
+    [
+      "56638/2/1"
+    ]
+  ]
+}

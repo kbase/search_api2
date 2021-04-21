@@ -137,7 +137,8 @@ def test_search_objects_source_tags():
         'query': {'bool': {'must': [{'term': {'tags': 'x'}}, {'term': {'tags': 'y'}}]}},
         'size': 20, 'from': 0,
         'sort': [{'timestamp': {'order': 'asc'}}],
-        'only_public': False, 'only_private': False,
+        'only_public': False,
+        'only_private': False,
         'track_total_hits': True
     }
     query = convert_params.search_objects(params)
@@ -152,7 +153,8 @@ def test_search_objects_source_tags_blacklist():
         'query': {'bool': {'must_not': [{'term': {'tags': 'x'}}, {'term': {'tags': 'y'}}]}},
         'size': 20, 'from': 0,
         'sort': [{'timestamp': {'order': 'asc'}}],
-        'only_public': False, 'only_private': False,
+        'only_public': False,
+        'only_private': False,
         'track_total_hits': True
     }
     query = convert_params.search_objects(params)
@@ -161,7 +163,7 @@ def test_search_objects_source_tags_blacklist():
 
 def test_search_objects_objtypes():
     params = {
-        'object_types': ['x', 'y', 'GenomeFeature']
+        'object_types': ['x', 'y']
     }
     expected = {
         'query': {
@@ -176,7 +178,6 @@ def test_search_objects_objtypes():
                 }
             }
         },
-        'indexes': ['genome_features_2'],
         'size': 20, 'from': 0,
         'sort': [{'timestamp': {'order': 'asc'}}],
         'only_public': False, 'only_private': False,
@@ -260,7 +261,7 @@ def test_search_types_valid():
 
 def test_get_objects_valid():
     params = {
-        'guids': ['x', 'y']
+        'ids': ['x', 'y']
     }
     expected = {
         'query': {'terms': {'_id': ['x', 'y']}}

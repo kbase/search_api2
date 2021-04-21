@@ -7,10 +7,15 @@ def init_config():
     """
     Initialize configuration data for the whole app
     """
+    # TODO: it might be better to NOT default to testing configuration,
+    #       but rather explicitly set the test environment.
+    #       Reason? A failure to configure one of these in prod could lead to
+    #       confusing failure conditions.
     ws_url = os.environ.get('WORKSPACE_URL', 'https://ci.kbase.us/services/ws').strip('/')
     es_url = os.environ.get('ELASTICSEARCH_URL', 'http://localhost:9200').strip('/')
     index_prefix = os.environ.get('INDEX_PREFIX', 'test')
-    prefix_delimiter = os.environ.get('INDEX_PREFIX_DELIMITER', '_')
+    prefix_delimiter = os.environ.get('INDEX_PREFIX_DELIMITER', '.')
+    suffix_delimiter = os.environ.get('INDEX_SUFFIX_DELIMITER', '_')
     config_url = os.environ.get(
         'GLOBAL_CONFIG_URL',
         'https://github.com/kbase/index_runner_spec/releases/latest/download/config.yaml'
@@ -34,6 +39,7 @@ def init_config():
         'elasticsearch_url': es_url,
         'index_prefix': index_prefix,
         'prefix_delimiter': prefix_delimiter,
+        'suffix_delimiter': suffix_delimiter,
         'workspace_url': ws_url,
         'user_profile_url': user_profile_url,
         'workers': int(os.environ.get('WORKERS', 8)),

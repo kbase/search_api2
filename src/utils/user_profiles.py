@@ -5,7 +5,7 @@ from src.utils.config import config
 from src.exceptions import UserProfileError
 
 
-def get_user_profiles(usernames: list, auth_token):
+def get_user_profiles(usernames: list, auth_token=None):
     """
     Get a list of workspace IDs that the given username is allowed to access in
     the workspace.
