@@ -33,14 +33,9 @@ ObjectData type:
           entirety. Longer fields are shown as snippets preceded or followed by
           "...".
 """
-from src.utils.config import config
-from src.utils.obj_utils import get_any
-from src.exceptions import ResponseError
 
-# Unversioned feature index name/alias, (eg "genome_features")
-_FEATURES_UNVERSIONED = config['global']['genome_features_current_index_name']
-# Versioned feature index name (eg "genome_features_2")
-_GENOME_FEATURES_IDX_NAME = config['global']['latest_versions'][_FEATURES_UNVERSIONED]
+from src.utils.obj_utils import get_any
+from jsonrpc11base.errors import InvalidParamsError
 
 # Mapping of special sorting properties names from the Java API to search2 key names
 _SORT_PROP_MAPPING = {
@@ -58,7 +53,8 @@ def search_objects(params):
     Convert parameters from the "search_objects" RPC method into an Elasticsearch query.
     """
     query = _get_search_params(params)
-    if params.get('include_highlight'):
+    post_proc = params.get('post_processing', {})
+    if post_proc.get('include_highlight') == 1:
         # We need a special highlight query so that the main query does not generate
         # highlights for bits of the query which are not user-generated.
         highlight_query = {'bool': {}}
@@ -67,7 +63,10 @@ def search_objects(params):
             # Match full text for any field in the objects
             highlight_query['bool']['must'] = [{
                 'match': {
-                    'agg_fields': match_filter['full_text_in_all']
+                    'agg_fields': {
+                        'query': match_filter['full_text_in_all'],
+                        'operator': 'AND',
+                    }
                 }
             }]
         # Note that search_objects, being used by both the legacy and current
@@ -95,7 +94,6 @@ def search_types(params):
             with_all_history - ignored
     output:
         type_to_count - dict where keys are type names and vals are counts
-        search_time - int - total time performing search
     This method constructs the same search parameters as `search_objects`, but
     aggregates results based on `obj_type_name`.
     """
@@ -115,17 +113,12 @@ def get_objects(params):
     Convert params from the "get_objects" RPC method into an Elasticsearch query.
     Retrieve a list of objects based on their upas.
     params:
-        guids - list of string - KBase IDs (upas) to fetch
-        post_processing - object of post-query filters (see PostProcessing def at top of this module)
+        ids - list of string - Search document ids to fetch; ids are in a specific
+        format for object indexes: "WS::<wsid>:<objid>"
     output:
-        objects - list of ObjectData - see the ObjectData type description in the module docstring above.
-        search_time - int - time it took to perform the search on ES
-        access_group_narrative_info - dict of {access_group_id: narrative_info} -
-            Information about the workspaces in which the objects in the
-            results reside. This data only applies to workspace objects.
+        query - elasticsearch query for document ids specified in the params argument
     """
-    query = {'query': {'terms': {'_id': params['guids']}}}
-    return query
+    return {'query': {'terms': {'_id': params['ids']}}}
 
 
 def _get_search_params(params):
@@ -135,24 +128,54 @@ def _get_search_params(params):
     match_filter = params.get('match_filter', {})
     # Base query object for ES. Will get mutated and expanded below.
     # query = {'bool': {'must': [], 'must_not': [], 'should': []}}  # type: dict
-    query = {'bool': {}}  # type: dict
+    query = {'bool': {
+        'must': [],
+        'filter': {
+            'bool': {}
+        }
+    }}  # type: dict
+
+    # Provides for full text search
     if match_filter.get('full_text_in_all'):
         # Match full text for any field in the objects
-        query['bool']['must'] = []
-        query['bool']['must'].append({'match': {'agg_fields': match_filter['full_text_in_all']}})
+        terms = match_filter.get('full_text_in_all')
+        query['bool']['must'].append({
+            'match': {
+                'agg_fields': {
+                    'query': terms,
+                    'operator': 'AND'
+                }
+            }
+        })
+
+    # Search by object name, precisely, so more of a filter.
     if match_filter.get('object_name'):
-        query['bool']['must'] = query['bool'].get('must', [])
-        query['bool']['must'].append({'match': {'obj_name': str(match_filter['object_name'])}})
+        query['bool']['must'].append({
+            'match': {
+                'obj_name': str(match_filter['object_name'])
+            }
+        })
+
+    # Search by timestamp range
     if match_filter.get('timestamp') is not None:
         ts = match_filter['timestamp']
         min_ts = ts.get('min_date')
         max_ts = ts.get('max_date')
         if min_ts is not None and max_ts is not None and min_ts < max_ts:
-            query['bool']['must'] = query['bool'].get('must', [])
-            query['bool']['must'].append({'range': {'timestamp': {'gte': min_ts, 'lte': max_ts}}})
+            query['bool']['must'].append({
+                'range': {
+                    'timestamp': {'gte': min_ts, 'lte': max_ts}
+                }
+            })
         else:
-            raise ResponseError(code=-32602, message="Invalid timestamp range in match_filter/timestamp")
-    # Handle a search on tags, which corresponds to the generic `tags` field in all indexes.
+            raise InvalidParamsError(
+                message="Invalid timestamp range in match_filter/timestamp")
+
+    # Handle a search on tags, which corresponds to the generic `tags` field in all
+    # indexes.
+    # search_tags is populated on a workspace to indicate the type of workspace.
+    # Currently
+    # supported are "narrative", "refseq", and "noindex"
     if match_filter.get('source_tags'):
         # If source_tags_blacklist is `1`, then we are **excluding** these tags.
         blacklist_tags = bool(match_filter.get('source_tags_blacklist'))
@@ -162,26 +185,52 @@ def _get_search_params(params):
         if blacklist_tags:
             query['bool']['must_not'] = tag_query
         else:
-            query['bool']['must'] = query['bool'].get('must', [])
             query['bool']['must'] += tag_query
+
     # Handle match_filter/lookupInKeys
     query = _handle_lookup_in_keys(match_filter, query)
+
     # Handle filtering by object type
     object_types = params.get('object_types', [])
     if object_types:
         # For this fake type, we search on the specific index instead (see lower down).
-        type_blacklist = ['GenomeFeature']
-        query['bool']['should'] = [
+        query['bool']['filter']['bool']['should'] = [
             {'term': {'obj_type_name': obj_type}}
             for obj_type in object_types
-            if obj_type not in type_blacklist
         ]
+
+    # Translate with_private and with_public to only_private and only_public.
+    access_filter = params.get('access_filter', {})
+    with_private = access_filter.get('with_private')
+    with_public = access_filter.get('with_public')
+    if with_private is None and with_public is None:
+        only_public = False
+        only_private = False
+    else:
+        with_private = bool(with_private)
+        with_public = bool(with_public)
+        if with_private:
+            if with_public:
+                only_public = False
+                only_private = False
+            else:
+                only_public = False
+                only_private = True
+        elif with_public:
+            only_public = True
+            only_private = False
+        else:
+            # Error condition
+            raise InvalidParamsError(
+                message='May not specify no private data and no public data'
+            )
+
     # Handle sorting options
     if 'sorting_rules' not in params:
         params['sorting_rules'] = [{
-          "property": "timestamp",
-          "is_object_property": 0,
-          "ascending": 1
+            "property": "timestamp",
+            "is_object_property": 0,
+            "ascending": 1
         }]
     sort = []  # type: list
     for sort_rule in params['sorting_rules']:
@@ -192,36 +241,48 @@ def _get_search_params(params):
             if prop in _SORT_PROP_MAPPING:
                 prop = _SORT_PROP_MAPPING[sort_rule['property']]
             else:
-                msg = f"Invalid non-object sorting property '{prop}'"
-                raise ResponseError(code=-32602, message=msg)
+                raise InvalidParamsError(
+                    message=f"Invalid non-object sorting property '{prop}'"
+                )
         order = 'asc' if ascending else 'desc'
         sort.append({prop: {'order': order}})
+
     pagination = params.get('pagination', {})
-    access_filter = params.get('access_filter', {})
-    with_private = bool(access_filter.get('with_private'))
-    with_public = bool(access_filter.get('with_public'))
+
+    # remove unused elements from query
+    if len(query['bool']['filter']['bool']) == 0:
+        del query['bool']['filter']['bool']
+
+    if len(query['bool']['filter']) == 0:
+        del query['bool']['filter']
+
+    if len(query['bool']['must']) == 0:
+        del query['bool']['must']
+
     # Get excluded index names (handles `exclude_subobjects`)
     search_params = {
         'query': query,
         'size': pagination.get('count', 20),
         'from': pagination.get('start', 0),
         'sort': sort,
-        'public_only': not with_private and with_public,
-        'private_only': not with_public and with_private
+        'only_public': only_public,
+        'only_private': only_private,
+        'track_total_hits': True
     }
-    if 'GenomeFeature' in object_types:
-        search_params['indexes'] = [_GENOME_FEATURES_IDX_NAME]
+
     return search_params
 
 
 def _handle_lookup_in_keys(match_filter, query):
     """
     Handle the match_filter/lookup_in_keys option from the legacy API.
-    This allows the user to pass a number of field names and term or range values for filtering.
+    This allows the user to pass a number of field names and term or range values for
+    filtering.
     """
     if not match_filter.get('lookup_in_keys'):
         return query
-    # This will be a dict where each key is a field name and each val is a MatchValue type
+    # This will be a dict where each key is a field name and each val is a MatchValue
+    # type
     lookup_in_keys = match_filter['lookup_in_keys']
     for (key, match_value) in lookup_in_keys.items():
         # match_value will be a dict with one of these keys set:
@@ -245,6 +306,5 @@ def _handle_lookup_in_keys(match_filter, query):
             if range_max is not None:
                 query_clause['range'][key]['lte'] = range_max
         if query_clause:
-            query['bool']['must'] = query['bool'].get('must', [])
             query['bool']['must'].append(query_clause)
     return query

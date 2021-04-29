@@ -21,13 +21,18 @@ mock_resp = {
 @responses.activate
 def test_get_user_profiles_valid():
     responses.add(responses.POST, config['user_profile_url'],
+                  headers={'Authorization': 'x'},
                   json=mock_resp, status=200)
-    get_user_profiles(['username'], 'x')
+    res = get_user_profiles(['username'], 'x')
+    assert res == mock_resp['result'][0]
 
 
+@responses.activate
 def test_get_user_profiles_noauth():
+    responses.add(responses.POST, config['user_profile_url'],
+                  json=mock_resp, status=200)
     res = get_user_profiles(['username'], None)
-    assert res == []
+    assert res == mock_resp['result'][0]
 
 
 @responses.activate

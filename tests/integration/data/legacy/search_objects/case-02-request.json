@@ -1,0 +1,34 @@
+{
+	"params": [{
+		"match_filter": {
+			"full_text_in_all": "genome",
+			"exclude_subobjects": 1
+		},
+		"pagination": {
+			"start": 0,
+			"count": 15
+		},
+		"post_processing": {
+			"ids_only": 0,
+			"skip_info": 0,
+			"skip_keys": 0,
+			"skip_data": 0,
+			"include_highlight": 1,
+			"add_narrative_info": 1,
+			"add_access_group_info": 1
+		},
+		"access_filter": {
+			"with_private": 1,
+			"with_public": 1
+		},
+		"sorting_rules": [{
+			"property": "timestamp",
+			"ascending": 0,
+			"is_object_property": 0
+		}],
+		"object_types": ["Narrative", "Assembly", "Genome", "PairedEndLibrary", "Pangenome", "Tree", "Media"]
+	}],
+	"method": "KBaseSearchEngine.search_objects",
+	"version": "1.1",
+	"id": "0008033925138730691"
+}

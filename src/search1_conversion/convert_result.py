@@ -1,26 +1,55 @@
-import re
-from typing import Optional
-
 from src.utils.config import config
-from src.utils.formatting import iso8601_to_epoch
+from src.utils.formatting import iso8601_to_epoch_ms
 from src.utils.user_profiles import get_user_profiles
-from src.utils.workspace import get_workspace_info, get_object_info
-import src.es_client as es_client
+from src.utils.workspace import get_workspace_info
+from src.exceptions import NoAccessGroupError, NoUserProfileError
 
-# Mappings from search2 document fields to search1 fields:
-_KEY_MAPPING = {
+# TODO: The structure of the ES docs and of the API's result
+# data should be documented in detail outside of this file, with a
+# reference here.
+
+# Mappings from search2 document fields to search1 fields.
+_GLOBAL_DOC_KEY_MAPPING = {
     'obj_name': 'object_name',
-    'access_group': 'access_group',
-    'obj_id': 'obj_id',
-    'version': 'version',
-    'timestamp': 'timestamp',
-    'obj_type_name': 'type',
-    # 'obj_type_version': 'type_ver',
-    'creator': 'creator'
+    'access_group': 'workspace_id',
+    'obj_id': 'object_id',
+    'version': 'object_version',
+    'obj_type_module': 'workspace_type_module',
+    'obj_type_name': 'workspace_type_name',
+    'obj_type_version': 'workspace_type_version',
+    'timestamp': 'modified_at'
 }
 
+# These keys are copied over literally without renaming
+# keys or transformation
+_GLOBAL_DOC_KEY_COPYING = [
+    'creator',
+    'copied'
+]
 
-def search_objects(params: dict, results: dict, meta: dict):
+# These keys are copied from the result "hit", not "hit.doc" as
+# above.
+_GLOBAL_HIT_KEY_COPYING = [
+    'id'
+]
+
+# These keys are to be neither mapped nor copied, but when copying the rest of the
+# doc fields into the data field, should be excluded, or omitted.
+_GLOBAL_DOC_KEY_EXCLUSION = [
+    'is_public',
+    'shared_users',
+    'tags',
+    'index_runner_ver'
+]
+
+# Similar to excluded fields, these fields are transformed and copied in code below
+# (see the "# Transforms" comment) and should be ignored when copying into the data field.
+_GLOBAL_DOC_KEY_TRANSFORMS = [
+    'creation_date'
+]
+
+
+def search_objects(params: dict, results: dict, ctx: dict):
     """
     Convert Elasticsearch results into the RPC results conforming to the
     "search_objects" method
@@ -34,30 +63,33 @@ def search_objects(params: dict, results: dict, meta: dict):
         'search_time': results['search_time'],
         'objects': objects,
     }
-    _add_access_group_info(ret, results, meta, post_processing)
-    _add_objects_and_info(ret, results, meta, post_processing)
+    _add_access_group_info(ret, results, ctx, post_processing)
+    _add_objects_and_info(ret, results, ctx, post_processing)
+
     return ret
 
 
-def search_types(params, results, meta):
+def search_types(results: dict):
     """
-    Convert Elasticsearch results into RPC results conforming to the spec for
-    the "search_types" method.
+    Convert Elasticsearch results into RPC results conforming to the
+    "search_types" method.
     """
-    # Now we need to convert the ES result format into the API format
+    # Convert the ES result format into the API format
     search_time = results['search_time']
-    buckets = results['aggregations']['type_count']['counts']
-    counts_dict = {}  # type: dict
-    for count_obj in buckets:
-        counts_dict[count_obj['key']] = counts_dict.get(count_obj['key'], 0)
-        counts_dict[count_obj['key']] += count_obj['count']
+    type_counts = results['aggregations']['type_count']['counts']
+    type_to_count = {}  # type: dict
+
+    for type_count in type_counts:
+        key = type_count['key']
+        count = type_count['count']
+        type_to_count[key] = count
     return {
-        'type_to_count': counts_dict,
+        'type_to_count': type_to_count,
         'search_time': int(search_time)
     }
 
 
-def get_objects(params, results, meta):
+def get_objects(params, results, ctx):
     """
     Convert Elasticsearch results into RPC results conforming to the spec for
     the "get_objects" method.
@@ -66,8 +98,8 @@ def get_objects(params, results, meta):
     ret = {
         'search_time': results['search_time'],
     }
-    _add_access_group_info(ret, results, meta, post_processing)
-    _add_objects_and_info(ret, results, meta, post_processing)
+    _add_access_group_info(ret, results, ctx, post_processing)
+    _add_objects_and_info(ret, results, ctx, post_processing)
     return ret
 
 
@@ -84,24 +116,21 @@ def _get_post_processing(params: dict) -> dict:
     return pp
 
 
-def _add_objects_and_info(ret: dict, search_results: dict, meta: dict, post_processing: dict):
+def _add_objects_and_info(ret: dict, search_results: dict, ctx: dict, post_processing: dict):
     """
-    Populate the fields for `objects` and `objects_info`.
+    Populate the fields for `objects`.
 
     Args:
         ret: final method result object (mutated)
         search_results: return value from es_client.query.search
-        meta: RPC meta object (contains auth token)
+        ctx: RPC context object (contains auth token)
         post_processing: some query options pulled from the RPC method params
     """
     objects = _get_object_data_from_search_results(search_results, post_processing)
     ret['objects'] = objects
-    infos = _get_object_infos(objects, meta)
-    if infos is not None:
-        ret['objects_info'] = infos
 
 
-def _add_access_group_info(ret: dict, search_results: dict, meta: dict, post_processing: dict):
+def _add_access_group_info(ret: dict, search_results: dict, ctx: dict, post_processing: dict):
     """
     Populate the fields for `access_group_narrative_info` and/or
     `access_groups_info` depending on keys from the `post_processing` field.
@@ -110,85 +139,82 @@ def _add_access_group_info(ret: dict, search_results: dict, meta: dict, post_pro
     Args:
         ret: final method result object (mutated)
         search_results: return value from es_client.query.search
-        meta: RPC meta object (contains auth token)
+        ctx: RPC context object (contains auth token)
         post_processing: some query options pulled from the RPC method params
     """
     fetch_narratives = post_processing.get('add_narrative_info') == 1
     fetch_ws_infos = post_processing.get('add_access_group_info') == 1
     if fetch_narratives or fetch_ws_infos:
-        (ws_infos, narrative_infos) = _fetch_narrative_info(search_results, meta)
+        (ws_infos, narrative_infos) = _fetch_narrative_info(search_results, ctx)
         if fetch_narratives:
             ret['access_group_narrative_info'] = narrative_infos
         if fetch_ws_infos:
             ret['access_groups_info'] = ws_infos
 
 
-def _fetch_narrative_info(results, meta):
+def _fetch_narrative_info(es_result, ctx):
     """
-    For each result object, we construct a single bulk query to ES that fetches
-    the narrative data. We then construct that data into a "narrative_info"
-    tuple, which contains: (narrative_name, object_id, time_last_saved,
-    owner_username, owner_displayname) Returns a dictionary of workspace_id
-    mapped to the narrative_info tuple above.
+    Returns a to mappings of workspaces, each keyed on the workspace id:
+    - a subset of workspace info as returned by the workspace:
+      (id, name, owner, save_date, max_objid, user_perm, global_perm,
+       lockstat, metadata)
+    - a subset of narrative info for workspaces which are narratives, a tuple
+      of selected values:
+      (narrative title, object id, workspace modification timestamp,
+       owner username, owner realname)
 
-    This also returns a dictionary of workspace infos for each object:
+    The reason for the duplication is historical, not intentional design.
+    One day we will rectify this.
+
     (id, name, owner, save_date, max_objid, user_perm, global_perm, lockstat, metadata)
     """
-    hit_docs = [hit['doc'] for hit in results['hits']]
-    workspace_ids = []
+    hit_docs = [hit['doc'] for hit in es_result['hits']]
+    workspace_ids = set()
     ws_infos = {}
     owners = set()
+
+    # Get workspace info for all unique workspaces in the search
+    # results
     for hit_doc in hit_docs:
         if 'access_group' not in hit_doc:
-            continue
+            raise NoAccessGroupError()
         workspace_id = hit_doc['access_group']
-        workspace_ids.append(workspace_id)
-        workspace_info = get_workspace_info(workspace_id, meta['auth'])
+        workspace_ids.add(workspace_id)
+
+    if len(workspace_ids) == 0:
+        return {}, {}
+
+    for workspace_id in workspace_ids:
+        workspace_info = get_workspace_info(workspace_id, ctx['auth'])
         if len(workspace_info) > 2:
             owners.add(workspace_info[2])
             ws_infos[str(workspace_id)] = workspace_info
-    if len(workspace_ids) == 0:
-        return ({}, {})
-    # Get profile for all owners
-    user_profiles = get_user_profiles(list(owners), meta['auth'])
-    user_profile_map = {profile['user']['username']: profile for profile in user_profiles}
-    narrative_index_name = config['global']['ws_type_to_indexes']['KBaseNarrative.Narrative']
-    # TODO move this code into es_client.fetch_narratives
-    # ES query params
-    search_params: dict = {
-        'indexes': [narrative_index_name],
-        'size': len(workspace_ids)
-    }
-    # Filter by workspace ID
-    matches = [
-        {'match': {'access_group': wsid}}
-        for wsid in workspace_ids
-    ]
-    search_params['query'] = {
-        'bool': {'should': matches}
-    }
-    # Make the query for narratives on ES
-    search_results = es_client.search(search_params, meta)
+
+    # Get profile for all owners in the search results
+    owner_list = list(owners)
+    user_profiles = get_user_profiles(owner_list, ctx['auth'])
+    user_profile_map = {}
+    for index, profile in enumerate(user_profiles):
+        if profile is None:
+            raise NoUserProfileError(owner_list[index])
+        username = profile['user']['username']
+        user_profile_map[username] = profile
+
     # Get all the source document objects for each narrative result
-    narrative_hits = [hit['doc'] for hit in search_results['hits']]
     narr_infos = {}
-    for narr in narrative_hits:
-        _id = narr['access_group']
-        if _id not in ws_infos:
-            continue
-        [workspace_id, workspace_name, owner, moddate,
-         max_objid, user_permission, global_permission,
-         lockstat, ws_metadata] = ws_infos[str(_id)]
-        if owner in user_profile_map:
-            # See type in legacy-schema.yaml/narrativeInfo
-            narr_infos[str(_id)] = [
-                narr.get('narrative_title', ''),
-                narr.get('obj_id'),
-                iso8601_to_epoch(moddate),  # Save date as an epoch
+    for ws_info in ws_infos.values():
+        [workspace_id, _, owner, moddate, _, _, _, _, ws_metadata] = ws_info
+        user_profile = user_profile_map.get(owner)
+        real_name = user_profile['user']['realname']
+        if 'narrative' in ws_metadata:
+            narr_infos[str(workspace_id)] = [
+                ws_metadata.get('narrative_nice_name', ''),
+                int(ws_metadata.get('narrative')),
+                iso8601_to_epoch_ms(moddate),
                 owner,
-                user_profile_map[owner]['user']['realname'],
+                real_name
             ]
-    return (ws_infos, narr_infos)
+    return ws_infos, narr_infos
 
 
 def _get_object_data_from_search_results(search_results, post_processing):
@@ -199,77 +225,87 @@ def _get_object_data_from_search_results(search_results, post_processing):
     """
     # TODO post_processing/skip_info,skip_keys,skip_data -- look at results in current api
     # TODO post_processing/ids_only -- look at results in current api
+
     object_data = []  # type: list
     # Keys found in every ws object
-    for result in search_results['hits']:
-        source = result['doc']
+    for hit in search_results['hits']:
+        doc = hit['doc']
         obj: dict = {}
-        for (search2_key, search1_key) in _KEY_MAPPING.items():
-            obj[search1_key] = source.get(search2_key)
+
+        # Copy fields from the "hit" to the result "object".
+        for key in _GLOBAL_HIT_KEY_COPYING:
+            obj[key] = hit.get(key)
+
+        # Simple key mapping from the doc to the object.
+        # The mapping transforms the raw keys from the ES result into
+        # friendlier keys expected by the API.
+        # Defined at top of file.
+        global_doc_keys = []
+        for (search2_key, search1_key) in _GLOBAL_DOC_KEY_MAPPING.items():
+            global_doc_keys.append(search2_key)
+            obj[search1_key] = doc.get(search2_key)
+
+        #  Even simpler key mapping - no key substitution
+        for key in _GLOBAL_DOC_KEY_COPYING:
+            global_doc_keys.append(key)
+            obj[key] = doc.get(key)
+
+        # Transforms
+        obj['created_at'] = iso8601_to_epoch_ms((doc['creation_date']))
+
+        # The index name from the external pov is unqualified and
+        # unversioned; it is equivalent to the index alias, and
+        # symmetric with any parameters which limit searches by
+        # index.
+        # The form of object indexes is:
+        # NAMESPACE.INDEXNAME_VERSION
+        # (why different separators for prefix and suffix?)
+        # e.g. search2.genome_2
+        # We are interested in the INDEXNAME and VERSION,
+        # although there is no need for clients to know the version
+        # it may be useful for diagnostics.
+        idx_pieces = hit['index'].split(config['suffix_delimiter'])
+        idx_name = idx_pieces[0]
+
+        # TODO: we should not default to 0, but rather raise an
+        # error. All indexes involved should be namespaced.
+        idx_ver = int(idx_pieces[1] or 0) if len(idx_pieces) == 2 else 0
+        obj['index_name'] = idx_name
+        obj['index_version'] = idx_ver
+
+        # Funny Business
+        # Always set object_name as a string type
+        # TODO: how can this ever be missing? It is simply impossible, every
+        # object has a name and a type.
+        obj['object_name'] = obj.get('object_name') or ''
+        obj['workspace_type_name'] = obj.get('workspace_type_name') or ''
+
         # The nested 'data' is all object-specific, so exclude all global keys
-        obj_data = {key: source[key] for key in source if key not in _KEY_MAPPING}
+        # The indexed doc mixes global keys and index-specific ones.
+        # The search1 api separated them, so this transformation respects that.
+        obj_data = {key: doc[key] for key in doc if key not in global_doc_keys
+                    and key not in _GLOBAL_DOC_KEY_EXCLUSION
+                    and key not in _GLOBAL_DOC_KEY_TRANSFORMS}
+
         if post_processing.get('skip_data') != 1:
             obj['data'] = obj_data
-        if post_processing.get('skip_keys') != 1:
-            obj['key_props'] = obj_data
-        obj['guid'] = _get_guid_from_doc(result)
-        obj['kbase_id'] = obj['guid'].strip('WS:')
-        idx_pieces = result['index'].split(config['prefix_delimiter'])
-        idx_name = idx_pieces[0]
-        idx_ver = int(idx_pieces[1] or 0) if len(idx_pieces) == 2 else 0
-        # Set to a string
-        obj['index_name'] = idx_name
-        obj['type_ver'] = idx_ver
-        # For the UI, make the type field "GenomeFeature" instead of "Genome".
-        if 'genome_feature_type' in source:
-            obj['type'] = 'GenomeFeature'
-        # Set defaults for required fields in objects/data
-        # Set some more top-level data manually that we use in the UI
+
+        # Highlights are mappings of key to a formatted string
+        # derived from the field with "hit" terms highlighted with
+        # html.
+        # These fields may be any field in the indexed doc, which
+        # mixes global and index-specific fields.
+        # We need to transform the keys, if the GLOBAL_KEY_MAPPING
+        # so deems; otherwise we use the keys directly.
+        # TODO: improvements needed here; not all search terms are highlighted
+        # as a result of this transform, which results in a confusing message
+        # on the front end.
         if post_processing.get('include_highlight') == 1:
-            highlight = result.get('highlight', {})
+            highlight = hit.get('highlight', {})
             transformed_highlight = {}
             for key, value in highlight.items():
-                transformed_highlight[_KEY_MAPPING.get(key, key)] = value
+                transformed_highlight[_GLOBAL_DOC_KEY_MAPPING.get(key, key)] = value
             obj['highlight'] = transformed_highlight
-        # Always set object_name as a string type
-        obj['object_name'] = obj.get('object_name') or ''
-        obj['type'] = obj.get('type') or ''
+
         object_data.append(obj)
     return object_data
-
-
-def _get_object_infos(objects: list, meta: dict) -> Optional[dict]:
-    """
-    Args:
-        objects: results from _get_object_data_from_search_results
-        post_processing: The field pulled from the RPC params
-        meta: rpc meta object with 'auth' key
-    """
-    if len(objects) == 0:
-        return None
-    refs = {obj['kbase_id'] for obj in objects}
-    infos = get_object_info(refs, meta['auth'])
-    return {
-        f"{info[6]}/{info[0]}/{info[4]}": info
-        for info in infos
-    }
-
-
-def _get_guid_from_doc(doc):
-    """
-    Convert from our guid format 'WS::1:2:3' into the legacy format 'WS:1/2/3'
-    """
-    # TODO this only works on the WS namespace should take into account the
-    #      namespace name
-    # Remove the first namespace
-    _id = doc['id'].replace('WS::', '')
-    # Remove any secondary namespace
-    _id = re.sub(r'::..::.+', '', _id)
-    # Replace colon delimiters with slashes
-    _id = _id.replace(':', '/')
-    # Add a single-colon delimited workspace namespace
-    _id = 'WS:' + _id
-    # Append the object version
-    ver = str(doc.get('obj_type_version', 1))
-    _id = _id + '/' + ver
-    return _id

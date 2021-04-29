@@ -9,16 +9,16 @@ This service has two JSON-RPC 2.0 endpoints:
 * `/legacy` - mirrors the old Java JSON-RPC 1.1 methods
 * `/rpc` - newer API using the Elasticsearch Query DSL
 
-The JSON-Schemas for the legacy methods can be found in `legacy-schema.yaml`
+The JSON-Schemas for the legacy methods can be found in `src/search1_rpc/schemas`
 
-The JSON-Schemas for the newer methods (/rpc) can be found in `rpc-schema.yaml`
+The JSON-Schemas for the newer methods (`/rpc`) can be found in `rpc-schema.yaml`
 
 ### Documents and indexes
 
 The [search configuration file](https://github.com/kbase/index_runner_spec/blob/master/config.yaml) details all of the indexes and document types found in the KBase Elasticsearch database.
 
 * `ws_type_to_indexes` shows which KBase workspace types (without versions) map to which unversioned index names
-* `ws_subobjects` is a list of indexes that represent KBase "subobjects", such as genome features, that don't have their own dedicated type in the workspace, but do have a dedicated index in Elasticsearch.
+* `ws_subobjects` is a list of indexes that represent KBase "sub objects", such as genome features, that don't have their own dedicated type in the workspace, but do have a dedicated index in Elasticsearch.
 * `global_mappings` are Elasticsearch type definitions that are reused in many of the indexes below.
 * `latest_versions` map the unversioned index names to the versioned index names that represent the latest type mapping version.
 * `aliases` is a list of Elasticsearch index aliases to a list of index names. These are all searchable as index names.
@@ -31,8 +31,11 @@ The [search configuration file](https://github.com/kbase/index_runner_spec/blob/
 * `-32003` - Elasticsearch response error
 * `-32004` - User profile service response error
 * `-32005` - Unknown workspace type
+* `-32006` - Access group missing
+* `-32007` - User profile missing
 
-### <url>/rpc
+
+### `<url>/rpc`
 
 Uses [JSON RPC 2.0 format](https://www.jsonrpc.org/specification).
 
@@ -80,7 +83,7 @@ Show the names of all indexes, and show what aliases stand for what indexes.
 
 ### <url>/legacy
 
-A JSON-RPC 2.0 API that mimics the legacy Java server, [found here](https://github.com/kbase/KBaseSearchEngin://github.com/kbase/KBaseSearchEngine). Refer to the `legacy-schema.yaml` file for a reference on the method parameter types.
+A JSON-RPC 1.1 API that mimics the legacy Java server, [found here](https://github.com/kbase/KBaseSearchEngin://github.com/kbase/KBaseSearchEngine). Refer to the `src/search1_rpc/schemas` file for a reference on the method parameter types.
 
 ## Development
 
@@ -107,18 +110,8 @@ volume for the Elasticsearch service to see the changes. You can do this with `d
 
 ### Running the integration tests
 
-Under `tests/integration`, there is a module of integration tests that run against CI (KBase staging server).
+Under `tests/integration`, there is a set of integration tests that run against CI (KBase staging server).
 
 These do not run in our CI workflow, but are only run manually/locally.
 
-You need to ssh tunnel to get CI Elasticsearch available locally:
-
-```sh
-ssh -L 9500:<elasticsearch_ip>:9500 username@login1.berkeley.kbase.us
-```
-
-Then you can run the integration test script:
-
-```sh
-sh scripts/run_integration_tests.sh
-```
+Please see the [integration testing docs](docs/integration-testing.md) for instructions and further information.

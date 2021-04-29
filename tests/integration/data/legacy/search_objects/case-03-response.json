@@ -1,0 +1,672 @@
+{
+	"object_version": "1.1",
+	"result": [{
+		"pagination": {
+			"start": 0,
+			"count": 20
+		},
+		"sorting_rules": [{
+			"is_object_property": 0,
+			"property": "access_group_id",
+			"ascending": 0
+		}, {
+			"is_object_property": 0,
+			"property": "type",
+			"ascending": 1
+		}],
+		"total": 12,
+		"search_time": 1544,
+		"objects": [{
+			"object_name": "GCF_000759885.1",
+			"workspace_id": 56638,
+			"object_id": 2,
+			"object_version": 1,
+			"timestamp": 1531222570501,
+			"workspace_type_name": "Genome",
+			"creator": "kbasedata",
+			"data": {
+				"genome_id": "GCF_000759885.1",
+				"scientific_name": "Prochlorococcus marinus str. GP2",
+				"publication_titles": ["Genomes of diverse isolates of the marine cyanobacterium Prochlorococcus", "Direct Submission"],
+				"publication_authors": ["Biller,S., Berube,P., Thompson,J., Kelly,L., Roggensack,S., Awad,L., Roache-Johnson,K., Ding,H., Giovannoni,S.J., Moore,L.R. and Chisholm,S.W.", "Biller,S.J., Berube,P.M., Berta-Thompson,J.W., Kelly,L., Roggensack,S.E., Awad,L., Roache-Johnson,K.H., Ding,H., Giovannoni,S.J., Rocap,G., Moore,L.R. and Chisholm,S.W."],
+				"size": 1624310,
+				"num_contigs": 11,
+				"genome_type": null,
+				"gc_content": 0.31164,
+				"taxonomy": "cellular organisms; Bacteria; Terrabacteria group; Cyanobacteria/Melainabacteria group; Cyanobacteria; Synechococcales; Prochloraceae; Prochlorococcus; Prochlorococcus marinus",
+				"mean_contig_length": 147664.54545454544,
+				"external_origination_date": "11-Apr-2017",
+				"original_source_file_name": "GCF_000759885.1_ASM75988v1_genomic.gbff",
+				"cds_count": 1760,
+				"feature_count": 1760,
+				"mrna_count": 0,
+				"non_coding_feature_count": 89,
+				"assembly_ref": "15792:64027:2",
+				"source_id": "NZ_JNAH01000001",
+				"feature_counts": {
+					"CDS": 1760,
+					"gene": 1804,
+					"ncRNA": 3,
+					"non-protein_encoding_gene": 44,
+					"protein_encoding_gene": 1760,
+					"rRNA": 3,
+					"regulatory": 1,
+					"tRNA": 37,
+					"tmRNA": 1
+				},
+				"source": "RefSeq",
+				"warnings": ["SUSPECT: CDS EU91_RS03000_CDS_1 has a length of 974 which is not consistent with the length of the translation included (323 amino acids)."],
+				"shared_users": ["kbaseuitest"],
+				"creation_date": "2020-11-19T01:07:33+0000",
+				"is_public": true,
+				"copied": "15792/64028/2",
+				"tags": ["narrative"],
+				"obj_type_version": "14.2",
+				"obj_type_module": "KBaseGenomes",
+				"index_runner_ver": "1.9.17"
+			},
+			"index_name": "genome_2",
+			"index_version": 0,
+			"highlight": {
+				"publication_titles": ["Genomes of diverse isolates of the marine cyanobacterium <em>Prochlorococcus</em>"],
+				"scientific_name": ["<em>Prochlorococcus</em> marinus str. GP2"],
+				"taxonomy": ["Terrabacteria group; Cyanobacteria/Melainabacteria group; Cyanobacteria; Synechococcales; Prochloraceae; <em>Prochlorococcus</em>", "; <em>Prochlorococcus</em> marinus"]
+			}
+		}, {
+			"object_name": "Narrative.1605747150690",
+			"workspace_id": 56638,
+			"object_id": 1,
+			"object_version": 13,
+			"timestamp": 1605765178549,
+			"workspace_type_name": "Narrative",
+			"creator": "kbaseuitest",
+			"data": {
+				"narrative_title": "Test Narrative for FeatureSet Integration Test",
+				"is_narratorial": false,
+				"data_objects": [{
+					"name": "GCF_000759885.1",
+					"obj_type": "KBaseGenomes.Genome-14.2"
+				}, {
+					"name": "GCF_001766235.1",
+					"obj_type": "KBaseGenomes.Genome-17.0"
+				}, {
+					"name": "featureset2",
+					"obj_type": "KBaseCollections.FeatureSet-4.0"
+				}, {
+					"name": "featureset1",
+					"obj_type": "KBaseCollections.FeatureSet-4.0"
+				}, {
+					"name": "mergedfeatureset",
+					"obj_type": "KBaseCollections.FeatureSet-4.0"
+				}],
+				"owner": "kbaseuitest",
+				"modified_at": 1605765178000,
+				"cells": [{
+					"desc": "Test Narrative for FeatureSet Integration Test.\nTo reproduce:\n\nremove add a markdown cell (this one!), remove the welcome cell\nImport 2 genomes\nin this case, I copied, from RefSeq refdata:\n\nAcetobacter ascendens\nProchlorococcus marinus str. GP2\n\nat the time of writing, the public data search for refseq is broken, so I copied into this narrative from their landing pages\ncreate a FeatureSet for each Genome, using Build FeatureSet from Genome\n\nchoose the first 3 features from each genome for the feature set\nname the feature set for Acetobacter \"featureset1\", for Prochlorococcus \"featureset2\"\n\ncreate another FeatureSet combining these two using \"Merge FeatureSets\"\nin the Description parameter add the text \"merged feature set\", or whatever text you like (it will need to match the integration test.)\nin \"Output FeatureSet Name\" name it \"mergedfeatureset\"\ninsert the merged feature set object into the narrative as the last cell; it should be the 6th cell.\nfinally make the narrative public.\n\n",
+					"cell_type": "markdown"
+				}, {
+					"desc": "Build FeatureSet from Genome",
+					"cell_type": "kbase_app"
+				}, {
+					"desc": "Merge FeatureSets - v1.0.1",
+					"cell_type": "kbase_app"
+				}, {
+					"desc": "kbaseReportView",
+					"cell_type": "widget"
+				}, {
+					"desc": "mergedfeatureset",
+					"cell_type": "data"
+				}],
+				"total_cells": 6,
+				"static_narrative_saved": null,
+				"static_narrative_ref": null,
+				"shared_users": ["kbaseuitest"],
+				"creation_date": "2020-11-19T00:52:30+0000",
+				"is_public": true,
+				"copied": null,
+				"tags": ["narrative"],
+				"obj_type_version": "4.0",
+				"obj_type_module": "KBaseNarrative",
+				"index_runner_ver": "1.9.17"
+			},
+			"index_name": "narrative_2",
+			"index_version": 0,
+			"highlight": {
+				"cells.desc": ["the welcome cell\nImport 2 genomes\nin this case, I copied, from RefSeq refdata:\n\nAcetobacter ascendens\n<em>Prochlorococcus</em>", "features from each genome for the feature set\nname the feature set for Acetobacter \"featureset1\", for <em>Prochlorococcus</em>"]
+			}
+		}, {
+			"object_name": "Prochlorococcus_marinus",
+			"workspace_id": 53745,
+			"object_id": 2,
+			"object_version": 1,
+			"timestamp": 1485796830804,
+			"workspace_type_name": "Genome",
+			"creator": "qzhang",
+			"data": {
+				"genome_id": "GCF_001180265.1",
+				"scientific_name": "Prochlorococcus marinus",
+				"publication_titles": ["Direct Submission"],
+				"publication_authors": ["Thompson R,Luke."],
+				"size": 1388767,
+				"num_contigs": 120,
+				"genome_type": null,
+				"gc_content": 0.3111781889978665,
+				"taxonomy": "cellular organisms; Bacteria; Terrabacteria group; Cyanobacteria/Melainabacteria group; Cyanobacteria; Synechococcales; Prochloraceae; Prochlorococcus",
+				"mean_contig_length": null,
+				"external_origination_date": "08-JAN-2017",
+				"original_source_file_name": "GCF_001180265.1_CLC_assembled_contigs_genomic.gbff",
+				"cds_count": 1456,
+				"feature_count": 1601,
+				"mrna_count": 1456,
+				"non_coding_feature_count": 0,
+				"assembly_ref": "15792:64165:1",
+				"source_id": "NZ_CVSW01000001 (119 more accessions)",
+				"feature_counts": null,
+				"source": "refseq",
+				"warnings": null,
+				"shared_users": ["eaptest31", "eapearson"],
+				"creation_date": "2020-09-10T14:12:35+0000",
+				"is_public": true,
+				"copied": null,
+				"tags": ["narrative"],
+				"obj_type_version": "12.3",
+				"obj_type_module": "KBaseGenomes",
+				"index_runner_ver": "1.9.17"
+			},
+			"index_name": "genome_2",
+			"index_version": 0,
+			"highlight": {
+				"scientific_name": ["<em>Prochlorococcus</em> marinus"],
+				"taxonomy": ["Terrabacteria group; Cyanobacteria/Melainabacteria group; Cyanobacteria; Synechococcales; Prochloraceae; <em>Prochlorococcus</em>"]
+			}
+		}, {
+			"object_name": "Prochlorococcus_marinus",
+			"workspace_id": 53744,
+			"object_id": 4,
+			"object_version": 1,
+			"timestamp": 1485796830804,
+			"workspace_type_name": "Genome",
+			"creator": "qzhang",
+			"data": {
+				"genome_id": "GCF_001180265.1",
+				"scientific_name": "Prochlorococcus marinus",
+				"publication_titles": ["Direct Submission"],
+				"publication_authors": ["Thompson R,Luke."],
+				"size": 1388767,
+				"num_contigs": 120,
+				"genome_type": null,
+				"gc_content": 0.3111781889978665,
+				"taxonomy": "cellular organisms; Bacteria; Terrabacteria group; Cyanobacteria/Melainabacteria group; Cyanobacteria; Synechococcales; Prochloraceae; Prochlorococcus",
+				"mean_contig_length": null,
+				"external_origination_date": "08-JAN-2017",
+				"original_source_file_name": "GCF_001180265.1_CLC_assembled_contigs_genomic.gbff",
+				"cds_count": 1456,
+				"feature_count": 1601,
+				"mrna_count": 1456,
+				"non_coding_feature_count": 0,
+				"assembly_ref": "15792:64165:1",
+				"source_id": "NZ_CVSW01000001 (119 more accessions)",
+				"feature_counts": null,
+				"source": "refseq",
+				"warnings": null,
+				"shared_users": ["eaptest31", "eapearson", "kbaseuitest", "eaptest30"],
+				"creation_date": "2020-09-10T15:24:20+0000",
+				"is_public": false,
+				"copied": "53745/2/1",
+				"tags": ["narrative"],
+				"obj_type_version": "12.3",
+				"obj_type_module": "KBaseGenomes",
+				"index_runner_ver": "1.9.17"
+			},
+			"id": "WS::53744:4",
+			"index_name": "genome_2",
+			"index_version": 0,
+			"highlight": {
+				"scientific_name": ["<em>Prochlorococcus</em> marinus"],
+				"taxonomy": ["Terrabacteria group; Cyanobacteria/Melainabacteria group; Cyanobacteria; Synechococcales; Prochloraceae; <em>Prochlorococcus</em>"]
+			}
+		}, {
+			"object_name": "prokka_ouput_1",
+			"workspace_id": 47458,
+			"object_id": 7,
+			"object_version": 1,
+			"timestamp": 1585919913126,
+			"workspace_type_name": "Genome",
+			"creator": "kbaseuitest",
+			"data": {
+				"genome_id": "GCF_000015645.1",
+				"scientific_name": "Prochlorococcus marinus str. AS9601",
+				"publication_titles": ["Patterns and implications of gene gain and loss in the evolution of Prochlorococcus", "Direct Submission"],
+				"publication_authors": ["Kettler,G.C., Martiny,A.C., Huang,K., Zucker,J., Coleman,M.L., Rodrigue,S., Chen,F., Lapidus,A., Ferriera,S., Johnson,J., Steglich,C., Church,G.M., Richardson,P. and Chisholm,S.W.", "Chisholm,S., Huang,K., Martiny,A., Kettler,G., Coleman,M., Keller,K., Arkin,A., Coe,A., Rodrigue,S., Ferriera,S., Johnson,J., Kravitz,S., Beeson,K., Sutton,G., Rogers,Y.-H., Friedman,R., Frazier,M. and Venter,J.C."],
+				"size": 1669886,
+				"num_contigs": 1,
+				"genome_type": "Unknown",
+				"gc_content": 0.313215393146598,
+				"taxonomy": "cellular organisms; Bacteria; Terrabacteria group; Cyanobacteria/Melainabacteria group; Cyanobacteria; Synechococcales; Prochloraceae; Prochlorococcus; Prochlorococcus marinus",
+				"mean_contig_length": null,
+				"external_origination_date": "24-NOV-2016",
+				"original_source_file_name": "GCF_000015645.1_ASM1564v1_genomic.gbff",
+				"cds_count": 1780,
+				"feature_count": 1780,
+				"mrna_count": 1780,
+				"non_coding_feature_count": 46,
+				"assembly_ref": "15792:63937:1",
+				"source_id": "NC_008816",
+				"feature_counts": {
+					"CDS": 1780,
+					"gene": 1826,
+					"mRNA": 1780,
+					"non_coding_features": 46,
+					"non_coding_genes": 46,
+					"protein_encoding_gene": 1780,
+					"pseudogene": 14
+				},
+				"source": "RefSeq",
+				"warnings": ["Genome molecule_type Unknown is not expected for domain Bacteria.", "Unable to determine organism taxonomy"],
+				"shared_users": ["kbaseuitest"],
+				"creation_date": "2020-04-03T13:18:35+0000",
+				"is_public": false,
+				"copied": null,
+				"tags": ["narrative"],
+				"obj_type_version": "17.0",
+				"obj_type_module": "KBaseGenomes",
+				"index_runner_ver": "1.9.17"
+			},
+			"id": "WS::47458:7",
+			"index_name": "genome_2",
+			"index_version": 0,
+			"highlight": {
+				"publication_titles": ["Patterns and implications of gene gain and loss in the evolution of <em>Prochlorococcus</em>"],
+				"scientific_name": ["<em>Prochlorococcus</em> marinus str. AS9601"],
+				"taxonomy": ["Terrabacteria group; Cyanobacteria/Melainabacteria group; Cyanobacteria; Synechococcales; Prochloraceae; <em>Prochlorococcus</em>", "; <em>Prochlorococcus</em> marinus"]
+			}
+		}, {
+			"object_name": "Prochlorococcus_marinus_str._AS9601",
+			"workspace_id": 47458,
+			"object_id": 6,
+			"object_version": 1,
+			"timestamp": 1485794271879,
+			"workspace_type_name": "Genome",
+			"creator": "qzhang",
+			"data": {
+				"genome_id": "GCF_000015645.1",
+				"scientific_name": "Prochlorococcus marinus str. AS9601",
+				"publication_titles": ["Patterns and implications of gene gain and loss in the evolution of Prochlorococcus", "Direct Submission"],
+				"publication_authors": ["Kettler,G.C., Martiny,A.C., Huang,K., Zucker,J., Coleman,M.L., Rodrigue,S., Chen,F., Lapidus,A., Ferriera,S., Johnson,J., Steglich,C., Church,G.M., Richardson,P. and Chisholm,S.W.", "Chisholm,S., Huang,K., Martiny,A., Kettler,G., Coleman,M., Keller,K., Arkin,A., Coe,A., Rodrigue,S., Ferriera,S., Johnson,J., Kravitz,S., Beeson,K., Sutton,G., Rogers,Y.-H., Friedman,R., Frazier,M. and Venter,J.C."],
+				"size": 1669886,
+				"num_contigs": 1,
+				"genome_type": null,
+				"gc_content": 0.313215393146598,
+				"taxonomy": "cellular organisms; Bacteria; Terrabacteria group; Cyanobacteria/Melainabacteria group; Cyanobacteria; Synechococcales; Prochloraceae; Prochlorococcus; Prochlorococcus marinus",
+				"mean_contig_length": null,
+				"external_origination_date": "24-NOV-2016",
+				"original_source_file_name": "GCF_000015645.1_ASM1564v1_genomic.gbff",
+				"cds_count": 1780,
+				"feature_count": 1840,
+				"mrna_count": 1780,
+				"non_coding_feature_count": 0,
+				"assembly_ref": "15792:63937:1",
+				"source_id": "NC_008816",
+				"feature_counts": null,
+				"source": "refseq",
+				"warnings": null,
+				"shared_users": ["kbaseuitest"],
+				"creation_date": "2020-04-03T13:11:52+0000",
+				"is_public": false,
+				"copied": "15792/63939/1",
+				"tags": ["narrative"],
+				"obj_type_version": "12.3",
+				"obj_type_module": "KBaseGenomes",
+				"index_runner_ver": "1.9.17"
+			},
+			"id": "WS::47458:6",
+			"index_name": "genome_2",
+			"index_version": 0,
+			"highlight": {
+				"publication_titles": ["Patterns and implications of gene gain and loss in the evolution of <em>Prochlorococcus</em>"],
+				"scientific_name": ["<em>Prochlorococcus</em> marinus str. AS9601"],
+				"taxonomy": ["Terrabacteria group; Cyanobacteria/Melainabacteria group; Cyanobacteria; Synechococcales; Prochloraceae; <em>Prochlorococcus</em>", "; <em>Prochlorococcus</em> marinus"]
+			}
+		}, {
+			"object_name": "Prochlorococcus_marinus",
+			"workspace_id": 44697,
+			"object_id": 2,
+			"object_version": 1,
+			"timestamp": 1485796717279,
+			"workspace_type_name": "Genome",
+			"creator": "qzhang",
+			"data": {
+				"genome_id": "GCF_001180245.1",
+				"scientific_name": "Prochlorococcus marinus",
+				"publication_titles": ["Direct Submission"],
+				"publication_authors": ["Thompson R,Luke."],
+				"size": 1418374,
+				"num_contigs": 136,
+				"genome_type": null,
+				"gc_content": 0.31359570888919286,
+				"taxonomy": "cellular organisms; Bacteria; Terrabacteria group; Cyanobacteria/Melainabacteria group; Cyanobacteria; Synechococcales; Prochloraceae; Prochlorococcus",
+				"mean_contig_length": null,
+				"external_origination_date": "08-JAN-2017",
+				"original_source_file_name": "GCF_001180245.1_CLC_assembled_contigs_genomic.gbff",
+				"cds_count": 1494,
+				"feature_count": 1648,
+				"mrna_count": 1494,
+				"non_coding_feature_count": 0,
+				"assembly_ref": "15792:64156:1",
+				"source_id": "NZ_CVSV01000001 (135 more accessions)",
+				"feature_counts": null,
+				"source": "refseq",
+				"warnings": null,
+				"shared_users": ["psdehal", "scanon", "eapearson", "marcin"],
+				"creation_date": "2019-11-05T18:28:29+0000",
+				"is_public": true,
+				"copied": "15792/64157/1",
+				"tags": ["narrative"],
+				"obj_type_version": "12.3",
+				"obj_type_module": "KBaseGenomes",
+				"index_runner_ver": "1.9.17"
+			},
+			"id": "WS::44697:2",
+			"index_name": "genome_2",
+			"index_version": 0,
+			"highlight": {
+				"scientific_name": ["<em>Prochlorococcus</em> marinus"],
+				"taxonomy": ["Terrabacteria group; Cyanobacteria/Melainabacteria group; Cyanobacteria; Synechococcales; Prochloraceae; <em>Prochlorococcus</em>"]
+			}
+		}, {
+			"object_name": "Prochlorococcus_marinus",
+			"workspace_id": 35753,
+			"object_id": 2,
+			"object_version": 1,
+			"timestamp": 1485796717279,
+			"workspace_type_name": "Genome",
+			"creator": "qzhang",
+			"data": {
+				"genome_id": "GCF_001180245.1",
+				"scientific_name": "Prochlorococcus marinus",
+				"publication_titles": ["Direct Submission"],
+				"publication_authors": ["Thompson R,Luke."],
+				"size": 1418374,
+				"num_contigs": 136,
+				"genome_type": null,
+				"gc_content": 0.31359570888919286,
+				"taxonomy": "cellular organisms; Bacteria; Terrabacteria group; Cyanobacteria/Melainabacteria group; Cyanobacteria; Synechococcales; Prochloraceae; Prochlorococcus",
+				"mean_contig_length": null,
+				"external_origination_date": "08-JAN-2017",
+				"original_source_file_name": "GCF_001180245.1_CLC_assembled_contigs_genomic.gbff",
+				"cds_count": 1494,
+				"feature_count": 1648,
+				"mrna_count": 1494,
+				"non_coding_feature_count": 0,
+				"assembly_ref": "15792:64156:1",
+				"source_id": "NZ_CVSV01000001 (135 more accessions)",
+				"feature_counts": null,
+				"source": "refseq",
+				"warnings": null,
+				"shared_users": ["eapearson"],
+				"creation_date": "2018-08-17T23:35:08+0000",
+				"is_public": true,
+				"copied": "15792/64157/1",
+				"tags": [],
+				"obj_type_version": "12.3",
+				"obj_type_module": "KBaseGenomes",
+				"index_runner_ver": "1.9.17"
+			},
+			"id": "WS::35753:2",
+			"index_name": "genome_2",
+			"index_version": 0,
+			"highlight": {
+				"scientific_name": ["<em>Prochlorococcus</em> marinus"],
+				"taxonomy": ["Terrabacteria group; Cyanobacteria/Melainabacteria group; Cyanobacteria; Synechococcales; Prochloraceae; <em>Prochlorococcus</em>"]
+			}
+		}, {
+			"object_name": "out_tree_1",
+			"workspace_id": 35753,
+			"object_id": 3,
+			"object_version": 1,
+			"timestamp": 1534549148045,
+			"workspace_type_name": "Tree",
+			"creator": "eapearson",
+			"data": {
+				"tree_name": null,
+				"workspace_type_name": "SpeciesTree",
+				"labels": [{
+					"node_id": "GCF_000007925.1",
+					"label": "Prochlorococcus marinus subsp. marinus str. CCMP1375 (GCF_000007925.1)"
+				}, {
+					"node_id": "GCF_000011465.1",
+					"label": "Prochlorococcus marinus subsp. pastoris str. CCMP1986 (GCF_000011465.1)"
+				}, {
+					"node_id": "GCF_000011485.1",
+					"label": "Prochlorococcus marinus str. MIT 9313 (GCF_000011485.1)"
+				}, {
+					"node_id": "GCF_000012465.1",
+					"label": "Prochlorococcus marinus str. NATL2A (GCF_000012465.1)"
+				}, {
+					"node_id": "GCF_000012505.1",
+					"label": "Synechococcus sp. CC9902 (GCF_000012505.1)"
+				}, {
+					"node_id": "GCF_000012645.1",
+					"label": "Prochlorococcus marinus str. MIT 9312 (GCF_000012645.1)"
+				}, {
+					"node_id": "GCF_000014585.1",
+					"label": "Synechococcus sp. CC9311 (GCF_000014585.1)"
+				}, {
+					"node_id": "GCF_000015645.1",
+					"label": "Prochlorococcus marinus str. AS9601 (GCF_000015645.1)"
+				}, {
+					"node_id": "GCF_000015665.1",
+					"label": "Prochlorococcus marinus str. MIT 9515 (GCF_000015665.1)"
+				}, {
+					"node_id": "GCF_000015965.1",
+					"label": "Prochlorococcus marinus str. MIT 9301 (GCF_000015965.1)"
+				}, {
+					"node_id": "GCF_000063505.1",
+					"label": "Synechococcus sp. WH 7803 (GCF_000063505.1)"
+				}, {
+					"node_id": "GCF_000153065.1",
+					"label": "Synechococcus sp. RS9917 (GCF_000153065.1)"
+				}, {
+					"node_id": "GCF_000153825.1",
+					"label": "Synechococcus sp. RS9916 (GCF_000153825.1)"
+				}, {
+					"node_id": "GCF_000737535.1",
+					"label": "Synechococcus sp. KORDI-100 (GCF_000737535.1)"
+				}, {
+					"node_id": "GCF_000737575.1",
+					"label": "Synechococcus sp. KORDI-49 (GCF_000737575.1)"
+				}, {
+					"node_id": "GCF_000737595.1",
+					"label": "Synechococcus sp. KORDI-52 (GCF_000737595.1)"
+				}, {
+					"node_id": "GCF_000759855.1",
+					"label": "Prochlorococcus marinus str. MIT 9107 (GCF_000759855.1)"
+				}, {
+					"node_id": "GCF_000759955.1",
+					"label": "Prochlorococcus marinus str. MIT 9201 (GCF_000759955.1)"
+				}, {
+					"node_id": "GCF_000760175.1",
+					"label": "Prochlorococcus sp. MIT 0601 (GCF_000760175.1)"
+				}, {
+					"node_id": "GCF_000760215.1",
+					"label": "Prochlorococcus sp. MIT 0603 (GCF_000760215.1)"
+				}, {
+					"node_id": "user1",
+					"label": "Genome 35753/2/1 (Prochlorococcus_marinus)"
+				}],
+				"shared_users": ["eapearson"],
+				"creation_date": "2018-08-17T23:39:08+0000",
+				"is_public": true,
+				"copied": null,
+				"tags": [],
+				"obj_type_version": "1.0",
+				"obj_type_module": "KBaseTrees",
+				"index_runner_ver": "1.9.17"
+			},
+			"id": "WS::35753:3",
+			"index_name": "tree_1",
+			"index_version": 0,
+			"highlight": {
+				"labels.label": ["<em>Prochlorococcus</em> marinus str. MIT 9313 (GCF_000011485.1)", "<em>Prochlorococcus</em> marinus str. NATL2A (GCF_000012465.1)", "<em>Prochlorococcus</em> marinus str. AS9601 (GCF_000015645.1)", "<em>Prochlorococcus</em> sp. MIT 0601 (GCF_000760175.1)", "<em>Prochlorococcus</em> sp. MIT 0603 (GCF_000760215.1)"]
+			}
+		}, {
+			"object_name": "Prochlorococcus_marinus_2",
+			"workspace_id": 35011,
+			"object_id": 4,
+			"object_version": 1,
+			"timestamp": 1531226116626,
+			"workspace_type_name": "Genome",
+			"creator": "kbasedata",
+			"data": {
+				"genome_id": "GCF_001180305.1",
+				"scientific_name": "Prochlorococcus marinus",
+				"publication_titles": ["Direct Submission"],
+				"publication_authors": ["Thompson R,Luke."],
+				"size": 1463721,
+				"num_contigs": 85,
+				"genome_type": null,
+				"gc_content": 0.30995,
+				"taxonomy": "cellular organisms; Bacteria; Terrabacteria group; Cyanobacteria/Melainabacteria group; Cyanobacteria; Synechococcales; Prochloraceae; Prochlorococcus",
+				"mean_contig_length": 17220.24705882353,
+				"external_origination_date": "08-Jan-2017 _ 11-Apr-2017",
+				"original_source_file_name": "GCF_001180305.1_CLC_assembled_contigs_genomic.gbff",
+				"cds_count": 1619,
+				"feature_count": 1619,
+				"mrna_count": 0,
+				"non_coding_feature_count": 85,
+				"assembly_ref": "15792:64183:2",
+				"source_id": "NZ_CVSX01000001",
+				"feature_counts": {
+					"CDS": 1619,
+					"gene": 1661,
+					"ncRNA": 2,
+					"non-protein_encoding_gene": 42,
+					"protein_encoding_gene": 1619,
+					"rRNA": 7,
+					"regulatory": 1,
+					"tRNA": 32,
+					"tmRNA": 1
+				},
+				"source": "RefSeq",
+				"warnings": ["SUSPECT: CDS AMO15_RS07665_CDS_1 has a length of 407 which is not consistent with the length of the translation included (134 amino acids)."],
+				"shared_users": ["eapearson"],
+				"creation_date": "2018-08-06T16:18:35+0000",
+				"is_public": true,
+				"copied": "15792/64184/2",
+				"tags": [],
+				"obj_type_version": "14.2",
+				"obj_type_module": "KBaseGenomes",
+				"index_runner_ver": "1.9.17"
+			},
+			"id": "WS::35011:4",
+			"index_name": "genome_2",
+			"index_version": 0,
+			"highlight": {
+				"scientific_name": ["<em>Prochlorococcus</em> marinus"],
+				"taxonomy": ["Terrabacteria group; Cyanobacteria/Melainabacteria group; Cyanobacteria; Synechococcales; Prochloraceae; <em>Prochlorococcus</em>"]
+			}
+		}, {
+			"object_name": "Prochlorococcus_marinus",
+			"workspace_id": 35011,
+			"object_id": 2,
+			"object_version": 1,
+			"timestamp": 1485796717279,
+			"workspace_type_name": "Genome",
+			"creator": "qzhang",
+			"data": {
+				"genome_id": "GCF_001180245.1",
+				"scientific_name": "Prochlorococcus marinus",
+				"publication_titles": ["Direct Submission"],
+				"publication_authors": ["Thompson R,Luke."],
+				"size": 1418374,
+				"num_contigs": 136,
+				"genome_type": null,
+				"gc_content": 0.31359570888919286,
+				"taxonomy": "cellular organisms; Bacteria; Terrabacteria group; Cyanobacteria/Melainabacteria group; Cyanobacteria; Synechococcales; Prochloraceae; Prochlorococcus",
+				"mean_contig_length": null,
+				"external_origination_date": "08-JAN-2017",
+				"original_source_file_name": "GCF_001180245.1_CLC_assembled_contigs_genomic.gbff",
+				"cds_count": 1494,
+				"feature_count": 1648,
+				"mrna_count": 1494,
+				"non_coding_feature_count": 0,
+				"assembly_ref": "15792:64156:1",
+				"source_id": "NZ_CVSV01000001 (135 more accessions)",
+				"feature_counts": null,
+				"source": "refseq",
+				"warnings": null,
+				"shared_users": ["eapearson"],
+				"creation_date": "2018-08-06T16:18:28+0000",
+				"is_public": true,
+				"copied": "15792/64157/1",
+				"tags": [],
+				"obj_type_version": "12.3",
+				"obj_type_module": "KBaseGenomes",
+				"index_runner_ver": "1.9.17"
+			},
+			"id": "WS::35011:2",
+			"index_name": "genome_2",
+			"index_version": 0,
+			"highlight": {
+				"scientific_name": ["<em>Prochlorococcus</em> marinus"],
+				"taxonomy": ["Terrabacteria group; Cyanobacteria/Melainabacteria group; Cyanobacteria; Synechococcales; Prochloraceae; <em>Prochlorococcus</em>"]
+			}
+		}, {
+			"object_name": "Prochlorococcus_marinus_1",
+			"workspace_id": 35011,
+			"object_id": 3,
+			"object_version": 1,
+			"timestamp": 1485797107623,
+			"workspace_type_name": "Genome",
+			"creator": "qzhang",
+			"data": {
+				"genome_id": "GCF_001180325.1",
+				"scientific_name": "Prochlorococcus marinus",
+				"publication_titles": ["Direct Submission"],
+				"publication_authors": ["Thompson R,Luke."],
+				"size": 1443989,
+				"num_contigs": 93,
+				"genome_type": null,
+				"gc_content": 0.3119442045611151,
+				"taxonomy": "cellular organisms; Bacteria; Terrabacteria group; Cyanobacteria/Melainabacteria group; Cyanobacteria; Synechococcales; Prochloraceae; Prochlorococcus",
+				"mean_contig_length": null,
+				"external_origination_date": "08-JAN-2017",
+				"original_source_file_name": "GCF_001180325.1_CLC_assembled_contigs_genomic.gbff",
+				"cds_count": 1550,
+				"feature_count": 1684,
+				"mrna_count": 1550,
+				"non_coding_feature_count": 0,
+				"assembly_ref": "15792:64192:1",
+				"source_id": "NZ_CVSZ01000001 (92 more accessions)",
+				"feature_counts": null,
+				"source": "refseq",
+				"warnings": null,
+				"shared_users": ["eapearson"],
+				"creation_date": "2018-08-06T16:18:34+0000",
+				"is_public": true,
+				"copied": "15792/64193/1",
+				"tags": [],
+				"obj_type_version": "12.3",
+				"obj_type_module": "KBaseGenomes",
+				"index_runner_ver": "1.9.17"
+			},
+			"id": "WS::35011:3",
+			"index_name": "genome_2",
+			"index_version": 0,
+			"highlight": {
+				"scientific_name": ["<em>Prochlorococcus</em> marinus"],
+				"taxonomy": ["Terrabacteria group; Cyanobacteria/Melainabacteria group; Cyanobacteria; Synechococcales; Prochloraceae; <em>Prochlorococcus</em>"]
+			}
+		}],
+		"access_group_narrative_info": {
+			"47458": ["Sample Jobs for Testing", 1, 1586207131000, "kbaseuitest", "KBase UI Test User"],
+			"35011": ["Marine Cyanobacteria", 1, 1533582035000, "eapearson", "Erik A Pearson"],
+			"35753": ["Species Tree for Search Test", 1, 1537028823000, "eapearson", "Erik A Pearson"],
+			"53744": ["Search2 Sharing Test", 1, 1599751906000, "eapearson", "Erik A Pearson"],
+			"53745": ["search2 public narrative", 1, 1599752072000, "eapearson", "Erik A Pearson"],
+			"44697": ["Ontology landing page links and stuff", 1, 1601927359000, "eapearson", "Erik A Pearson"],
+			"56638": ["Test Narrative for FeatureSet Integration Test", 1, 1605765178000, "kbaseuitest", "KBase UI Test User"]
+		}
+	}],
+	"id": "12573638302160872"
+}

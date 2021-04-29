@@ -1,0 +1,1 @@
+Search for "coli" in narrative workspaces which are either public or private. 

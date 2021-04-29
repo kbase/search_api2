@@ -1,0 +1,1 @@
+# Method call to get type counts

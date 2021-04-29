@@ -1,0 +1,22 @@
+{
+  "match_filter": {
+    "full_text_in_all": "Prochlorococcus marinus str. GP2",
+    "exclude_subobjects": 1,
+    "source_tags": [
+      "refdata",
+      "noindex"
+    ],
+    "source_tags_blacklist": 1
+  },
+  "access_filter": {
+    "with_private": 1,
+    "with_public": 1
+  },
+  "sorting_rules": [
+    {
+      "property": "timestamp",
+      "is_object_property": 0,
+      "ascending": 1
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 import pytest
 
 from src.search1_conversion import convert_params
-from src.exceptions import ResponseError
+from jsonrpc11base.errors import InvalidParamsError
 
 
 def test_search_objects_valid():
@@ -12,7 +12,8 @@ def test_search_objects_valid():
         'query': {'bool': {}},
         'size': 20, 'from': 0,
         'sort': [{'timestamp': {'order': 'asc'}}],
-        'public_only': False, 'private_only': False
+        'only_public': False, 'only_private': False,
+        'track_total_hits': True
     }
     query = convert_params.search_objects(params)
     assert query == expected
@@ -21,18 +22,43 @@ def test_search_objects_valid():
 def test_search_objects_highlight():
     params = {
         'match_filter': {'full_text_in_all': 'x'},
-        'include_highlight': True
+        'post_processing': {
+            'include_highlight': 1
+        }
     }
     expected = {
-        'query': {'bool': {'must': [{'match': {'agg_fields': 'x'}}]}},
+        'query': {
+            'bool': {
+                'must': [{
+                    'match': {
+                        'agg_fields': {
+                            'query': 'x',
+                            'operator': 'AND'
+                        }
+                    }
+                }]
+            }
+        },
         'highlight': {
             'fields': {'*': {}},
-            'highlight_query': {'bool': {'must': [{'match': {'agg_fields': 'x'}}]}},
+            'highlight_query': {
+                'bool': {
+                    'must': [{
+                        'match': {
+                            'agg_fields': {
+                                'query': 'x',
+                                'operator': 'AND'
+                            }
+                        }
+                    }]
+                }
+            },
             'require_field_match': False,
         },
         'size': 20, 'from': 0,
         'sort': [{'timestamp': {'order': 'asc'}}],
-        'public_only': False, 'private_only': False
+        'only_public': False, 'only_private': False,
+        'track_total_hits': True
     }
     query = convert_params.search_objects(params)
     assert query == expected
@@ -43,10 +69,23 @@ def test_search_objects_fulltext():
         'match_filter': {'full_text_in_all': 'xyz'},
     }
     expected = {
-        'query': {'bool': {'must': [{'match': {'agg_fields': 'xyz'}}]}},
+        'query': {
+            'bool': {
+                'must': [{
+                    'match': {
+                        'agg_fields': {
+                            'query': 'xyz',
+                            'operator': 'AND'
+                        }
+                    }
+                }]
+            }
+        },
         'size': 20, 'from': 0,
         'sort': [{'timestamp': {'order': 'asc'}}],
-        'public_only': False, 'private_only': False
+        'only_public': False,
+        'only_private': False,
+        'track_total_hits': True
     }
     query = convert_params.search_objects(params)
     assert query == expected
@@ -60,7 +99,8 @@ def test_search_objects_object_name():
         'query': {'bool': {'must': [{'match': {'obj_name': 'xyz'}}]}},
         'size': 20, 'from': 0,
         'sort': [{'timestamp': {'order': 'asc'}}],
-        'public_only': False, 'private_only': False
+        'only_public': False, 'only_private': False,
+        'track_total_hits': True
     }
     query = convert_params.search_objects(params)
     assert query == expected
@@ -74,14 +114,15 @@ def test_search_objects_timestamp():
         'query': {'bool': {'must': [{'range': {'timestamp': {'gte': 0, 'lte': 1}}}]}},
         'size': 20, 'from': 0,
         'sort': [{'timestamp': {'order': 'asc'}}],
-        'public_only': False, 'private_only': False
+        'only_public': False, 'only_private': False,
+        'track_total_hits': True
     }
     query = convert_params.search_objects(params)
     assert query == expected
 
 
 def test_search_objects_timestamp_invalid():
-    with pytest.raises(ResponseError):
+    with pytest.raises(InvalidParamsError):
         params = {
             'match_filter': {'timestamp': {'min_date': 0, 'max_date': 0}}
         }
@@ -96,7 +137,9 @@ def test_search_objects_source_tags():
         'query': {'bool': {'must': [{'term': {'tags': 'x'}}, {'term': {'tags': 'y'}}]}},
         'size': 20, 'from': 0,
         'sort': [{'timestamp': {'order': 'asc'}}],
-        'public_only': False, 'private_only': False
+        'only_public': False,
+        'only_private': False,
+        'track_total_hits': True
     }
     query = convert_params.search_objects(params)
     assert query == expected
@@ -110,7 +153,9 @@ def test_search_objects_source_tags_blacklist():
         'query': {'bool': {'must_not': [{'term': {'tags': 'x'}}, {'term': {'tags': 'y'}}]}},
         'size': 20, 'from': 0,
         'sort': [{'timestamp': {'order': 'asc'}}],
-        'public_only': False, 'private_only': False
+        'only_public': False,
+        'only_private': False,
+        'track_total_hits': True
     }
     query = convert_params.search_objects(params)
     assert query == expected
@@ -118,21 +163,25 @@ def test_search_objects_source_tags_blacklist():
 
 def test_search_objects_objtypes():
     params = {
-        'object_types': ['x', 'y', 'GenomeFeature']
+        'object_types': ['x', 'y']
     }
     expected = {
         'query': {
             'bool': {
-                'should': [
-                    {'term': {'obj_type_name': 'x'}},
-                    {'term': {'obj_type_name': 'y'}}
-                ]
+                'filter': {
+                    'bool': {
+                        'should': [
+                            {'term': {'obj_type_name': 'x'}},
+                            {'term': {'obj_type_name': 'y'}}
+                        ]
+                    }
+                }
             }
         },
-        'indexes': ['genome_features_2'],
         'size': 20, 'from': 0,
         'sort': [{'timestamp': {'order': 'asc'}}],
-        'public_only': False, 'private_only': False
+        'only_public': False, 'only_private': False,
+        'track_total_hits': True
     }
     query = convert_params.search_objects(params)
     assert query == expected
@@ -149,14 +198,15 @@ def test_search_objects_sorting():
         'query': {'bool': {}},
         'sort': [{'x': {'order': 'asc'}}, {'timestamp': {'order': 'desc'}}],
         'size': 20, 'from': 0,
-        'public_only': False, 'private_only': False
+        'only_public': False, 'only_private': False,
+        'track_total_hits': True
     }
     query = convert_params.search_objects(params)
     assert query == expected
 
 
 def test_search_objects_sorting_invalid_prop():
-    with pytest.raises(ResponseError):
+    with pytest.raises(InvalidParamsError):
         params = {
             'sorting_rules': [
                 {'property': 'x', 'is_object_property': False, 'ascending': False},
@@ -185,7 +235,8 @@ def test_search_objects_lookup_in_keys():
         },
         'size': 20, 'from': 0,
         'sort': [{'timestamp': {'order': 'asc'}}],
-        'public_only': False, 'private_only': False
+        'only_public': False, 'only_private': False,
+        'track_total_hits': True
     }
     query = convert_params.search_objects(params)
     assert query == expected
@@ -200,7 +251,9 @@ def test_search_types_valid():
         'size': 0, 'from': 0,
         'aggs': {'type_count': {'terms': {'field': 'obj_type_name'}}},
         'sort': [{'timestamp': {'order': 'asc'}}],
-        'public_only': False, 'private_only': False
+        'only_public': False,
+        'only_private': False,
+        'track_total_hits': True
     }
     query = convert_params.search_types(params)
     assert query == expected
@@ -208,10 +261,80 @@ def test_search_types_valid():
 
 def test_get_objects_valid():
     params = {
-        'guids': ['x', 'y']
+        'ids': ['x', 'y']
     }
     expected = {
         'query': {'terms': {'_id': ['x', 'y']}}
     }
     query = convert_params.get_objects(params)
     assert query == expected
+
+
+def test_search_objects_only_public():
+    params = {
+        'match_filter': {},
+        'access_filter': {
+            'with_public': 1
+        }
+    }
+    expected = {
+        'query': {'bool': {}},
+        'size': 20, 'from': 0,
+        'sort': [{'timestamp': {'order': 'asc'}}],
+        'only_public': True, 'only_private': False,
+        'track_total_hits': True
+    }
+    query = convert_params.search_objects(params)
+    assert query == expected
+
+
+def test_search_objects_only_private():
+    params = {
+        'match_filter': {},
+        'access_filter': {
+            'with_private': 1
+        }
+    }
+    expected = {
+        'query': {'bool': {}},
+        'size': 20, 'from': 0,
+        'sort': [{'timestamp': {'order': 'asc'}}],
+        'only_public': False, 'only_private': True,
+        'track_total_hits': True
+    }
+    query = convert_params.search_objects(params)
+    assert query == expected
+
+
+def test_search_objects_private_and_public():
+    params = {
+        'match_filter': {},
+        'access_filter': {
+            'with_private': 1,
+            'with_public': 1
+        }
+    }
+    expected = {
+        'query': {'bool': {}},
+        'size': 20, 'from': 0,
+        'sort': [{'timestamp': {'order': 'asc'}}],
+        'only_public': False, 'only_private': False,
+        'track_total_hits': True
+    }
+    query = convert_params.search_objects(params)
+    assert query == expected
+
+
+def test_search_objects_private_nor_public():
+    params = {
+        'match_filter': {},
+        'access_filter': {
+            'with_private': 0,
+            'with_public': 0
+        }
+    }
+    with pytest.raises(InvalidParamsError) as re:
+        convert_params.search_objects(params)
+    assert re.value.code == -32602
+    assert re.value.message == 'Invalid params'
+    assert re.value.error['message'] == 'May not specify no private data and no public data'

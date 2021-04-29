@@ -1,0 +1,634 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"title": "Base types for legacy search methods",
+	"definitions": {
+		"sdk_boolean": {
+			"type": "integer",
+			"enum": [
+				0,
+				1
+			]
+		},
+		"tag": {
+			"type": "string",
+			"enum": [
+				"narrative",
+				"refdata",
+				"noindex"
+			]
+		},
+		"data": {
+			"title": "Search result object data",
+			"type": "object"
+		},
+		"searchResultHit": {
+			"type": "object",
+			"title": "Workspace object search result",
+			"required": [
+				"id",
+				"workspace_id",
+				"object_id",
+				"object_version",
+				"object_name",
+				"workspace_type_module",
+				"workspace_type_name",
+				"workspace_type_version",
+				"modified_at",
+				"created_at",
+				"creator",
+				"index_name",
+				"index_version",
+				"data"
+			],
+			"properties": {
+				"id": {
+					"type": "string"
+				},
+				"workspace_id": {
+					"type": "integer"
+				},
+				"object_id": {
+					"type": "integer"
+				},
+				"object_version": {
+					"type": "integer"
+				},
+				"object_name": {
+					"type": "string"
+				},
+				"workspace_type_module": {
+					"type": "string"
+				},
+				"workspace_type_name": {
+					"type": "string"
+				},
+				"workspace_type_version": {
+					"type": "string"
+				},
+				"modified_at": {
+					"type": "integer"
+				},
+				"created_at": {
+					"type": "integer"
+				},
+				"creator": {
+					"type": "string"
+				},
+				"index_name": {
+					"type": "string"
+				},
+				"index_version": {
+					"type": "integer"
+				},
+				"highlight": {
+					"$ref": "#/definitions/highlight"
+				},
+				"data": {
+					"$ref": "#/definitions/data"
+				}
+			}
+		},
+		"searchResult": {
+			"type": "object",
+			"properties": {
+				"objects": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/searchResultHit"
+					}
+				},
+				"access_groups_info": {
+					"type": "object",
+					"patternProperties": {
+						"^[1-9][0-9]*$": {
+							"$ref": "#/definitions/workspaceInfo"
+						}
+					}
+				},
+				"access_group_narrative_info": {
+					"type": "object",
+					"patternProperties": {
+						"^[1-9][0-9]*$": {
+							"$ref": "#/definitions/narrativeInfo"
+						}
+					}
+				},
+				"total": {
+					"type": "integer"
+				},
+				"search_time": {
+					"type": "integer"
+				},
+				"sortingRules": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/sortingRule"
+					}
+				}
+			}
+		},
+		"sortingRule": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": [
+				"property"
+			],
+			"properties": {
+				"is_object_property": {
+					"$ref": "#/definitions/sdk_boolean"
+				},
+				"property": {
+					"type": "string"
+				},
+				"ascending": {
+					"$ref": "#/definitions/sdk_boolean"
+				}
+			}
+		},
+		"narrativeInfo": {
+			"type": "array",
+			"items": [{
+					"type": "string",
+					"title": "Narrative Name"
+				},
+				{
+					"type": "integer",
+					"title": "Narrative ID"
+				},
+				{
+					"type": "integer",
+					"title": "Time Last Saved (Epoch)"
+				},
+				{
+					"type": "string",
+					"title": "Owner User Name"
+				},
+				{
+					"type": "string",
+					"title": "Owner Display Name"
+				}
+			]
+		},
+		"userBrief": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"username": {
+					"type": "string"
+				},
+				"realname": {
+					"type": "string"
+				}
+			}
+		},
+		"workspaceInfo": {
+			"type": "array",
+			"items": [{
+					"title": "Workspace Id",
+					"type": "integer"
+				},
+				{
+					"title": "Workspace Name",
+					"type": "string"
+				},
+				{
+					"title": "Owner",
+					"type": "string"
+				},
+				{
+					"title": "Save date",
+					"type": "string"
+				},
+				{
+					"title": "Maximum object id",
+					"type": "integer"
+				},
+				{
+					"title": "User permission",
+					"type": "string"
+				},
+				{
+					"title": "Global Permission",
+					"type": "string"
+				},
+				{
+					"title": "Lock Status",
+					"type": "string"
+				},
+				{
+					"title": "Metadata",
+					"$ref": "#/definitions/metadata"
+				}
+			]
+		},
+		"metadata": {
+			"type": "object",
+			"additionalProperties": {
+				"type": "string"
+			}
+		},
+		"workspaceInfoDict": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"id": {
+					"type": "integer"
+				},
+				"name": {
+					"type": "string"
+				},
+				"owner": {
+					"type": "string"
+				},
+				"modification_date": {
+					"type": "string"
+				},
+				"max_object_id": {
+					"type": "integer"
+				},
+				"user_permission": {
+					"type": "string"
+				},
+				"global_permission": {
+					"type": "string"
+				},
+				"lock_status": {
+					"type": "string"
+				},
+				"metadata": {
+					"$ref": "#/definitions/metadata"
+				}
+			}
+		},
+		"objectInfoDict": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"id": {
+					"type": "integer"
+				},
+				"name": {
+					"type": "string"
+				},
+				"version": {
+					"type": "integer"
+				},
+				"type": {
+					"type": "string"
+				},
+				"saved_date": {
+					"type": "string"
+				},
+				"saved_by": {
+					"type": "string"
+				},
+				"workspace_id": {
+					"type": "integer"
+				},
+				"checksum": {
+					"type": "string"
+				},
+				"size": {
+					"type": "integer"
+				},
+				"metadata": {
+					"$ref": "#/definitions/metadata"
+				}
+			}
+		},
+		"workspaceInfoNice": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"permission": {
+					"type": "string"
+				},
+				"is_public": {
+					"type": "boolean"
+				},
+				"modified_at": {
+					"type": "integer"
+				},
+				"owner": {
+					"$ref": "#/definitions/userBrief"
+				}
+			}
+		},
+		"highlight": {
+			"type": "object",
+			"additionalProperties": {
+				"type": "array",
+				"items": {
+					"type": "string"
+				}
+			}
+		},
+		"workspaceType": {
+			"type": "string",
+			"enum": [
+				"narrative",
+				"refdata",
+				"workspace"
+			]
+		},
+		"narrativeWorkspaceInfo": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"title": {
+					"type": "string"
+				}
+			}
+		},
+		"refdataWorkspaceInfo": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"title": {
+					"type": "string"
+				},
+				"source": {
+					"type": "string"
+				}
+			}
+		},
+		"otherWorkspaceInfo": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"title": {
+					"type": "string"
+				}
+			}
+		},
+		"typeCounts": {
+			"type": "object",
+			"additionalProperties": false,
+			"patternProperties": {
+				"^[A-Z][a-zA-Z]*$": {
+					"type": "integer"
+				}
+			}
+		},
+		"postProcessing": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"ids_only": {
+					"$ref": "#/definitions/sdk_boolean"
+				},
+				"skip_info": {
+					"$ref": "#/definitions/sdk_boolean"
+				},
+				"skip_keys": {
+					"$ref": "#/definitions/sdk_boolean"
+				},
+				"skip_data": {
+					"$ref": "#/definitions/sdk_boolean"
+				},
+				"include_highlight": {
+					"$ref": "#/definitions/sdk_boolean"
+				},
+				"add_narrative_info": {
+					"$ref": "#/definitions/sdk_boolean"
+				},
+				"add_access_group_info": {
+					"$ref": "#/definitions/sdk_boolean"
+				}
+			}
+		},
+		"objectRef": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"ref": {
+					"type": "string"
+				},
+				"workspace_id": {
+					"type": "integer"
+				},
+				"object_id": {
+					"type": "integer"
+				},
+				"version": {
+					"type": "integer"
+				}
+			}
+		},
+		"accessFilter": {
+			"type": "object",
+			"allOf": [{
+					"not": {
+						"required": [],
+						"properties": {
+							"with_private": {
+								"const": 0
+							},
+							"with_public": {
+								"const": 0
+							}
+						}
+					}
+				},
+				{
+					"required": [],
+					"properties": {
+						"with_private": {
+							"$ref": "#/definitions/sdk_boolean"
+						},
+						"with_public": {
+							"$ref": "#/definitions/sdk_boolean"
+						}
+					}
+				}
+			]
+		},
+		"matchFilter": {
+			"type": "object",
+			"required": [],
+			"additionalProperties": false,
+			"properties": {
+				"full_text_in_all": {
+					"type": "string"
+				},
+				"timestamp": {
+					"$ref": "#/definitions/keyMatchItem"
+				},
+				"lookup_in_keys": {
+					"$ref": "#/definitions/keyMatch"
+				},
+				"exclude_subobjects": {
+					"$ref": "#/definitions/sdk_boolean"
+				},
+				"source_tags": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				},
+				"source_tags_blacklist": {
+					"type": "integer"
+				}
+			}
+		},
+		"keyMatch": {
+			"type": "object",
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\w+$": {
+					"$ref": "#/definitions/keyMatchItem"
+				}
+			}
+		},
+		"keyMatchItem": {
+			"oneOf": [{
+					"type": "object",
+					"additionalProperties": false,
+					"required": [
+						"value"
+					],
+					"properties": {
+						"value": {
+							"type": "string"
+						}
+					}
+				},
+				{
+					"type": "object",
+					"additionalProperties": false,
+					"required": [
+						"string_value"
+					],
+					"properties": {
+						"string_value": {
+							"type": "string"
+						}
+					}
+				},
+				{
+					"type": "object",
+					"additionalProperties": false,
+					"required": [
+						"int_value"
+					],
+					"properties": {
+						"int_value": {
+							"type": "integer"
+						}
+					}
+				},
+				{
+					"type": "object",
+					"additionalProperties": false,
+					"required": [
+						"double_value"
+					],
+					"properties": {
+						"double_value": {
+							"type": "number"
+						}
+					}
+				},
+				{
+					"type": "object",
+					"additionalProperties": false,
+					"required": [
+						"bool_value"
+					],
+					"properties": {
+						"bool_value": {
+							"type": "boolean"
+						}
+					}
+				},
+				{
+					"type": "object",
+					"additionalProperties": false,
+					"anyOf": [{
+							"required": [
+								"min_int"
+							]
+						},
+						{
+							"required": [
+								"max_int"
+							]
+						},
+						{
+							"required": [
+								"min_int",
+								"max_int"
+							]
+						}
+					],
+					"properties": {
+						"min_int": {
+							"type": "integer"
+						},
+						"max_int": {
+							"type": "integer"
+						}
+					}
+				},
+				{
+					"type": "object",
+					"additionalProperties": false,
+					"anyOf": [{
+							"required": [
+								"min_double"
+							]
+						},
+						{
+							"required": [
+								"max_double"
+							]
+						},
+						{
+							"required": [
+								"min_double",
+								"max_double"
+							]
+						}
+					],
+					"properties": {
+						"min_double": {
+							"type": "number"
+						},
+						"max_double": {
+							"type": "number"
+						}
+					}
+				},
+				{
+					"type": "object",
+					"additionalProperties": false,
+					"anyOf": [{
+							"required": [
+								"min_date"
+							]
+						},
+						{
+							"required": [
+								"max_date"
+							]
+						},
+						{
+							"required": [
+								"min_date",
+								"max_date"
+							]
+						}
+					],
+					"properties": {
+						"min_boolean": {
+							"type": "boolean"
+						},
+						"max_boolean": {
+							"type": "boolean"
+						}
+					}
+				}
+			]
+		}
+	}
+}

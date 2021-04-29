@@ -1,0 +1,109 @@
+{
+  "user": {
+    "username": "kbaseuitest",
+    "realname": "KBase UI Test User"
+  },
+  "profile": {
+    "metadata": {
+      "createdBy": "userprofile_ui_service",
+      "created": "2020-01-06T21:48:12.352Z"
+    },
+    "preferences": {},
+    "userdata": {
+      "organization": "",
+      "department": "",
+      "affiliations": [
+        {
+          "title": "tester",
+          "organization": "kbase / lbnl",
+          "started": 2020,
+          "ended": 2020
+        }
+      ],
+      "city": "",
+      "state": "California",
+      "postalCode": "",
+      "country": "",
+      "researchStatement": "Test user account for ui integration tests.\n\nPlease don't modify the profile.\n\nThis **can** be markdown, but who would know?",
+      "gravatarDefault": "monsterid",
+      "avatarOption": "gravatar",
+      "researchInterests": [
+        "Comparative Genomics",
+        "Genome Annotation",
+        "Metabolic Modeling",
+        "Read Processing",
+        "Sequence Analysis"
+      ],
+      "researchInterestsOther": null,
+      "jobTitleOther": "My job",
+      "jobTitle": "Other",
+      "fundingSource": ""
+    },
+    "synced": {
+      "gravatarHash": "b4d95f8595104614355e6ee9c4c03e3f"
+    },
+    "plugins": {
+      "data-search": {
+        "settings": {
+          "history": {
+            "search": {
+              "history": [
+                "Prochlorococcus marinus str. GP2",
+                "Prochlorococcus",
+                "coli",
+                "Prochlorococcus marinus",
+                "marinus",
+                "sphaeroides",
+                "abcde12345",
+                "cooli",
+                "Prochlorococcus Unconfirmed",
+                "Prochlorococcus  Unconfirmed"
+              ],
+              "time": {
+                "$numberLong": "1618589834094"
+              }
+            }
+          }
+        }
+      },
+      "jgi-search": {
+        "settings": {
+          "history": {
+            "search": {
+              "history": [
+                "coli"
+              ],
+              "time": {
+                "$numberLong": "1582608583358"
+              }
+            }
+          },
+          "jgiDataTerms": {
+            "agreed": true,
+            "time": {
+              "$numberLong": "1580251462454"
+            }
+          }
+        }
+      },
+      "public-search": {
+        "settings": {
+          "history": {
+            "history": [
+              "prochlorococcus marinus",
+              "prochlorococcus marnius",
+              "AnnotatedMetagenomeAssembly",
+              "AnnotatedGenomeAssembly",
+              "coli",
+              "prochlorococcus unconfirmed",
+              "prochlorococcus"
+            ],
+            "time": {
+              "$numberLong": "1615932685001"
+            }
+          }
+        }
+      }
+    }
+  }
+}
