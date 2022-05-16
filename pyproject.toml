@@ -7,7 +7,7 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.7"
-sanic = "20.12.2"
+sanic = "20.12.6"
 requests = "2.25.1"
 jsonschema = "3.2.0"
 pyyaml = "5.4.1"
