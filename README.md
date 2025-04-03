@@ -4,7 +4,7 @@ This is a small HTTP interface around KBase's elasticsearch indexes.
 
 ## API
 
-This service has two JSON-RPC 2.0 endpoints:
+This service has two JSON-RPC 2.0 endpoints: 
 
 * `/legacy` - mirrors the old Java JSON-RPC 1.1 methods
 * `/rpc` - newer API using the Elasticsearch Query DSL
