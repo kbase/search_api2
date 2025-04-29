@@ -5,31 +5,46 @@ name: Run tests
 
 on:
   pull_request:
-    branches: [ "*" ]
+    types:
+    - opened
+    - reopened
+    - synchronize
+    - ready_for_review
+  push:
+    # run workflow when merging to main or develop
+    branches:
+      - main
+      - master
+      - develop
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.7]
+
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+    - name: Check out GitHub repo
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: 3.9.19
+
     - name: Pip installation
       run: python -m pip install --upgrade pip poetry
+
     - name: Poetry installation
       run: poetry install
+
     - name: Create test image
-      run: docker-compose build
+      run: docker compose build
+
     - name: Run tests
       run: scripts/run_tests
-    - name: Codecov
-      uses: codecov/codecov-action@v1
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v5
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        file: ./coverage.xml
         fail_ci_if_error: true
