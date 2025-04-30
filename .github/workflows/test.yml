@@ -35,7 +35,7 @@ jobs:
       run: python -m pip install --upgrade pip poetry
 
     - name: Poetry installation
-      run: poetry install
+      run: poetry install --no-root
 
     - name: Create test image
       run: docker compose build
