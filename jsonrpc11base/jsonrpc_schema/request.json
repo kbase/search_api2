@@ -1,0 +1,6 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "JSON-RPC Request Schema",
+    "description": "JSON-Schema that validates a JSON-RPC 1.1 request",
+    "$ref": "jsonrpc11.json#definitions/request"
+}
