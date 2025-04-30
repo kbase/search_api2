@@ -1,5 +1,31 @@
-from jsonrpc11base.errors import APIError
+from typing import Optional
 from src import exceptions
+
+
+class APIError(Exception):
+    """
+    APIError class based on the JSON-RPC 1.1 specs.
+    Should not be used directly, but subclassed.
+
+    code - number
+    message - string
+    error - object
+    """
+    code: int = 1
+    message: str = 'API error'
+    error: Optional[dict] = None
+
+    def to_json(self):
+        """Return the Exception data in a format for JSON-RPC."""
+
+        error = {'name': 'APIError',
+                 'code': self.code,
+                 'message': self.message}
+
+        if self.error is not None:
+            error['error'] = self.error
+
+        return error
 
 
 class UnknownTypeError(APIError):

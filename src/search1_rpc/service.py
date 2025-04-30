@@ -19,8 +19,8 @@ results are also wrapped in an array of one element.
 
 import time
 import os
-from jsonrpc11base import JSONRPCService
-from jsonrpc11base.service_description import ServiceDescription
+from jsonrpcbase import JSONRPCService
+from src.search1_rpc.service_description import ServiceDescription
 from src.es_client.query import search
 from src.search1_conversion import convert_params, convert_result
 from src.utils.logger import logger
