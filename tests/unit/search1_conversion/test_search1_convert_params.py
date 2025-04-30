@@ -1,7 +1,7 @@
 import pytest
 
 from src.search1_conversion import convert_params
-from jsonrpcbase import InvalidParamsError
+from jsonrpc11base.errors import InvalidParamsError
 
 
 def test_search_objects_valid():

@@ -35,7 +35,7 @@ ObjectData type:
 """
 
 from src.utils.obj_utils import get_any
-from jsonrpcbase import InvalidParamsError
+from jsonrpc11base.errors import InvalidParamsError
 
 # Mapping of special sorting properties names from the Java API to search2 key names
 _SORT_PROP_MAPPING = {
