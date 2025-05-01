@@ -314,20 +314,6 @@ files = [
 ]
 
 [[package]]
-name = "jsonrpcbase"
-version = "0.2.0"
-description = "Simple JSON-RPC service without transport layer"
-optional = false
-python-versions = "*"
-groups = ["main"]
-files = [
-    {file = "JSONRPCBase-0.2.0.tar.gz", hash = "sha256:7ea67fc1a7c87756e9a876e18a342e431e80d0ef3ba867dfd6f3fac5bf3fcc0d"},
-]
-
-[package.dependencies]
-six = "*"
-
-[[package]]
 name = "jsonschema"
 version = "3.2.0"
 description = "An implementation of JSON Schema validation for Python"
@@ -994,4 +980,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = "3.9.19"
-content-hash = "1d1d76c95ec1723eab1ac9e329a0db3d9efa807cd2b3dbfe1a2029298660e4f4"
+content-hash = "b231869281a3ce92439879268576bced832a5f0c29c4a2f0f7b0c680e28fe3cb"
