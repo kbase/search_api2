@@ -18,7 +18,16 @@ def test_search_public_valid(services):
             'only_public': True,
             'track_total_hits': True,
         }
-        result = search(params, {'auth': None})
+        print("entering search")
+
+        try:
+            result = search(params, {'auth': None})
+        except Exception as e:
+            print("search is wrong")
+            raise e
+
+        print("pass search")
+
         assert result['count'] == 4
         assert result['search_time'] >= 0
         assert result['aggregations'] == {}
