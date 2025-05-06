@@ -13,6 +13,6 @@ poetry run flake8 src tests
 poetry run bandit -r src
 
 echo "Running tests in $path"
-poetry run pytest -x -vv --cov=./src --cov-report=xml $path
+poetry run pytest -vv --cov=./src --cov-report=xml $path
 poetry run coverage html
 poetry run coverage report
