@@ -55,6 +55,8 @@ RPC_ERRORS = {
     -32603: 'Internal error',
     # Reserved for implementation-defined server-errors.
     -32000: 'Server error',
+    # Elasticsearch response error
+    -32003: 'Elasticsearch response error',
 }
 
 log = logging.getLogger(__name__)

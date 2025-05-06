@@ -50,7 +50,7 @@ def test_show_indexes_error(services):
             res = json.loads(result)
             assert res['error']
             assert res['error']['code'] == -32003
-            assert res['error']['message'] == 'Server error'
+            assert res['error']['message'] == 'Elasticsearch response error'
             assert res['error']['data']['method'] == 'show_indexes'
 
 
