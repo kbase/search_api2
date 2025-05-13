@@ -1,5 +1,4 @@
 import subprocess
-import signal
 from src.utils.wait_for_service import wait_for_service
 from src.utils.logger import logger
 import json
