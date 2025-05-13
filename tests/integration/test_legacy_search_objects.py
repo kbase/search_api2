@@ -148,9 +148,10 @@ def get_count(service, with_private, with_public):
     result = assert_jsonrpc11_result(resp.json(), response_data)
     return result['total']
 
-#
-# This series of tests relies upon a specific state of data in
-# search.
+
+# NOTE: These tests depend on a specific data state in the search index.
+# They query Elasticsearch in the CI environment, and assertions may fail
+# if the underlying data has been added, removed, or modified.
 
 
 def test_search_objects_private_and_public_counts(service):
