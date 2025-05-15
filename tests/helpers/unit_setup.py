@@ -9,7 +9,7 @@ import os
 container_process = None
 container_out = None
 container_err = None
-stop_timeout = 60
+stop_timeout = 30
 
 
 def load_data_file(name):
@@ -42,7 +42,7 @@ def stop_service():
         logger.info('Stopping container')
 
         # Stop and remove containers
-        subprocess.run("docker compose --ansi never down", shell=True, check=True)
+        subprocess.run("docker compose --ansi never down --timeout 10", shell=True, check=True)
 
         logger.info('Waiting until service has stopped...')
         if not common.wait_for_line("container.out",
