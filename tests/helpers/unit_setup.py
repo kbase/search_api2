@@ -9,7 +9,7 @@ import os
 container_process = None
 container_out = None
 container_err = None
-stop_timeout = 30
+stop_timeout = 60
 
 
 def load_data_file(name):
