@@ -21,7 +21,7 @@ def start_service(app_url):
     # Build and start the app using docker-compose
     cwd = 'tests/integration/docker'
     logger.info(f'Running docker-compose file in "{cwd}"')
-    cmd = "docker-compose --ansi never up"
+    cmd = "docker compose --ansi never up"
     logger.info(f'Running command:\n{cmd}')
     container_out = open("container.out", "w")
     container_err = open("container.err", "w")
@@ -42,7 +42,7 @@ def stop_service():
 
         # Stop and remove containers
         cwd = 'tests/integration/docker'
-        subprocess.run("docker-compose --ansi never down", shell=True, check=True, cwd=cwd)
+        subprocess.run("docker compose --ansi never down", shell=True, check=True, cwd=cwd)
 
         logger.info('Waiting until service has stopped...')
 
