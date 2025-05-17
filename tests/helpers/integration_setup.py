@@ -4,7 +4,6 @@ from src.utils.logger import logger
 import json
 import os
 import requests
-from . import common
 from .common import assert_jsonrpc11_result, equal
 
 container_process = None

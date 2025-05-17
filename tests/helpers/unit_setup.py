@@ -1,7 +1,6 @@
 import subprocess
 from src.utils.wait_for_service import wait_for_service
 from src.utils.logger import logger
-from . import common
 import json
 import os
 
