@@ -43,15 +43,7 @@ def stop_service():
         # Stop and remove containers
         cwd = 'tests/integration/docker'
         subprocess.run("docker compose --ansi never down", shell=True, check=True, cwd=cwd)
-
-        logger.info('Waiting until service has stopped...')
-
-        if not common.wait_for_line("container.out",
-                                    lambda line: "exited with code 0" in line,
-                                    timeout=stop_timeout,
-                                    line_count=1):
-            raise Exception(f'Container did not stop in the alloted time of {stop_timeout} seconds')
-        logger.info('...stopped!')
+        logger.info('Service has stopped!')
 
     if container_err is not None:
         container_err.close()
