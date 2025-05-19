@@ -1,13 +1,9 @@
-version: "3.4"
-
 # This docker-compose is for developer workflows, not for running in production.
-
-# This
 
 networks:
   kbase-dev:
-    external:
-      name: kbase-dev
+    name: kbase-dev
+    external: true
 
 services:
   searchapi2:
