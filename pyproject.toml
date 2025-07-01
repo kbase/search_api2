@@ -15,7 +15,7 @@ pyyaml = "6.0.1"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "0.812"
-bandit = "1.7.0"
+bandit = "1.8.5"
 mccabe = "0.6.1"
 flake8 = "3.8.4"
 pytest = "7.4.0"
