@@ -13,6 +13,7 @@ def init_config():
     #       confusing failure conditions.
     ws_url = os.environ.get('WORKSPACE_URL', 'https://ci.kbase.us/services/ws').strip('/')
     es_url = os.environ.get('ELASTICSEARCH_URL', 'http://localhost:9200').strip('/')
+    es_auth_token = os.environ.get('ELASTICSEARCH_AUTH_TOKEN')
     index_prefix = os.environ.get('INDEX_PREFIX', 'test')
     prefix_delimiter = os.environ.get('INDEX_PREFIX_DELIMITER', '.')
     suffix_delimiter = os.environ.get('INDEX_SUFFIX_DELIMITER', '_')
@@ -37,6 +38,7 @@ def init_config():
         'dev': bool(os.environ.get('DEVELOPMENT')),
         'global': global_config,
         'elasticsearch_url': es_url,
+        'elasticsearch_auth_token': es_auth_token,
         'index_prefix': index_prefix,
         'prefix_delimiter': prefix_delimiter,
         'suffix_delimiter': suffix_delimiter,
