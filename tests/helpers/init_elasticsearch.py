@@ -1,5 +1,6 @@
 import requests
 import json
+import os
 
 from src.utils.config import config, init_config
 
@@ -10,8 +11,6 @@ def _get_headers():
     # Use existing config first, but allow for dynamic config for testing
     auth_token = config.get('elasticsearch_auth_token')
     if not auth_token:
-        # Check if environment has changed (for testing scenarios)
-        import os
         if 'ELASTICSEARCH_AUTH_TOKEN' in os.environ:
             current_config = init_config()
             auth_token = current_config.get('elasticsearch_auth_token')
