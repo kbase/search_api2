@@ -1,23 +1,18 @@
 import requests
 import json
-import os
 
-from src.utils.config import config, init_config
+from src.utils.config import config, get_elasticsearch_auth_header
 
 
 def _get_headers():
     """Get HTTP headers for Elasticsearch requests, including auth if configured."""
     headers = {'Content-Type': 'application/json'}
-    # Use existing config first, but allow for dynamic config for testing
-    auth_token = config.get('elasticsearch_auth_token')
-    if not auth_token:
-        if 'ELASTICSEARCH_AUTH_TOKEN' in os.environ:
-            current_config = init_config()
-            auth_token = current_config.get('elasticsearch_auth_token')
-    
-    if auth_token:
-        headers['Authorization'] = auth_token
+    # Use the centralized auth header function
+    auth_header = get_elasticsearch_auth_header()
+    if auth_header:
+        headers['Authorization'] = auth_header
     return headers
+
 
 # TODO use a util for creating index names
 narrative_index_name = ''.join([
