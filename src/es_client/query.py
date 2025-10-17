@@ -85,7 +85,7 @@ def search(params, meta):
         options['track_total_hits'] = params.get('track_total_hits')
 
     headers = {'Content-Type': 'application/json'}
-    
+
     # Add Authorization header if Elasticsearch auth token is configured
     if config.get('elasticsearch_auth_token'):
         headers['Authorization'] = config['elasticsearch_auth_token']

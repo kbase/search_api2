@@ -14,10 +14,11 @@ def _get_headers():
         if 'ELASTICSEARCH_AUTH_TOKEN' in os.environ:
             current_config = init_config()
             auth_token = current_config.get('elasticsearch_auth_token')
-    
+
     if auth_token:
         headers['Authorization'] = auth_token
     return headers
+
 
 # TODO use a util for creating index names
 narrative_index_name = ''.join([

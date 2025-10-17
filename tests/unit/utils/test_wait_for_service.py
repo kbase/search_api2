@@ -60,23 +60,23 @@ def test_wait_for_service_with_auth_token(mock_get, caplog):
     """Test that wait_for_service passes auth_token to requests properly."""
     search2_logger = logging.getLogger('search2')
     search2_logger.propagate = True
-    
+
     # Mock the requests.get to simulate a successful connection with auth
     mock_response = Mock()
     mock_response.raise_for_status = Mock()
     mock_get.return_value = mock_response
-    
+
     with caplog.at_level(logging.INFO, logger='search2'):
         wait_for_service('http://test.url', 'TestService', auth_token='Bearer test-token')
-        
+
         # Verify requests.get was called with the auth token in headers
         mock_get.assert_called_once()
         call_args = mock_get.call_args
         assert call_args[1]['headers']['Authorization'] == 'Bearer test-token'
-        
+
         # Verify success log message
         assert 'TestService is online!' in caplog.text
-    
+
     search2_logger.propagate = False
 
 
@@ -85,21 +85,21 @@ def test_wait_for_service_without_auth_token(mock_get, caplog):
     """Test that wait_for_service works without auth_token (backward compatibility)."""
     search2_logger = logging.getLogger('search2')
     search2_logger.propagate = True
-    
+
     # Mock the requests.get to simulate a successful connection
     mock_response = Mock()
     mock_response.raise_for_status = Mock()
     mock_get.return_value = mock_response
-    
+
     with caplog.at_level(logging.INFO, logger='search2'):
         wait_for_service('http://test.url', 'TestService')
-        
+
         # Verify requests.get was called with empty headers
         mock_get.assert_called_once()
         call_args = mock_get.call_args
         assert call_args[1]['headers'] == {}
-        
+
         # Verify success log message
         assert 'TestService is online!' in caplog.text
-    
+
     search2_logger.propagate = False
