@@ -61,7 +61,6 @@ def test_wait_for_service_with_auth_token(mock_get, caplog):
     search2_logger = logging.getLogger('search2')
     search2_logger.propagate = True
     try:
-        # Mock the requests.get to simulate a successful connection with auth
         mock_response = Mock()
         mock_response.raise_for_status = Mock()
         mock_get.return_value = mock_response
@@ -83,19 +82,16 @@ def test_wait_for_service_without_auth_token(mock_get, caplog):
     search2_logger = logging.getLogger('search2')
     search2_logger.propagate = True
     try:
-        # Mock the requests.get to simulate a successful connection
         mock_response = Mock()
         mock_response.raise_for_status = Mock()
         mock_get.return_value = mock_response
         with caplog.at_level(logging.INFO, logger='search2'):
             wait_for_service('http://test.url', 'TestService')
-            # Verify requests.get was called with empty headers
             mock_get.assert_called_once_with(
                 'http://test.url',
                 timeout=180,
                 headers={}
             )
-            # Verify success log message
             assert 'TestService is online!' in caplog.text
     finally:
         search2_logger.propagate = False
