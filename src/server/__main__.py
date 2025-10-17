@@ -6,7 +6,7 @@ import traceback
 
 from src.search1_rpc import service as legacy_service
 from src.search2_rpc import service as rpc_service
-from src.utils.config import config
+from src.utils.config import config, get_elasticsearch_auth_header
 from src.utils.logger import logger
 from src.utils.obj_utils import get_path
 from src.utils.wait_for_service import wait_for_service
@@ -136,7 +136,7 @@ def _get_status_code(result: dict) -> int:
 
 # Wait for dependencies to start
 logger.info('Checking connection to elasticsearch')
-wait_for_service(config['elasticsearch_url'], 'Elasticsearch')
+wait_for_service(config['elasticsearch_url'], 'Elasticsearch', auth_token=get_elasticsearch_auth_header())
 # Start the server
 app.run(
     host='0.0.0.0',  # nosec

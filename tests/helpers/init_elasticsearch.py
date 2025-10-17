@@ -1,7 +1,18 @@
 import requests
 import json
 
-from src.utils.config import config
+from src.utils.config import config, get_elasticsearch_auth_header
+
+
+def _get_headers():
+    """Get HTTP headers for Elasticsearch requests, including auth if configured."""
+    headers = {'Content-Type': 'application/json'}
+    # Use the centralized auth header function
+    auth_header = get_elasticsearch_auth_header()
+    if auth_header:
+        headers['Authorization'] = auth_header
+    return headers
+
 
 # TODO use a util for creating index names
 narrative_index_name = ''.join([
@@ -73,7 +84,7 @@ def init_elasticsearch():
             {"add": {"indices": index_names, "alias": alias_name}}
         ]
     }
-    resp = requests.post(url, data=json.dumps(body), headers={'Content-Type': 'application/json'})
+    resp = requests.post(url, data=json.dumps(body), headers=_get_headers())
     if not resp.ok:
         raise RuntimeError("Error creating aliases on ES:", resp.text)
     _COMPLETED = True
@@ -81,7 +92,7 @@ def init_elasticsearch():
 
 def create_index(index_name):
     # Check if exists
-    resp = requests.head(_ES_URL + '/' + index_name)
+    resp = requests.head(_ES_URL + '/' + index_name, headers=_get_headers())
     if resp.status_code == 200:
         return
     resp = requests.put(
@@ -91,7 +102,7 @@ def create_index(index_name):
                 'index': {'number_of_shards': 2, 'number_of_replicas': 1}
             }
         }),
-        headers={'Content-Type': 'application/json'},
+        headers=_get_headers(),
     )
     if not resp.ok and resp.json()['error']['type'] != 'index_already_exists_exception':
         raise RuntimeError('Error creating index on ES:', resp.text)
@@ -106,7 +117,7 @@ def create_doc(index_name, data):
         data['name'],
         '?refresh=wait_for'
     ])
-    headers = {'Content-Type': 'application/json'}
+    headers = _get_headers()
     resp = requests.put(url, data=json.dumps(data), headers=headers)
     if not resp.ok:
         raise RuntimeError(f"Error creating test doc:\n{resp.text}")

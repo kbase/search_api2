@@ -1,6 +1,10 @@
 import yaml
 import urllib.request
 import os
+import base64
+import logging
+
+logger = logging.getLogger('search2')
 
 
 def init_config():
@@ -13,6 +17,9 @@ def init_config():
     #       confusing failure conditions.
     ws_url = os.environ.get('WORKSPACE_URL', 'https://ci.kbase.us/services/ws').strip('/')
     es_url = os.environ.get('ELASTICSEARCH_URL', 'http://localhost:9200').strip('/')
+    es_auth_token = os.environ.get('ELASTICSEARCH_AUTH_TOKEN')
+    es_auth_username = os.environ.get('ELASTICSEARCH_AUTH_USERNAME')
+    es_auth_password = os.environ.get('ELASTICSEARCH_AUTH_PASSWORD')
     index_prefix = os.environ.get('INDEX_PREFIX', 'test')
     prefix_delimiter = os.environ.get('INDEX_PREFIX_DELIMITER', '.')
     suffix_delimiter = os.environ.get('INDEX_SUFFIX_DELIMITER', '_')
@@ -37,6 +44,9 @@ def init_config():
         'dev': bool(os.environ.get('DEVELOPMENT')),
         'global': global_config,
         'elasticsearch_url': es_url,
+        'elasticsearch_auth_token': es_auth_token,
+        'elasticsearch_auth_username': es_auth_username,
+        'elasticsearch_auth_password': es_auth_password,
         'index_prefix': index_prefix,
         'prefix_delimiter': prefix_delimiter,
         'suffix_delimiter': suffix_delimiter,
@@ -48,3 +58,31 @@ def init_config():
 
 
 config = init_config()
+
+
+def get_elasticsearch_auth_header():
+    """
+    Build the Elasticsearch Authorization header based on available credentials.
+    Returns None if no credentials are configured.
+
+    Priority:
+    1. If username and password are set, use Basic authentication
+    2. If only auth token is set, use Bearer authentication
+    """
+    username = config.get('elasticsearch_auth_username')
+    password = config.get('elasticsearch_auth_password')
+    auth_token = config.get('elasticsearch_auth_token')
+
+    if username and password:
+        # Basic authentication with base64 encoding
+        credentials = f"{username}:{password}"
+        credentials_bytes = credentials.encode('utf-8')
+        base64_credentials = base64.b64encode(credentials_bytes).decode('utf-8')
+        logger.info("Using Basic Authentication for Elasticsearch.")
+        return f"Basic {base64_credentials}"
+    elif auth_token:
+        # Bearer authentication
+        logger.info("Using Bearer Authentication for Elasticsearch.")
+        return f"Bearer {auth_token}"
+    else:
+        return None

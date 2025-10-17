@@ -7,12 +7,15 @@ DEFAULT_TIMEOUT = 180
 WAIT_POLL_INTERVAL = 5
 
 
-def wait_for_service(url, name, timeout=DEFAULT_TIMEOUT):
+def wait_for_service(url, name, timeout=DEFAULT_TIMEOUT, auth_token=None):
     start = time.time()
+    headers = {}
+    if auth_token:
+        headers['Authorization'] = auth_token
     while True:
         logger.info(f'Attempting to connect to {name} at {url}')
         try:
-            requests.get(url, timeout=timeout).raise_for_status()
+            requests.get(url, timeout=timeout, headers=headers).raise_for_status()
             logger.info(f'{name} is online!')
             break
         except Exception:
