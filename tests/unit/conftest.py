@@ -1,4 +1,11 @@
 # content of a/conftest.py
+import os
+# Set environment variables BEFORE any other imports
+# This ensures the config module picks up the auth credentials
+os.environ['ELASTICSEARCH_URL'] = 'http://localhost:9200'
+os.environ['ELASTICSEARCH_AUTH_USERNAME'] = 'elastic'
+os.environ['ELASTICSEARCH_AUTH_PASSWORD'] = 'changeme'
+
 import pytest
 from tests.helpers.unit_setup import (
     start_service,
