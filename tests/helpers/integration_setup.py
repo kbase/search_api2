@@ -32,10 +32,6 @@ def start_service(app_url):
 
 
 def stop_service():
-    global container_process
-    global container_out
-    global container_err
-
     if container_process is not None:
         logger.info('Stopping container')
 

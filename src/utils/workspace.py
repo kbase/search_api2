@@ -63,6 +63,7 @@ def _req(method: str, params: dict, token: Optional[str]):
         url=config['workspace_url'],
         headers=headers,
         data=json.dumps(payload),
+        timeout=120
     )
     resp_json = None
     result = None

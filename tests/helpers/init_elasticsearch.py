@@ -12,7 +12,7 @@ def _get_headers():
     if auth_header_value:
         headers['Authorization'] = auth_header_value
     return headers
-    
+
 
 # TODO use a util for creating index names
 narrative_index_name = ''.join([

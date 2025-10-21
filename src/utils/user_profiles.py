@@ -25,6 +25,7 @@ def get_user_profiles(usernames: list, auth_token=None):
         url=url,
         data=json.dumps(payload),
         headers=headers,
+        timeout=120
     )
     if not resp.ok:
         raise UserProfileError(url, resp.text)
