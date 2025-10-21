@@ -86,7 +86,6 @@ def search(params, meta):
 
     headers = {'Content-Type': 'application/json'}
 
-    # Add Authorization header if Elasticsearch auth is configured
     auth_header = get_elasticsearch_auth_header()
     if auth_header:
         headers['Authorization'] = auth_header
