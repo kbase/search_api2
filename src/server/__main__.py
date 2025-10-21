@@ -136,7 +136,7 @@ def _get_status_code(result: dict) -> int:
 
 # Wait for dependencies to start
 logger.info('Checking connection to elasticsearch')
-wait_for_service(config['elasticsearch_url'], 'Elasticsearch')
+wait_for_service(config['elasticsearch_url'], 'Elasticsearch', auth_token=config['authorization_header_value'])
 # Start the server
 app.run(
     host='0.0.0.0',  # nosec
