@@ -1,4 +1,4 @@
-gi"""
+"""
 Integration tests for Elasticsearch authentication.
 
 These tests verify that the search API can successfully connect to and query
