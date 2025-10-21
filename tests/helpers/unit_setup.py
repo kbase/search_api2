@@ -24,10 +24,11 @@ def start_service(wait_for_url, wait_for_name):
     global container_out
     global container_err
 
-    # Set environment variables for the tests to use same auth as docker-compose
-    os.environ.setdefault('ELASTICSEARCH_URL', 'http://localhost:9200')
-    os.environ.setdefault('ELASTICSEARCH_AUTH_USERNAME', 'elastic')
-    os.environ.setdefault('ELASTICSEARCH_AUTH_PASSWORD', 'changeme')
+    # Set environment variables BEFORE importing config module
+    # This ensures config picks up the auth credentials
+    os.environ['ELASTICSEARCH_URL'] = 'http://localhost:9200'
+    os.environ['ELASTICSEARCH_AUTH_USERNAME'] = 'elastic'
+    os.environ['ELASTICSEARCH_AUTH_PASSWORD'] = 'changeme'
 
     cmd = "docker compose --ansi never up"
     logger.info(f'Running command:\n{cmd}')
