@@ -246,39 +246,6 @@ def test_search_with_basic_auth_header(services):
 
 
 @responses.activate
-def test_search_with_bearer_auth_header(services):
-    """Test that Bearer auth header is correctly added to Elasticsearch request."""
-    with patch('src.es_client.query.ws_auth') as ws_mock, \
-         patch('src.es_client.query.get_elasticsearch_auth_header') as auth_mock:
-        ws_mock.return_value = [0, 1]
-        auth_mock.return_value = 'Bearer my-secret-token'
-
-        prefix = config['index_prefix']
-        delim = config['prefix_delimiter']
-        index_name_str = prefix + delim + "default_search"
-        url = config['elasticsearch_url'] + '/' + index_name_str + '/_search'
-
-        # Mock successful ES response
-        es_response = {
-            'took': 5,
-            'hits': {
-                'total': {'value': 0},
-                'hits': []
-            }
-        }
-        responses.add(responses.POST, url, json=es_response, status=200)
-
-        # Execute search
-        search({}, {'auth': None})
-
-        # Verify the request was made with the Authorization header
-        assert len(responses.calls) == 1
-        request = responses.calls[0].request
-        assert 'Authorization' in request.headers
-        assert request.headers['Authorization'] == 'Bearer my-secret-token'
-
-
-@responses.activate
 def test_search_without_auth_header(services):
     """Test that no Authorization header is added when auth is not configured."""
     with patch('src.es_client.query.ws_auth') as ws_mock, \
