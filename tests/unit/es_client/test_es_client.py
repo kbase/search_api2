@@ -216,9 +216,8 @@ def test_es_response_error_default(services):
 def test_search_with_basic_auth_header(services):
     """Test that Basic auth header is correctly added to Elasticsearch request."""
     with patch('src.es_client.query.ws_auth') as ws_mock, \
-         patch('src.es_client.query.get_elasticsearch_auth_header') as auth_mock:
+         patch.dict('src.utils.config.config', {'authorization_header_value': 'Basic dGVzdHVzZXI6dGVzdHBhc3M='}):
         ws_mock.return_value = [0, 1]
-        auth_mock.return_value = 'Basic dGVzdHVzZXI6dGVzdHBhc3M='
 
         prefix = config['index_prefix']
         delim = config['prefix_delimiter']
@@ -249,9 +248,8 @@ def test_search_with_basic_auth_header(services):
 def test_search_without_auth_header(services):
     """Test that no Authorization header is added when auth is not configured."""
     with patch('src.es_client.query.ws_auth') as ws_mock, \
-         patch('src.es_client.query.get_elasticsearch_auth_header') as auth_mock:
+         patch.dict('src.utils.config.config', {'authorization_header_value': None}):
         ws_mock.return_value = [0, 1]
-        auth_mock.return_value = None  # No auth configured
 
         prefix = config['index_prefix']
         delim = config['prefix_delimiter']
