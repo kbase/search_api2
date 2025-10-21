@@ -1,5 +1,6 @@
 import requests
 import json
+import os as _os
 
 from src.utils.config import config, get_elasticsearch_auth_header
 
@@ -26,7 +27,7 @@ index_names = [
     config['index_prefix'] + config['prefix_delimiter'] + 'index2',
 ]
 
-_ES_URL = 'http://localhost:9200'
+_ES_URL = _os.environ.get('ELASTICSEARCH_URL', 'http://localhost:9200')
 
 # Simple run once semaphore
 _COMPLETED = False

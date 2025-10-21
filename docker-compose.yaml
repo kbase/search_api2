@@ -17,6 +17,8 @@ services:
       - DEVELOPMENT=1
       - PYTHONUNBUFFERED=true
       - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - ELASTICSEARCH_AUTH_USERNAME=elastic
+      - ELASTICSEARCH_AUTH_PASSWORD=changeme
       - WORKERS=2
 
   elasticsearch:
@@ -25,7 +27,8 @@ services:
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - bootstrap.memory_lock=true
       - discovery.type=single-node
-      - xpack.security.enabled=false
+      - xpack.security.enabled=true
+      - ELASTIC_PASSWORD=changeme
     ports:
       - "127.0.0.1:9200:9200"
       - "127.0.0.1:9300:9300"
