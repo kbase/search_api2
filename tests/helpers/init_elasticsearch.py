@@ -60,6 +60,40 @@ narrative_docs = [
 ]
 
 
+def create_index(index_name):
+    """Create an Elasticsearch index if it does not already exist."""
+    # Check if exists
+    resp = requests.head(_ES_URL + '/' + index_name)
+    if resp.status_code == 200:
+        return
+    resp = requests.put(
+        _ES_URL + '/' + index_name,
+        data=json.dumps({
+            'settings': {
+                'index': {'number_of_shards': 2, 'number_of_replicas': 1}
+            }
+        }),
+        headers=_get_headers(),
+    )
+    if not resp.ok and resp.json()['error']['type'] != 'index_already_exists_exception':
+        raise RuntimeError('Error creating index on ES:', resp.text)
+
+
+def create_doc(index_name, data):
+    """Create a document in the specified index."""
+    # Wait for doc to sync
+    url = '/'.join([
+        _ES_URL,
+        index_name,
+        '_doc',
+        data['name'],
+        '?refresh=wait_for'
+    ])
+    resp = requests.put(url, data=json.dumps(data), headers=_get_headers())
+    if not resp.ok:
+        raise RuntimeError(f"Error creating test doc:\n{resp.text}")
+
+
 def init_elasticsearch():
     """
     Initialize the indexes and documents on elasticsearch before running tests.
@@ -83,3 +117,7 @@ def init_elasticsearch():
             {"add": {"indices": index_names, "alias": alias_name}}
         ]
     }
+    resp = requests.post(url, data=json.dumps(body), headers=_get_headers())
+    if not resp.ok:
+        raise RuntimeError("Error creating aliases on ES:", resp.text)
+    _COMPLETED = True
