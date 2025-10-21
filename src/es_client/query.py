@@ -7,7 +7,7 @@ import requests
 
 from src.utils.logger import logger
 from src.utils.workspace import ws_auth
-from src.utils.config import config, get_elasticsearch_auth_header
+from src.utils.config import config
 from src.utils.obj_utils import get_path
 from src.exceptions import UnknownIndex, ElasticsearchError
 
@@ -86,9 +86,9 @@ def search(params, meta):
 
     headers = {'Content-Type': 'application/json'}
 
-    auth_header = get_elasticsearch_auth_header()
-    if auth_header:
-        headers['Authorization'] = auth_header
+    auth_header_value = config['authorization_header_value']
+    if auth_header_value:
+        headers['Authorization'] = auth_header_value
 
     # Allows index exclusion; otherwise there is an error
     params = {'allow_no_indices': 'true'}
