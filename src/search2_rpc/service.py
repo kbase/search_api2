@@ -33,7 +33,6 @@ def show_indexes(params, meta):
     resp = requests.get(
         config['elasticsearch_url'] + '/_cat/indices/' + prefix + '*?format=json',
         headers=headers,
-        timeout=120
     )
     if not resp.ok:
         raise ElasticsearchError(resp.text)
