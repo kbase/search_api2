@@ -2,18 +2,17 @@ import requests
 import json
 import os as _os
 
-from src.utils.config import config, get_elasticsearch_auth_header
+from src.utils.config import config
 
 
 def _get_headers():
     """Get HTTP headers for Elasticsearch requests, including auth if configured."""
     headers = {'Content-Type': 'application/json'}
-    # Use the centralized auth header function
-    auth_header = get_elasticsearch_auth_header()
-    if auth_header:
-        headers['Authorization'] = auth_header
+    auth_header_value = config.get('authorization_header_value')
+    if auth_header_value:
+        headers['Authorization'] = auth_header_value
     return headers
-
+    
 
 # TODO use a util for creating index names
 narrative_index_name = ''.join([
