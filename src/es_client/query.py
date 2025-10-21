@@ -86,10 +86,14 @@ def search(params, meta):
 
     headers = {'Content-Type': 'application/json'}
 
+    auth_header_value = config['authorization_header_value']
+    if auth_header_value:
+        headers['Authorization'] = auth_header_value
+
     # Allows index exclusion; otherwise there is an error
     params = {'allow_no_indices': 'true'}
 
-    resp = requests.post(url, data=json.dumps(options), params=params, headers=headers)
+    resp = requests.post(url, data=json.dumps(options), params=params, headers=headers)  # nosec B113
 
     if not resp.ok:
         _handle_es_err(resp)
