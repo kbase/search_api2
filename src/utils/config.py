@@ -2,9 +2,6 @@ import yaml
 import urllib.request
 import os
 import base64
-import logging
-
-logger = logging.getLogger('search2')
 
 
 def init_config():
