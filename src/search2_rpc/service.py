@@ -7,7 +7,7 @@ import time
 
 from jsonrpcbase import JSONRPCService
 from src.es_client import search
-from src.utils.config import config
+from src.utils.config import config, get_elasticsearch_auth_header
 from src.utils.logger import logger
 from src.search2_conversion import convert_params, convert_result
 from src.exceptions import ElasticsearchError
@@ -26,9 +26,13 @@ service = JSONRPCService(
 def show_indexes(params, meta):
     """List all index names for our prefix"""
     prefix = config['index_prefix']
+    headers = {'Content-Type': 'application/json'}
+    auth_header = get_elasticsearch_auth_header()
+    if auth_header:
+        headers['Authorization'] = auth_header
     resp = requests.get(
         config['elasticsearch_url'] + '/_cat/indices/' + prefix + '*?format=json',
-        headers={'Content-Type': 'application/json'},
+        headers=headers,
     )
     if not resp.ok:
         raise ElasticsearchError(resp.text)
