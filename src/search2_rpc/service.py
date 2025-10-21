@@ -26,9 +26,14 @@ service = JSONRPCService(
 def show_indexes(params, meta):
     """List all index names for our prefix"""
     prefix = config['index_prefix']
+    headers = {'Content-Type': 'application/json'}
+    auth_header_value = config['authorization_header_value']
+    if auth_header_value:
+        headers['Authorization'] = auth_header_value
     resp = requests.get(
         config['elasticsearch_url'] + '/_cat/indices/' + prefix + '*?format=json',
-        headers={'Content-Type': 'application/json'},
+        headers=headers,
+        timeout=120
     )
     if not resp.ok:
         raise ElasticsearchError(resp.text)
