@@ -6,12 +6,12 @@ os.environ['ELASTICSEARCH_URL'] = 'http://localhost:9200'
 os.environ['ELASTICSEARCH_AUTH_USERNAME'] = 'elastic'
 os.environ['ELASTICSEARCH_AUTH_PASSWORD'] = 'changeme'
 
-import pytest
-from tests.helpers.unit_setup import (
+import pytest  # noqa: E402
+from tests.helpers.unit_setup import (  # noqa: E402
     start_service,
     stop_service
 )
-from tests.helpers import init_elasticsearch
+from tests.helpers import init_elasticsearch  # noqa: E402
 
 # ES_URL = 'http://localhost:9200'
 APP_URL = 'http://localhost:5000'
