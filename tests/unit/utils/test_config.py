@@ -1,8 +1,9 @@
-from src.utils.config import init_config, get_elasticsearch_auth_header
 import os
 import pytest
 import base64
-from unittest.mock import patch
+
+
+from src.utils.config import init_config, auth_header_encoder
 
 
 def test_init_config_invalid_config_url():
@@ -17,48 +18,47 @@ def test_init_config_invalid_config_url():
         os.environ.pop('GLOBAL_CONFIG_URL')
 
 
-@patch('src.utils.config.config')
-def test_get_elasticsearch_auth_header_basic_auth(mock_config):
-    """Test Basic authentication when username and password are set."""
-    mock_config.get.side_effect = lambda key: {
-        'elasticsearch_auth_username': 'testuser',
-        'elasticsearch_auth_password': 'testpass'
-    }.get(key)
+def test_auth_header_encoder_valid_credentials():
+    """
+    Tests if the function correctly encodes a valid username and password.
+    """
+    username = "testuser"
+    password = "testpassword123"
 
-    auth_header = get_elasticsearch_auth_header()
+    # Manually create the expected Base64 string for verification
+    expected_credentials = base64.b64encode(b"testuser:testpassword123").decode('utf-8')
+    expected_header = f"Basic {expected_credentials}"
 
-    # Verify Basic auth format
-    assert auth_header.startswith('Basic ')
-
-    # Verify the credentials are properly base64 encoded
-    encoded_part = auth_header.split(' ')[1]
-    decoded = base64.b64decode(encoded_part).decode('utf-8')
-    assert decoded == 'testuser:testpass'
+    assert auth_header_encoder(username, password) == expected_header
 
 
-@patch('src.utils.config.config')
-def test_get_elasticsearch_auth_header_no_auth(mock_config):
-    """Test that None is returned when no credentials are set."""
-    mock_config.get.side_effect = lambda key: {
-        'elasticsearch_auth_username': None,
-        'elasticsearch_auth_password': None
-    }.get(key)
+@pytest.mark.parametrize(
+    "username, password",
+    [
+        (None, "password"),  # No username
+        ("username", None),  # No password
+        ("", "password"),  # Empty username
+        ("username", ""),  # Empty password
+        (None, None),  # Both None
+        ("", ""),  # Both empty
+    ],
+)
+def test_auth_header_encoder_missing_credentials_returns_none(username, password):
+    """
+    Tests if the function returns None when username or password is not provided.
+    """
+    assert auth_header_encoder(username, password) is None
 
-    auth_header = get_elasticsearch_auth_header()
 
-    # Verify no auth header is returned
-    assert auth_header is None
+def test_auth_header_encoder_with_special_characters():
+    """
+    Tests if the function correctly handles credentials with special characters.
+    """
+    username = "user@example.com"
+    password = "p@$$w*rd!"
 
+    credentials_str = f"{username}:{password}"
+    expected_credentials = base64.b64encode(credentials_str.encode('utf-8')).decode('utf-8')
+    expected_header = f"Basic {expected_credentials}"
 
-@patch('src.utils.config.config')
-def test_get_elasticsearch_auth_header_partial_basic(mock_config):
-    """Test that None is returned when only username OR password is set (not both)."""
-    mock_config.get.side_effect = lambda key: {
-        'elasticsearch_auth_username': 'testuser',
-        'elasticsearch_auth_password': None
-    }.get(key)
-
-    auth_header = get_elasticsearch_auth_header()
-
-    # Should return None since password is missing
-    assert auth_header is None
+    assert auth_header_encoder(username, password) == expected_header

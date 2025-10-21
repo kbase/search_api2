@@ -4,6 +4,19 @@ import os
 import base64
 
 
+def auth_header_encoder(username, password):
+    """
+    Encodes username and password for a Basic Authentication header.
+    Returns None if either username or password is not provided.
+    """
+    if not (username and password):
+        return None
+    credentials = f"{username}:{password}"
+    credentials_bytes = credentials.encode('utf-8')
+    base64_credentials = base64.b64encode(credentials_bytes).decode('utf-8')
+    return f"Basic {base64_credentials}"
+
+
 def init_config():
     """
     Initialize configuration data for the whole app.
@@ -24,12 +37,7 @@ def init_config():
         'https://ci.kbase.us/services/user_profile/rpc/'
     )
 
-    auth_header_value = None
-    if es_auth_username and es_auth_password:
-        credentials = f"{es_auth_username}:{es_auth_password}"
-        credentials_bytes = credentials.encode('utf-8')
-        base64_credentials = base64.b64encode(credentials_bytes).decode('utf-8')
-        auth_header_value = f"Basic {base64_credentials}"
+    auth_header_value = auth_header_encoder(es_auth_username, es_auth_password)
 
     # Load the global configuration release (non-environment specific, public config)
     allowed_protocols = ('https://', 'http://', 'file://')
