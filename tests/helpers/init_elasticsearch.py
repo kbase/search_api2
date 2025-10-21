@@ -1,59 +1,22 @@
 import requests
 import json
-
 from src.utils.config import config
 
-# TODO use a util for creating index names
-narrative_index_name = ''.join([
-    config['index_prefix'],
-    config['prefix_delimiter'],
-    config['global']['ws_type_to_indexes']['KBaseNarrative.Narrative'],
-])
-
-index_names = [
-    config['index_prefix'] + config['prefix_delimiter'] + 'index1',
-    config['index_prefix'] + config['prefix_delimiter'] + 'index2',
-]
-
-_ES_URL = 'http://localhost:9200'
-
-# Simple run once semaphore
-_COMPLETED = False
-
-#
-# For the test docs, note the workspace must match the doc's idea of permissions.
-# See data.py for the workspace definitions in which:
-# 0 - public workspace, refdata
-# 1 - public workspace, narrative
-# 100 - private workspace, narrative
-# 101 - private, inaccessible workspace, narrative
-test_docs = [
-    # Public doc, refdata
-    {'name': 'public-doc1', 'access_group': '0', 'is_public': True, 'timestamp': 10},
-    # Public doc, narrative
-    {'name': 'public-doc2', 'access_group': '1', 'is_public': True, 'timestamp': 12},
-    # Private but accessible doc
-    {'name': 'private-doc1', 'is_public': False, 'access_group': '100', 'timestamp': 7},
-    # Private but inaccessible doc
-    {'name': 'private-doc2', 'is_public': False, 'access_group': '101', 'timestamp': 9},
-]
-
-narrative_docs = [
-        {
-            'name': 'narrative1',
-            'narrative_title': 'narrative1',
-            'is_public': True,
-            'obj_id': 123,
-            'access_group': '1',
-            'timestamp': 1,
-        },
-]
+# Define headers at module level
+_BASE_HEADERS = {'Content-Type': 'application/json'}
 
 
+def _get_headers():
+    """Get headers with optional authorization."""
+    headers = _BASE_HEADERS.copy()
+    if config.get('authorization_header_value'):
+        headers['Authorization'] = config['authorization_header_value']
+    return headers
+
+
+# Then use it in your functions:
 def init_elasticsearch():
-    """
-    Initialize the indexes and documents on elasticsearch before running tests.
-    """
+    """Initialize the indexes and documents on elasticsearch before running tests."""
     global _COMPLETED
     if _COMPLETED:
         return
@@ -65,6 +28,7 @@ def init_elasticsearch():
             create_doc(index_name, doc)
     for doc in narrative_docs:
         create_doc(narrative_index_name, doc)
+
     # create default_search alias for all fields.
     url = f"{_ES_URL}/_aliases"
     alias_name = config['index_prefix'] + config['prefix_delimiter'] + "default_search"
@@ -73,7 +37,7 @@ def init_elasticsearch():
             {"add": {"indices": index_names, "alias": alias_name}}
         ]
     }
-    resp = requests.post(url, data=json.dumps(body), headers={'Content-Type': 'application/json'})
+    resp = requests.post(url, data=json.dumps(body), headers=_get_headers())
     if not resp.ok:
         raise RuntimeError("Error creating aliases on ES:", resp.text)
     _COMPLETED = True
@@ -91,7 +55,7 @@ def create_index(index_name):
                 'index': {'number_of_shards': 2, 'number_of_replicas': 1}
             }
         }),
-        headers={'Content-Type': 'application/json'},
+        headers=_get_headers(),
     )
     if not resp.ok and resp.json()['error']['type'] != 'index_already_exists_exception':
         raise RuntimeError('Error creating index on ES:', resp.text)
@@ -99,14 +63,13 @@ def create_index(index_name):
 
 def create_doc(index_name, data):
     # Wait for doc to sync
-    url = '/'.join([  # type: ignore
+    url = '/'.join([
         _ES_URL,
         index_name,
         '_doc',
         data['name'],
         '?refresh=wait_for'
     ])
-    headers = {'Content-Type': 'application/json'}
-    resp = requests.put(url, data=json.dumps(data), headers=headers)
+    resp = requests.put(url, data=json.dumps(data), headers=_get_headers())
     if not resp.ok:
         raise RuntimeError(f"Error creating test doc:\n{resp.text}")
