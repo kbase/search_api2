@@ -24,7 +24,6 @@ def init_config():
         'https://ci.kbase.us/services/user_profile/rpc/'
     )
 
-    # Calculate the Elasticsearch auth header value once during initialization
     auth_header_value = None
     if es_auth_username and es_auth_password:
         credentials = f"{es_auth_username}:{es_auth_password}"
