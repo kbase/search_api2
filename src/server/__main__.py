@@ -6,7 +6,7 @@ import traceback
 
 from src.search1_rpc import service as legacy_service
 from src.search2_rpc import service as rpc_service
-from src.utils.config import config, get_elasticsearch_auth_header
+from src.utils.config import config
 from src.utils.logger import logger
 from src.utils.obj_utils import get_path
 from src.utils.wait_for_service import wait_for_service
