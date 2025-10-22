@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ELASTICSEARCH_AUTH_USERNAME: elastic
-      ELASTICSEARCH_AUTH_PASSWORD: changeme123
+      ELASTICSEARCH_AUTH_PASSWORD: changeme
 
     steps:
     - name: Check out GitHub repo
