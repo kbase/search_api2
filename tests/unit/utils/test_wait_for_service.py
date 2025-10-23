@@ -16,7 +16,7 @@ def bad_url_with_timeout(name, url, timeout, caplog):
     with caplog.at_level(logging.INFO, logger='search2'):
         start = time.time()
         with pytest.raises(SystemExit) as se:
-            wait_for_service(url, 'foo', timeout=timeout)
+            wait_for_service(url, 'foo', {}, timeout=timeout)
 
         # Ensure it is attempting to exit.
         assert se.type == SystemExit

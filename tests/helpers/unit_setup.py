@@ -1,5 +1,6 @@
 import subprocess
 from src.utils.wait_for_service import wait_for_service
+from src.utils.config import config
 from src.utils.logger import logger
 import json
 import os
@@ -29,7 +30,7 @@ def start_service(wait_for_url, wait_for_name):
     container_out = open("container.out", "w")
     container_err = open("container.err", "w")
     container_process = subprocess.Popen(cmd, shell=True, stdout=container_out, stderr=container_err)
-    wait_for_service(wait_for_url, wait_for_name)
+    wait_for_service(wait_for_url, wait_for_name, config['elasticsearch_headers'])
 
 
 def stop_service():

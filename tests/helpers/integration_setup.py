@@ -28,7 +28,7 @@ def start_service(app_url):
                                          stdout=container_out,
                                          stderr=container_err,
                                          cwd=cwd)
-    wait_for_service(app_url, "search2")
+    wait_for_service(app_url, "search2", {})
 
 
 def stop_service():
