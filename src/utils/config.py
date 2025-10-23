@@ -38,7 +38,6 @@ def init_config():
     )
 
     auth_header_value = auth_header_encoder(es_auth_username, es_auth_password)
-    # Store the complete headers dict with all required keys
     elasticsearch_headers = {
         'Content-Type': 'application/json',
         'Authorization': auth_header_value
