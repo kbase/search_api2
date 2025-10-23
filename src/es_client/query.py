@@ -84,16 +84,10 @@ def search(params, meta):
     if params.get('track_total_hits'):
         options['track_total_hits'] = params.get('track_total_hits')
 
-    headers = {'Content-Type': 'application/json'}
-
-    auth_header_value = config['authorization_header_value']
-    if auth_header_value:
-        headers['Authorization'] = auth_header_value
-
     # Allows index exclusion; otherwise there is an error
     params = {'allow_no_indices': 'true'}
 
-    resp = requests.post(url, data=json.dumps(options), params=params, headers=headers)  # nosec B113
+    resp = requests.post(url, data=json.dumps(options), params=params, headers=config['elasticsearch_headers'])  # nosec B113
 
     if not resp.ok:
         _handle_es_err(resp)

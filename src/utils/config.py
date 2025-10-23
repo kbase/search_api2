@@ -7,10 +7,10 @@ import base64
 def auth_header_encoder(username, password):
     """
     Encodes username and password for a Basic Authentication header.
-    Returns None if either username or password is not provided.
+    Raises RuntimeError if either username or password is not provided.
     """
     if not (username and password):
-        return None
+        raise RuntimeError("Elasticsearch authentication credentials are required. Set ELASTICSEARCH_AUTH_USERNAME and ELASTICSEARCH_AUTH_PASSWORD environment variables.")
     credentials = f"{username}:{password}"
     credentials_bytes = credentials.encode('utf-8')
     base64_credentials = base64.b64encode(credentials_bytes).decode('utf-8')
@@ -38,6 +38,11 @@ def init_config():
     )
 
     auth_header_value = auth_header_encoder(es_auth_username, es_auth_password)
+    # Store the complete headers dict with all required keys
+    elasticsearch_headers = {
+        'Content-Type': 'application/json',
+        'Authorization': auth_header_value
+    }
 
     # Load the global configuration release (non-environment specific, public config)
     allowed_protocols = ('https://', 'http://', 'file://')
@@ -53,7 +58,7 @@ def init_config():
         'dev': bool(os.environ.get('DEVELOPMENT')),
         'global': global_config,
         'elasticsearch_url': es_url,
-        'authorization_header_value': auth_header_value,
+        'elasticsearch_headers': elasticsearch_headers,
         'index_prefix': index_prefix,
         'prefix_delimiter': prefix_delimiter,
         'suffix_delimiter': suffix_delimiter,

@@ -4,15 +4,6 @@ import json
 from src.utils.config import config
 
 
-def _get_headers():
-    """Get HTTP headers for Elasticsearch requests, including auth if configured."""
-    headers = {'Content-Type': 'application/json'}
-    auth_header_value = config.get('authorization_header_value')
-    if auth_header_value:
-        headers['Authorization'] = auth_header_value
-    return headers
-
-
 # TODO use a util for creating index names
 narrative_index_name = ''.join([
     config['index_prefix'],
@@ -73,7 +64,7 @@ def create_index(index_name):
                 'index': {'number_of_shards': 2, 'number_of_replicas': 1}
             }
         }),
-        headers=_get_headers(),
+        headers=config['elasticsearch_headers'],
     )
     if not resp.ok and resp.json()['error']['type'] != 'index_already_exists_exception':
         raise RuntimeError('Error creating index on ES:', resp.text)
@@ -89,7 +80,7 @@ def create_doc(index_name, data):
         data['name'],
         '?refresh=wait_for'
     ])
-    resp = requests.put(url, data=json.dumps(data), headers=_get_headers())
+    resp = requests.put(url, data=json.dumps(data), headers=config['elasticsearch_headers'])
     if not resp.ok:
         raise RuntimeError(f"Error creating test doc:\n{resp.text}")
 
@@ -117,7 +108,7 @@ def init_elasticsearch():
             {"add": {"indices": index_names, "alias": alias_name}}
         ]
     }
-    resp = requests.post(url, data=json.dumps(body), headers=_get_headers())
+    resp = requests.post(url, data=json.dumps(body), headers=config['elasticsearch_headers'])
     if not resp.ok:
         raise RuntimeError("Error creating aliases on ES:", resp.text)
     _COMPLETED = True
