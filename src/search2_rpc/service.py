@@ -1,18 +1,18 @@
 """
 JSON-RPC 2.0 service for the Search2 API
 """
-import jsonrpcbase
 import re
 import requests
 import time
 
+from jsonrpcbase import JSONRPCService
 from src.es_client import search
 from src.utils.config import config
 from src.utils.logger import logger
 from src.search2_conversion import convert_params, convert_result
 from src.exceptions import ElasticsearchError
 
-service = jsonrpcbase.JSONRPCService(
+service = JSONRPCService(
     info={
         'title': 'Search API',
         'description': 'Search API layer in front of Elasticsearch for KBase',

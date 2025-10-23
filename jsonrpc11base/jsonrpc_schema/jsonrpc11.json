@@ -1,0 +1,153 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "JSON-RPC Request Schema",
+    "description": "JSON-Schema that validates a JSON-RPC 1.1 request",
+    "definitions": {
+        "request": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "version",
+                "method"
+            ],
+            "properties": {
+                "version": {
+                    "const": "1.1"
+                },
+                "method": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "id": {
+                    "type": [
+                        "number",
+                        "string",
+                        "boolean",
+                        "array",
+                        "object",
+                        "null"
+                    ]
+                },
+                "params": {
+                    "anyOf": [
+                        {
+                            "type": "object"
+                        },
+                        {
+                            "type": "array"
+                        }
+                    ]
+                }
+            }
+        },
+        "result": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "version",
+                "result"
+            ],
+            "properties": {
+                "version": {
+                    "const": "1.1"
+                },
+                "id": {
+                    "type": [
+                        "integer",
+                        "string"
+                    ]
+                },
+                "result": {
+                    "anyOf": [
+                        {
+                            "type": "object"
+                        },
+                        {
+                            "type": "array"
+                        },
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                }
+            }
+        },
+        "errorObject": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "name",
+                "code",
+                "message"
+            ],
+            "properties": {
+                "name": {
+                    "const": "JSONRPCError"
+                },
+                "code": {
+                    "type": "number"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "error": {
+                    "anyOf": [
+                        {
+                            "type": "null"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "object"
+                        }
+                    ]
+                }
+            }
+        },
+        "error": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "version",
+                "error"
+            ],
+            "properties": {
+                "version": {
+                    "const": "1.1"
+                },
+                "id": {
+                    "type": [
+                        "integer",
+                        "string"
+                    ]
+                },
+                "error": {
+                    "$ref": "#definitions/errorObject"
+                }
+            }
+        },
+        "response": {
+            "oneOf": [
+                {
+                    "$ref": "#definitions/result"
+                },
+                {
+                    "$ref": "#definitions/error"
+                }
+            ]
+        }
+    }
+}

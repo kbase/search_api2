@@ -1,11 +1,9 @@
 import subprocess
-import signal
 from src.utils.wait_for_service import wait_for_service
 from src.utils.logger import logger
 import json
 import os
 import requests
-from . import common
 from .common import assert_jsonrpc11_result, equal
 
 container_process = None
@@ -22,7 +20,7 @@ def start_service(app_url):
     # Build and start the app using docker-compose
     cwd = 'tests/integration/docker'
     logger.info(f'Running docker-compose file in "{cwd}"')
-    cmd = "docker-compose --no-ansi up"
+    cmd = "docker compose --ansi never up"
     logger.info(f'Running command:\n{cmd}')
     container_out = open("container.out", "w")
     container_err = open("container.err", "w")
@@ -40,15 +38,11 @@ def stop_service():
 
     if container_process is not None:
         logger.info('Stopping container')
-        container_process.send_signal(signal.SIGTERM)
-        logger.info('Waiting until service has stopped...')
 
-        if not common.wait_for_line("container.err",
-                                    lambda line: 'Stopping' in line and 'done' in line,
-                                    timeout=stop_timeout,
-                                    line_count=1):
-            raise Exception(f'Container did not stop in the alloted time of {stop_timeout} seconds')
-        logger.info('...stopped!')
+        # Stop and remove containers
+        cwd = 'tests/integration/docker'
+        subprocess.run("docker compose --ansi never down", shell=True, check=True, cwd=cwd)
+        logger.info('Service has stopped!')
 
     if container_err is not None:
         container_err.close()

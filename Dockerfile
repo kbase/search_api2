@@ -1,4 +1,4 @@
-FROM python:3.7-alpine
+FROM python:3.9.19-alpine
 
 # Dockerize related args
 ARG BUILD_DATE
@@ -27,9 +27,9 @@ WORKDIR /app
 # Install dependencies
 COPY pyproject.toml poetry.lock /app/
 RUN apk --update add --no-cache --virtual build-dependencies libffi-dev libressl-dev musl-dev python3-dev build-base git rust cargo && \
-    pip install --upgrade pip poetry==1.0.9 && \
+    pip install --upgrade pip poetry==2.1.2 && \
     poetry config virtualenvs.create false && \
-    poetry install --no-dev --no-interaction --no-ansi && \
+    poetry install --no-root --without dev --no-interaction --no-ansi && \
     apk del --no-cache build-dependencies
 
 COPY . /app

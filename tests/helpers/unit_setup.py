@@ -1,8 +1,6 @@
 import subprocess
-import signal
 from src.utils.wait_for_service import wait_for_service
 from src.utils.logger import logger
-from . import common
 import json
 import os
 
@@ -26,7 +24,7 @@ def start_service(wait_for_url, wait_for_name):
     global container_out
     global container_err
 
-    cmd = "docker-compose --no-ansi up"
+    cmd = "docker compose --ansi never up"
     logger.info(f'Running command:\n{cmd}')
     container_out = open("container.out", "w")
     container_err = open("container.err", "w")
@@ -41,14 +39,10 @@ def stop_service():
 
     if container_process is not None:
         logger.info('Stopping container')
-        container_process.send_signal(signal.SIGTERM)
-        logger.info('Waiting until service has stopped...')
-        if not common.wait_for_line("container.err",
-                                    lambda line: 'Stopping' in line and 'done' in line,
-                                    timeout=stop_timeout,
-                                    line_count=2):
-            logger.warning(f'Container did not stop in the alotted time of {stop_timeout} seconds')
-        logger.info('...stopped!')
+
+        # Stop and remove containers
+        subprocess.run("docker compose --ansi never down", shell=True, check=True)
+        logger.info('Service has stopped!')
 
     if container_err is not None:
         container_err.close()

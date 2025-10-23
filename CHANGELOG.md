@@ -5,6 +5,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Standard GitHub Actions workflows
+
+### Changed
+- Upgraded Python to version 3.9.19 in test workflows and Dockerfile
+- Updated integration tests README file
+
+### Fixed
+- Container/service shutdown issues; all unit and integration tests now pass locally
+
+### Security
+- Vendored `kbase-jsonrpcbase` 0.3.0a6 and `jsonrpc11base` to resolve dependency conflicts
 
 ## [1.0.0] - 2021-04-20
 ### Fixed
