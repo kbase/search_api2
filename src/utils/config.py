@@ -10,7 +10,10 @@ def auth_header_encoder(username, password):
     Raises RuntimeError if either username or password is not provided.
     """
     if not (username and password):
-        raise RuntimeError("Elasticsearch authentication credentials are required. Set ELASTICSEARCH_AUTH_USERNAME and ELASTICSEARCH_AUTH_PASSWORD environment variables.")
+        raise RuntimeError(
+            "Elasticsearch authentication credentials are required. "
+            "Set ELASTICSEARCH_AUTH_USERNAME and ELASTICSEARCH_AUTH_PASSWORD environment variables."
+        )
     credentials = f"{username}:{password}"
     credentials_bytes = credentials.encode('utf-8')
     base64_credentials = base64.b64encode(credentials_bytes).decode('utf-8')

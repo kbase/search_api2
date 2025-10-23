@@ -87,7 +87,9 @@ def search(params, meta):
     # Allows index exclusion; otherwise there is an error
     params = {'allow_no_indices': 'true'}
 
-    resp = requests.post(url, data=json.dumps(options), params=params, headers=config['elasticsearch_headers'])  # nosec B113
+    resp = requests.post(
+        url, data=json.dumps(options), params=params, headers=config['elasticsearch_headers']
+    )  # nosec B113
 
     if not resp.ok:
         _handle_es_err(resp)
