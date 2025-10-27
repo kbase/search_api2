@@ -24,6 +24,5 @@ def test_init_config_invalid_config_url():
     ('username', ''),
 ])
 def test_auth_header_encoder_missing_credentials(username, password):
-    with pytest.raises(RuntimeError) as rte:
+    with pytest.raises(RuntimeError, match="Elasticsearch authentication credentials are required"):
         auth_header_encoder(username, password)
-    assert 'Elasticsearch authentication credentials are required' in str(rte)
