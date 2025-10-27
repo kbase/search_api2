@@ -3,6 +3,7 @@ import json
 
 from src.utils.config import config
 
+
 # TODO use a util for creating index names
 narrative_index_name = ''.join([
     config['index_prefix'],
@@ -50,6 +51,40 @@ narrative_docs = [
 ]
 
 
+def create_index(index_name):
+    """Create an Elasticsearch index if it does not already exist."""
+    # Check if exists
+    resp = requests.head(_ES_URL + '/' + index_name)
+    if resp.status_code == 200:
+        return
+    resp = requests.put(
+        _ES_URL + '/' + index_name,
+        data=json.dumps({
+            'settings': {
+                'index': {'number_of_shards': 2, 'number_of_replicas': 1}
+            }
+        }),
+        headers=config['elasticsearch_headers'],
+    )
+    if not resp.ok and resp.json()['error']['type'] != 'index_already_exists_exception':
+        raise RuntimeError('Error creating index on ES:', resp.text)
+
+
+def create_doc(index_name, data):
+    """Create a document in the specified index."""
+    # Wait for doc to sync
+    url = '/'.join([
+        _ES_URL,
+        index_name,
+        '_doc',
+        data['name'],
+        '?refresh=wait_for'
+    ])
+    resp = requests.put(url, data=json.dumps(data), headers=config['elasticsearch_headers'])
+    if not resp.ok:
+        raise RuntimeError(f"Error creating test doc:\n{resp.text}")
+
+
 def init_elasticsearch():
     """
     Initialize the indexes and documents on elasticsearch before running tests.
@@ -73,40 +108,7 @@ def init_elasticsearch():
             {"add": {"indices": index_names, "alias": alias_name}}
         ]
     }
-    resp = requests.post(url, data=json.dumps(body), headers={'Content-Type': 'application/json'})
+    resp = requests.post(url, data=json.dumps(body), headers=config['elasticsearch_headers'])
     if not resp.ok:
         raise RuntimeError("Error creating aliases on ES:", resp.text)
     _COMPLETED = True
-
-
-def create_index(index_name):
-    # Check if exists
-    resp = requests.head(_ES_URL + '/' + index_name)
-    if resp.status_code == 200:
-        return
-    resp = requests.put(
-        _ES_URL + '/' + index_name,
-        data=json.dumps({
-            'settings': {
-                'index': {'number_of_shards': 2, 'number_of_replicas': 1}
-            }
-        }),
-        headers={'Content-Type': 'application/json'},
-    )
-    if not resp.ok and resp.json()['error']['type'] != 'index_already_exists_exception':
-        raise RuntimeError('Error creating index on ES:', resp.text)
-
-
-def create_doc(index_name, data):
-    # Wait for doc to sync
-    url = '/'.join([  # type: ignore
-        _ES_URL,
-        index_name,
-        '_doc',
-        data['name'],
-        '?refresh=wait_for'
-    ])
-    headers = {'Content-Type': 'application/json'}
-    resp = requests.put(url, data=json.dumps(data), headers=headers)
-    if not resp.ok:
-        raise RuntimeError(f"Error creating test doc:\n{resp.text}")

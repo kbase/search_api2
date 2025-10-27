@@ -1,18 +1,33 @@
 import yaml
 import urllib.request
 import os
+import base64
+
+
+def auth_header_encoder(username, password):
+    """
+    Encodes username and password for a Basic Authentication header.
+    Raises RuntimeError if either username or password is not provided.
+    """
+    if not (username and password):
+        raise RuntimeError(
+            "Elasticsearch authentication credentials are required. "
+            "Set ELASTICSEARCH_AUTH_USERNAME and ELASTICSEARCH_AUTH_PASSWORD environment variables."
+        )
+    credentials = f"{username}:{password}"
+    credentials_bytes = credentials.encode('utf-8')
+    base64_credentials = base64.b64encode(credentials_bytes).decode('utf-8')
+    return f"Basic {base64_credentials}"
 
 
 def init_config():
     """
-    Initialize configuration data for the whole app
+    Initialize configuration data for the whole app.
     """
-    # TODO: it might be better to NOT default to testing configuration,
-    #       but rather explicitly set the test environment.
-    #       Reason? A failure to configure one of these in prod could lead to
-    #       confusing failure conditions.
     ws_url = os.environ.get('WORKSPACE_URL', 'https://ci.kbase.us/services/ws').strip('/')
     es_url = os.environ.get('ELASTICSEARCH_URL', 'http://localhost:9200').strip('/')
+    es_auth_username = os.environ.get('ELASTICSEARCH_AUTH_USERNAME')
+    es_auth_password = os.environ.get('ELASTICSEARCH_AUTH_PASSWORD')
     index_prefix = os.environ.get('INDEX_PREFIX', 'test')
     prefix_delimiter = os.environ.get('INDEX_PREFIX_DELIMITER', '.')
     suffix_delimiter = os.environ.get('INDEX_SUFFIX_DELIMITER', '_')
@@ -24,6 +39,13 @@ def init_config():
         'USER_PROFILE_URL',
         'https://ci.kbase.us/services/user_profile/rpc/'
     )
+
+    auth_header_value = auth_header_encoder(es_auth_username, es_auth_password)
+    elasticsearch_headers = {
+        'Content-Type': 'application/json',
+        'Authorization': auth_header_value
+    }
+
     # Load the global configuration release (non-environment specific, public config)
     allowed_protocols = ('https://', 'http://', 'file://')
     matches_protocol = (config_url.startswith(prot) for prot in allowed_protocols)
@@ -33,10 +55,12 @@ def init_config():
         global_config = yaml.safe_load(res)
     with open('VERSION') as fd:
         app_version = fd.read().replace('\n', '')
+
     return {
         'dev': bool(os.environ.get('DEVELOPMENT')),
         'global': global_config,
         'elasticsearch_url': es_url,
+        'elasticsearch_headers': elasticsearch_headers,
         'index_prefix': index_prefix,
         'prefix_delimiter': prefix_delimiter,
         'suffix_delimiter': suffix_delimiter,

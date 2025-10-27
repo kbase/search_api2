@@ -28,7 +28,7 @@ def show_indexes(params, meta):
     prefix = config['index_prefix']
     resp = requests.get(
         config['elasticsearch_url'] + '/_cat/indices/' + prefix + '*?format=json',
-        headers={'Content-Type': 'application/json'},
+        headers=config['elasticsearch_headers'],
     )
     if not resp.ok:
         raise ElasticsearchError(resp.text)
