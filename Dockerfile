@@ -1,4 +1,4 @@
-FROM python:3.9.19-alpine
+FROM python:3.14.0-alpine
 
 # Dockerize related args
 ARG BUILD_DATE
